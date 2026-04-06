@@ -84,10 +84,12 @@ var pendingScreenshot = null; // base64 webp string
 var hideCollected = false; // Filter: hide collected shiny/NPC markers
 
 // Shiny collection checklist (persisted to localStorage)
-var SHINY_COLLECTED_KEY = 'rhud_shiny_collected';
+function getShinyCollectedKey() {
+  return 'rhud_shiny_collected_' + (discordUser ? discordUser.id : 'local');
+}
 
 function getShinyCollected() {
-  try { return JSON.parse(localStorage.getItem(SHINY_COLLECTED_KEY) || '{}'); }
+  try { return JSON.parse(localStorage.getItem(getShinyCollectedKey()) || '{}'); }
   catch (e) { return {}; }
 }
 
@@ -98,7 +100,7 @@ function toggleShinyCollected(markerId) {
   } else {
     state[markerId] = Date.now();
   }
-  localStorage.setItem(SHINY_COLLECTED_KEY, JSON.stringify(state));
+  localStorage.setItem(getShinyCollectedKey(), JSON.stringify(state));
   return !!state[markerId];
 }
 
@@ -227,6 +229,10 @@ function loadSavedDiscordUser() {
 }
 
 function logoutDiscord() {
+  // Save current collection to user's key before logging out
+  if (discordUser) {
+    localStorage.setItem('rhud_shiny_collected_' + discordUser.id, JSON.stringify(getShinyCollected()));
+  }
   discordUser = null;
   localStorage.removeItem('discord_user');
   updateAuthUI();
@@ -334,59 +340,6 @@ function saveIdentity(characterName, guildTag) {
   }));
 }
 
-/**
- * Show the identity prompt (blurred background). Returns a promise that
- * resolves with { characterName, guildTag } or null if cancelled.
- */
-function showIdentityPrompt() {
-  return new Promise(function (resolve) {
-    var overlay = document.createElement('div');
-    overlay.id = 'identity-overlay';
-    overlay.innerHTML =
-      '<div class="identity-modal">' +
-      '<div class="identity-title">Welcome to the RavenHUD World Map</div>' +
-      '<div class="identity-subtitle">Please identify yourself to continue</div>' +
-      '<div class="identity-warning">' +
-      '<strong>Please be honest:</strong> Your character name and guild tag help keep the map data useful and consistent.' +
-      '</div>' +
-      '<div class="identity-privacy">' +
-      'By continuing, you acknowledge that your character name and guild tag are stored locally and used only to personalize your map experience. No third-party tracking.' +
-      '</div>' +
-      '<label class="identity-label">Character Name</label>' +
-      '<input type="text" id="identity-char" class="identity-input" placeholder="Your in-game name" maxlength="30" />' +
-      '<label class="identity-label">Guild Tag</label>' +
-      '<input type="text" id="identity-guild" class="identity-input" placeholder="e.g. RH, GG, CT (leave blank if none)" maxlength="10" />' +
-      '<button id="identity-submit" class="identity-btn" disabled>Enter Map</button>' +
-      '</div>';
-
-    document.body.appendChild(overlay);
-
-    var charInput = document.getElementById('identity-char');
-    var guildInput = document.getElementById('identity-guild');
-    var submitBtn = document.getElementById('identity-submit');
-
-    charInput.addEventListener('input', function () {
-      submitBtn.disabled = !charInput.value.trim();
-    });
-
-    charInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && charInput.value.trim()) submitBtn.click();
-    });
-    guildInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && charInput.value.trim()) submitBtn.click();
-    });
-
-    submitBtn.addEventListener('click', function () {
-      var name = charInput.value.trim();
-      var guild = guildInput.value.trim();
-      overlay.remove();
-      resolve({ characterName: name, guildTag: guild });
-    });
-
-    charInput.focus();
-  });
-}
-
 function escapeHtml(str) {
   var div = document.createElement('div');
   div.textContent = str;
@@ -438,16 +391,8 @@ function updateAuthUI() {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  // Identity prompt FIRST — character name + guild tag (cached 90 days)
-  var identity = getSavedIdentity();
+  var identity = getSavedIdentity() || { characterName: '', guildTag: '' };
   var isNewIdentity = false;
-  if (!identity || !identity.characterName || !identity.characterName.trim()) {
-    localStorage.removeItem(IDENTITY_KEY);
-    identity = await showIdentityPrompt();
-    if (!identity) return;
-    saveIdentity(identity.characterName, identity.guildTag);
-    isNewIdentity = true;
-  }
 
   // Compute the browser fingerprint up-front so we can send it with the
   // identity log. Used by Corvid's /cluster admin command to detect evasion.
