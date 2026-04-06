@@ -18,9 +18,6 @@ var BASE_PATH = window.location.pathname.replace(/(?:index\.html)?\/?$/, '');
 
 var DATA_URL = BASE_PATH + '/data/worldmap-markers.json';
 
-var CORVID_BAN_LIST_URL = null; // set below after CORVID_API_URL is defined
-var BAN_LIST_FALLBACK_URL = BASE_PATH + '/data/hall-of-shame.json';
-
 var TILE_URL = 'https://assets.ravenquest.tools/map/{z}/{x}/{y}.png';
 
 var MAP_CONFIG = {
@@ -34,8 +31,6 @@ var MAP_CONFIG = {
 
 var CORVID_API_URL =
   'https://corvid-discord.wonderfulfield-6f0ceab3.westus2.azurecontainerapps.io';
-CORVID_BAN_LIST_URL = CORVID_API_URL + '/api/bans/list';
-var BAN_STREAM_URL = CORVID_API_URL + '/api/bans/stream';
 
 var DISCORD_CLIENT_ID = '1469858215125717155';
 var DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -211,30 +206,6 @@ function handleOAuthCallback() {
       };
       localStorage.setItem('discord_user', JSON.stringify(discordUser));
 
-      // Log Discord login to Corvid's identity graph so /cluster can link
-      // this Discord account to the fingerprint + IP + character name.
-      var identity = getSavedIdentity();
-      var fp = await computeFingerprint();
-      fetch(CORVID_API_URL + '/api/bans/identity-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          characterName: identity ? identity.characterName : undefined,
-          guildTag: identity ? identity.guildTag : undefined,
-          discordId: discordUser.id,
-          fingerprint: fp,
-          timestamp: new Date().toISOString(),
-          isNewIdentity: false
-        })
-      }).catch(function () { /* fail-open */ });
-
-      // Check Discord ID against ban list immediately after login
-      var ban = await checkAllBans(null, null);
-      if (ban) {
-        showBanScreen(ban);
-        return false;
-      }
-
       updateAuthUI();
       return true;
     })
@@ -262,13 +233,11 @@ function logoutDiscord() {
 }
 
 // ---------------------------------------------------------------------------
-// Ban List & Identity
+// Identity
 // ---------------------------------------------------------------------------
 
-var banListCache = null;
 var IDENTITY_KEY = 'rhud_identity';
 var IDENTITY_TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
-var BAN_PERSIST_KEY = 'rhud_banned';
 
 // ---------------------------------------------------------------------------
 // Browser Fingerprint (UEBA)
@@ -341,36 +310,6 @@ async function computeFingerprint() {
   return fingerprintCache;
 }
 
-async function fetchBanList() {
-  if (banListCache) return banListCache;
-  // Prefer Corvid (sub-100ms, in-memory cache) so SSE invalidations are
-  // authoritative. Fall back to GitHub raw if Corvid is down.
-  try {
-    var res = await fetch(CORVID_BAN_LIST_URL);
-    if (res.ok) {
-      var data = await res.json();
-      banListCache = data.entries || [];
-      return banListCache;
-    }
-  } catch (e) { /* fall through to GitHub raw */ }
-  try {
-    var res2 = await fetch(BAN_LIST_FALLBACK_URL);
-    if (!res2.ok) return [];
-    var data2 = await res2.json();
-    banListCache = data2.entries || [];
-    return banListCache;
-  } catch (e) {
-    console.warn('Failed to fetch ban list:', e);
-    return [];
-  }
-}
-
-async function refreshBanList() {
-  // Forces a re-fetch, bypassing the in-memory cache
-  banListCache = null;
-  return fetchBanList();
-}
-
 function getSavedIdentity() {
   try {
     var raw = localStorage.getItem(IDENTITY_KEY);
@@ -396,35 +335,6 @@ function saveIdentity(characterName, guildTag) {
 }
 
 /**
- * Check Discord ID, character name, and guild tag against the ban list.
- * Returns the matching ban entry or null.
- */
-async function checkAllBans(characterName, guildTag) {
-  var entries = await fetchBanList();
-  var charLower = (characterName || '').trim().toLowerCase();
-  var guildLower = (guildTag || '').trim().toLowerCase();
-
-  for (var i = 0; i < entries.length; i++) {
-    var entry = entries[i];
-    var entryLower = entry.name.trim().toLowerCase();
-
-    // Discord ID match
-    if (entry.type === 'discord' && discordUser && entry.name.trim() === discordUser.id) {
-      return entry;
-    }
-    // Character name match
-    if (entry.type === 'character' && charLower && charLower === entryLower) {
-      return entry;
-    }
-    // Guild tag match
-    if (entry.type === 'guild' && guildLower && guildLower === entryLower) {
-      return entry;
-    }
-  }
-  return null;
-}
-
-/**
  * Show the identity prompt (blurred background). Returns a promise that
  * resolves with { characterName, guildTag } or null if cancelled.
  */
@@ -437,12 +347,10 @@ function showIdentityPrompt() {
       '<div class="identity-title">Welcome to the RavenHUD World Map</div>' +
       '<div class="identity-subtitle">Please identify yourself to continue</div>' +
       '<div class="identity-warning">' +
-      '<strong>Warning:</strong> Entering random letters, intentionally misrepresenting your guild, or otherwise attempting to circumvent the integrity of this check will result in a ban.' +
+      '<strong>Please be honest:</strong> Your character name and guild tag help keep the map data useful and consistent.' +
       '</div>' +
       '<div class="identity-privacy">' +
-      'By continuing, you acknowledge that your IP address, browser/device fingerprint, ' +
-      'user-agent, character name, and guild tag are logged for ban-evasion detection and ' +
-      'abuse prevention (retained up to 90 days). No third-party tracking.' +
+      'By continuing, you acknowledge that your character name and guild tag are stored locally and used only to personalize your map experience. No third-party tracking.' +
       '</div>' +
       '<label class="identity-label">Character Name</label>' +
       '<input type="text" id="identity-char" class="identity-input" placeholder="Your in-game name" maxlength="30" />' +
@@ -479,178 +387,10 @@ function showIdentityPrompt() {
   });
 }
 
-function reportBanTrigger(entry, identity) {
-  // Fire-and-forget — report the banned user's info to Corvid for IP logging
-  try {
-    fetch(CORVID_API_URL + '/api/bans/report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        matchedName: entry.name,
-        matchType: entry.type,
-        reason: entry.reason,
-        discordId: discordUser ? discordUser.id : null,
-        discordUsername: discordUser ? (discordUser.globalName || discordUser.username) : null,
-        identity: identity || getSavedIdentity(),
-        timestamp: new Date().toISOString()
-      })
-    }).catch(function () { /* silent */ });
-  } catch (e) { /* silent */ }
-}
-
-function showBanScreen(entry, identity) {
-  // Report to Corvid for IP logging
-  reportBanTrigger(entry, identity);
-
-  // Persist the ban so refreshing / clearing cookies doesn't get them
-  // past the ban screen. They see the ban screen immediately on every
-  // future page load without ever reaching the identity prompt.
-  try {
-    localStorage.setItem(BAN_PERSIST_KEY, JSON.stringify({
-      name: entry.name,
-      reason: entry.reason,
-      type: entry.type,
-      ts: Date.now()
-    }));
-  } catch (e) { /* storage full or blocked, skip */ }
-
-  // Remove any existing ban overlay
-  var existing = document.getElementById('ban-overlay');
-  if (existing) existing.remove();
-
-  var overlay = document.createElement('div');
-  overlay.id = 'ban-overlay';
-  overlay.innerHTML =
-    '<div class="ban-modal">' +
-    '<div class="ban-raven">&#x1F426;&#x200D;&#x2B1B;</div>' +
-    '<div class="ban-title">AH AH AH!</div>' +
-    '<div class="ban-subtitle">You didn\'t say the magic word...</div>' +
-    '<div class="ban-callout">' +
-    '<div class="ban-label">BANNED USER DETECTED</div>' +
-    '<div class="ban-name">' + escapeHtml(entry.name) + '</div>' +
-    '<div class="ban-reason">Reason: ' + escapeHtml(entry.reason) + '</div>' +
-    '</div>' +
-    '<div class="ban-message">' +
-    '<p class="ban-revoked">Your access to RavenHUD has been revoked.</p>' +
-    '<p>You have two options:</p>' +
-    '<ul>' +
-    '<li>Directly apologize to the creator for what you have done, admit you are a loser with no real social skills, and promise to never do it again.</li>' +
-    '<li>Close this tab &mdash; you aren\'t welcome here</li>' +
-    '</ul>' +
-    '<p><a href="https://discord.gg/6nNdvKV2nb" target="_blank" rel="noopener noreferrer" class="ban-discord-link">\uD83D\uDCAC Join the Discord to appeal</a></p>' +
-    '</div>' +
-    '<div class="ban-footer">Hall of Shame &bull; RavenHUD</div>' +
-    '</div>';
-
-  document.body.appendChild(overlay);
-
-  // Disable all interaction behind the overlay
-  logoutDiscord();
-
-  // Bark at them. Continuously. Until they leave.
-  startBanBark();
-}
-
-var banBarkAudio = null;
-function startBanBark() {
-  try {
-    banBarkAudio = new Audio('ban-bark.mp3');
-    banBarkAudio.loop = true;
-
-    // Browsers block autoplay before user gesture. Try immediately, then
-    // hook every interaction to retry on first click/tap/key.
-    function tryPlay() {
-      if (!banBarkAudio || !banBarkAudio.paused) return;
-      banBarkAudio.play().catch(function () { /* still blocked */ });
-    }
-    document.addEventListener('click', tryPlay, { once: false });
-    document.addEventListener('touchstart', tryPlay, { once: false });
-    document.addEventListener('keydown', tryPlay, { once: false });
-    tryPlay();
-  } catch (e) { /* audio blocked, skip */ }
-}
-
 function escapeHtml(str) {
   var div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
-}
-
-// Periodic ban re-check — kicks users banned after they entered the map.
-// SSE provides ~1-2s propagation via /api/bans/stream below; this polling
-// stays as a safety net for SSE disconnects and IP-ban changes that aren't
-// triggered by ban-list commits (future: proxy-list refreshes).
-var BAN_RECHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
-var banRecheckTimer = null;
-var banStreamSource = null;
-
-/**
- * Re-fetch the ban list and re-evaluate the current identity. Kicks the
- * user to the ban screen if now banned. Shared between SSE push handler
- * and periodic safety-net poll so enforcement logic stays in one place.
- */
-async function recheckBans(identity) {
-  // Force-refresh ban list so new bans are picked up
-  await refreshBanList();
-
-  // Check character/guild client-side
-  var ban = await checkAllBans(identity.characterName, identity.guildTag);
-  if (ban) {
-    stopBanWatcher();
-    showBanScreen(ban, identity);
-    localStorage.removeItem(IDENTITY_KEY);
-    return true;
-  }
-
-  // Check IP ban via Corvid (server-side only — client can't see its own IP)
-  try {
-    var res = await fetch(CORVID_API_URL + '/api/bans/ip-check', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    if (res.ok) {
-      var data = await res.json();
-      if (data.banned) {
-        stopBanWatcher();
-        showBanScreen({ type: 'ip', name: data.matchedName, reason: data.reason }, identity);
-        localStorage.removeItem(IDENTITY_KEY);
-        return true;
-      }
-    }
-  } catch (e) { /* fail-open */ }
-  return false;
-}
-
-function startPeriodicBanCheck(identity) {
-  if (banRecheckTimer) clearInterval(banRecheckTimer);
-  banRecheckTimer = setInterval(function () {
-    recheckBans(identity).catch(function () { /* silent */ });
-  }, BAN_RECHECK_INTERVAL_MS);
-}
-
-/**
- * Open an SSE connection to Corvid and re-check bans whenever the server
- * announces a ban-list change. EventSource auto-reconnects on drops.
- * Target latency: ~1-2s from ban issue to kick.
- */
-function startBanStreamSubscription(identity) {
-  if (typeof EventSource === 'undefined') return; // ancient browser
-  if (banStreamSource) banStreamSource.close();
-  try {
-    banStreamSource = new EventSource(BAN_STREAM_URL);
-    banStreamSource.addEventListener('ban-list-changed', function () {
-      recheckBans(identity).catch(function () { /* silent */ });
-    });
-    banStreamSource.addEventListener('error', function () {
-      // EventSource handles reconnect automatically; nothing to do here.
-      // Periodic poll still runs as a safety net.
-    });
-  } catch (e) { /* silent — periodic poll still covers us */ }
-}
-
-function stopBanWatcher() {
-  if (banRecheckTimer) { clearInterval(banRecheckTimer); banRecheckTimer = null; }
-  if (banStreamSource) { banStreamSource.close(); banStreamSource = null; }
 }
 
 function updateAuthUI() {
@@ -698,24 +438,7 @@ function updateAuthUI() {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  // Check for a persisted ban BEFORE anything else. If they were previously
-  // banned, show the ban screen immediately — no identity prompt, no map,
-  // no second chances. Clearing cookies/localStorage won't help because
-  // the server-side IP/fingerprint check will re-ban them anyway (and the
-  // SSE watcher will catch the rest).
-  try {
-    var persistedBan = localStorage.getItem(BAN_PERSIST_KEY);
-    if (persistedBan) {
-      var banData = JSON.parse(persistedBan);
-      showBanScreen(
-        { type: banData.type || 'character', name: banData.name || 'unknown', reason: banData.reason || 'Banned' },
-        null
-      );
-      return;
-    }
-  } catch (e) { /* corrupt data, let them through to server-side check */ }
-
-  // Identity prompt FIRST — character name + guild tag (cached 7 days)
+  // Identity prompt FIRST — character name + guild tag (cached 90 days)
   var identity = getSavedIdentity();
   var isNewIdentity = false;
   if (!identity || !identity.characterName || !identity.characterName.trim()) {
@@ -731,9 +454,8 @@ async function init() {
   var fingerprint = await computeFingerprint();
 
   // Log identity to Corvid — only on first visit or new identity, not every page load
-  // Always check IP ban though (server-side — client can't know its own IP)
   try {
-    var logRes = await fetch(CORVID_API_URL + '/api/bans/identity-log', {
+    await fetch(CORVID_API_URL + '/api/identity-log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -745,34 +467,11 @@ async function init() {
         discordId: discordUser ? discordUser.id : undefined
       })
     });
-    var logData = await logRes.json();
-    if (logData.banned) {
-      showBanScreen({ type: 'ip', name: logData.matchedName, reason: logData.reason }, identity);
-      localStorage.removeItem(IDENTITY_KEY);
-      return;
-    }
-  } catch (e) { /* Fail-open: if Corvid is down, continue (char/guild bans still work client-side) */ }
-
-  // Check character name + guild tag against ban list
-  var identityBan = await checkAllBans(identity.characterName, identity.guildTag);
-  if (identityBan) {
-    showBanScreen(identityBan, identity);
-    localStorage.removeItem(IDENTITY_KEY);
-    return;
-  }
+  } catch (e) { /* Fail-open: if Corvid is down, continue */ }
 
   // Discord login is separate — restore saved session and handle OAuth callback
   loadSavedDiscordUser();
   await handleOAuthCallback();
-
-  // If they just connected Discord, check Discord ID ban
-  if (discordUser) {
-    var discordBan = await checkAllBans(null, null);
-    if (discordBan) {
-      showBanScreen(discordBan);
-      return;
-    }
-  }
 
   initMap();
   initSidebar();
@@ -802,9 +501,6 @@ async function init() {
   buildSidebar();
   renderMarkers();
   updateStats();
-
-  startPeriodicBanCheck(identity);
-  startBanStreamSubscription(identity);
 }
 
 function initAuth() {
