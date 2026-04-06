@@ -14,7 +14,7 @@
 // Config
 // ---------------------------------------------------------------------------
 
-var BASE_PATH = window.location.pathname.replace(/\/$/, '');
+var BASE_PATH = window.location.pathname.replace(/(?:index\.html)?\/?$/, '');
 
 var DATA_URL = BASE_PATH + '/data/worldmap-markers.json';
 
