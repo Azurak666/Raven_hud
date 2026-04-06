@@ -882,7 +882,7 @@ function createMarkerIcon(category) {
   // Use actual game icon when available
   if (cat.icon) {
     return L.icon({
-      iconUrl: 'markers/' + cat.icon,
+      iconUrl: 'worldmap/markers/' + cat.icon,
       iconSize: [24, 24],
       iconAnchor: [12, 12]
     });
