@@ -15,11 +15,11 @@
 // ---------------------------------------------------------------------------
 
 var DATA_URL =
-  '../data/worldmap-markers.json';
+  'data/worldmap-markers.json';
 
 var CORVID_BAN_LIST_URL = null; // set below after CORVID_API_URL is defined
 var BAN_LIST_FALLBACK_URL =
-  '../data/hall-of-shame.json';
+  'data/hall-of-shame.json';
 
 var TILE_URL = 'https://assets.ravenquest.tools/map/{z}/{x}/{y}.png';
 
