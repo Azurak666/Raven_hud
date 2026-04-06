@@ -33,7 +33,7 @@ var CORVID_API_URL =
   'https://corvid-discord.wonderfulfield-6f0ceab3.westus2.azurecontainerapps.io';
 
 var DISCORD_CLIENT_ID = '1469858215125717155';
-var DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
+var DISCORD_REDIRECT_URI = window.location.origin + (BASE_PATH || '/');
 var DISCORD_SCOPES = 'identify';
 
 var GITHUB_REPO = 'Pix-Elated/ravenhud';
