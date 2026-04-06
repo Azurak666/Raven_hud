@@ -14,12 +14,12 @@
 // Config
 // ---------------------------------------------------------------------------
 
-var DATA_URL =
-  'data/worldmap-markers.json';
+var BASE_PATH = window.location.pathname.replace(/\/$/, '');
+
+var DATA_URL = BASE_PATH + '/data/worldmap-markers.json';
 
 var CORVID_BAN_LIST_URL = null; // set below after CORVID_API_URL is defined
-var BAN_LIST_FALLBACK_URL =
-  'data/hall-of-shame.json';
+var BAN_LIST_FALLBACK_URL = BASE_PATH + '/data/hall-of-shame.json';
 
 var TILE_URL = 'https://assets.ravenquest.tools/map/{z}/{x}/{y}.png';
 
@@ -882,7 +882,7 @@ function createMarkerIcon(category) {
   // Use actual game icon when available
   if (cat.icon) {
     return L.icon({
-      iconUrl: 'worldmap/markers/' + cat.icon,
+      iconUrl: BASE_PATH + '/worldmap/markers/' + cat.icon,
       iconSize: [24, 24],
       iconAnchor: [12, 12]
     });
@@ -975,7 +975,7 @@ function showDetail(m) {
   var cat = CATEGORIES[m.category];
   var detailCatEl = document.getElementById('detail-category');
   if (cat && cat.icon) {
-    detailCatEl.innerHTML = '<img src="markers/' + cat.icon + '" width="16" height="16" style="vertical-align:text-bottom;margin-right:4px">' + cat.label;
+    detailCatEl.innerHTML = '<img src="' + BASE_PATH + '/worldmap/markers/' + cat.icon + '" width="16" height="16" style="vertical-align:text-bottom;margin-right:4px">' + cat.label;
   } else {
     detailCatEl.textContent = cat ? cat.emoji + ' ' + cat.label : m.category;
   }
@@ -1320,7 +1320,7 @@ function showContributions() {
       item.className = 'contrib-item';
       var isEdit = editIds.indexOf(m.id) >= 0;
       var catIcon = (cat && cat.icon)
-        ? '<img src="markers/' + cat.icon + '" width="16" height="16" style="vertical-align:text-bottom">'
+        ? '<img src="' + BASE_PATH + '/worldmap/markers/' + cat.icon + '" width="16" height="16" style="vertical-align:text-bottom">'
         : (cat ? cat.emoji : '');
       item.innerHTML =
         '<span class="contrib-emoji">' + catIcon + '</span>' +
@@ -1444,7 +1444,7 @@ function buildSidebar() {
       row.innerHTML =
         '<input type="checkbox" data-category="' + catKey + '" ' +
         (visibility[catKey] ? 'checked' : '') + ' />' +
-        '<span class="cat-emoji">' + (catMeta.icon ? '<img src="markers/' + catMeta.icon + '" width="16" height="16" style="vertical-align:text-bottom">' : catMeta.emoji) + '</span>' +
+        '<span class="cat-emoji">' + (catMeta.icon ? '<img src="' + BASE_PATH + '/worldmap/markers/' + catMeta.icon + '" width="16" height="16" style="vertical-align:text-bottom">' : catMeta.emoji) + '</span>' +
         '<span class="cat-label">' + catMeta.label + '</span>' +
         '<span class="cat-count">' + ((catKey === 'reputation_shiny' || catKey === 'npc_reputation') ? getRepProgress(catKey).collected + '/' + count : count) + '</span>' +
         (count > 0 ? '<span class="cat-arrow">\u25B6</span>' : '');
