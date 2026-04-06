@@ -1629,12 +1629,10 @@ function initModal() {
 
   btnOpen.addEventListener('click', function () {
     if (!discordUser) {
-      if (confirm('You need to login with Discord to submit markers. Login now?')) {
-        startDiscordLogin();
-      }
+      openModalForSubmit({ loginDisabled: true });
       return;
     }
-    openModalForSubmit();
+    openModalForSubmit({ loginDisabled: false });
   });
 
   btnClose.addEventListener('click', closeModal);
@@ -1659,7 +1657,8 @@ function initModal() {
   });
 }
 
-function openModalForSubmit() {
+function openModalForSubmit(options) {
+  options = options || {};
   modalMode = 'submit';
   editingMarker = null;
 
@@ -1676,8 +1675,9 @@ function openModalForSubmit() {
 
   document.getElementById('modal-title').textContent = 'Submit a Marker';
   document.getElementById('modal-info').textContent =
-    'Click on the map to place your marker, then fill in the details below. ' +
-    'Your submission will be reviewed before being added.';
+    options.loginDisabled
+      ? 'Marker submissions require Discord login and are currently unavailable while login is being restored.'
+      : 'Click on the map to place your marker, then fill in the details below. Your submission will be reviewed before being added.';
   document.getElementById('btn-create-issue').textContent = 'Submit Marker';
 
   // Show author as verified Discord name
