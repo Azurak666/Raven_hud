@@ -1,0 +1,51 @@
+name: "Feature Request"
+description: "Suggest an idea for this project."
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting.
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have described my use case clearly
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is this related to a problem?
+      description: If this feature request is related to a frustration or problem, describe it here.
+      placeholder: "I'm always frustrated when... / I wish I could..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the Solution
+      description: What do you want to happen? Be specific.
+      placeholder: "I would like RavenHUD to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: "I've tried... / Another approach could be..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / References
+      description: Add any mockups, screenshots, or links to similar features in other projects.
+      placeholder: "Paste images or links here..."
+    validations:
+      required: false

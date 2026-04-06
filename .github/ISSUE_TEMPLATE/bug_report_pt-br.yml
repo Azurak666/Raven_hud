@@ -1,0 +1,97 @@
+name: "Relatório de Bug"
+description: "Reportar um bug para nos ajudar a melhorar."
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Lista de Verificação
+      description: Por favor, confirme o seguinte antes de enviar.
+      options:
+        - label: Eu pesquisei issues existentes e isto não é uma duplicata
+          required: true
+        - label: Estou usando a versão mais recente do RavenHUD
+          required: true
+        - label: Forneci passos detalhados para reproduzir este bug
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Bug
+      description: O que aconteceu? Seja o mais específico possível.
+      placeholder: "Descreva o bug claramente. O que você viu? Quais mensagens de erro apareceram?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para Reproduzir
+      description: Como podemos reproduzir este bug?
+      placeholder: |
+        1. Abra o jogo
+        2. Vá para ...
+        3. Clique em ...
+        4. Veja o erro
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que deveria ter acontecido?
+      placeholder: "Descreva o que você esperava que acontecesse."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento Real
+      description: O que realmente aconteceu?
+      placeholder: "Descreva o que realmente aconteceu em vez do comportamento esperado."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema Operacional
+      description: Qual sistema operacional você está usando?
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux
+        - macOS
+    validations:
+      required: true
+
+  - type: input
+    id: resolution
+    attributes:
+      label: Resolução do Jogo
+      description: Em qual resolução você está jogando?
+      placeholder: "ex: 1920x1080"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Versão do RavenHUD
+      description: Qual versão do RavenHUD você está usando? (Verifique o arquivo de versão ou a release no GitHub)
+      placeholder: "ex: 1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Capturas de Tela / Logs
+      description: Adicione capturas de tela ou arquivos de log que ajudem a explicar o problema. Arraste e solte imagens aqui.
+      placeholder: "Cole capturas de tela ou arraste arquivos aqui..."
+    validations:
+      required: false

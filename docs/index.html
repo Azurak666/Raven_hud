@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RavenHUD - A companion overlay tool for RavenQuest. Track cosmetics, trophies, tradepacks, and more.">
+  <meta name="keywords" content="RavenQuest, RavenHUD, overlay, companion, tracker, cosmetics, trophies, tradepacks">
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="RavenHUD">
+  <meta property="og:title" content="RavenHUD - RavenQuest Companion">
+  <meta property="og:description" content="Track cosmetics, trophies, tradepacks, and more with this always-on-top overlay.">
+  <meta property="og:image" content="https://therealpixelated.github.io/ravenhud/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://therealpixelated.github.io/ravenhud">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RavenHUD - RavenQuest Companion">
+  <meta name="twitter:description" content="Track cosmetics, trophies, tradepacks, and more with this always-on-top overlay.">
+  <meta name="twitter:image" content="https://therealpixelated.github.io/ravenhud/assets/og-image.png">
+  <!-- Canonical & Theme -->
+  <link rel="canonical" href="https://therealpixelated.github.io/ravenhud/">
+  <meta name="theme-color" content="#1a1614">
+  <meta name="author" content="therealpixelated">
+  <title>RavenHUD - RavenQuest Companion</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div class="background-gradient" aria-hidden="true"></div>
+
+  <!-- SHUTDOWN NOTICE -->
+  <div style="background:#dc2626;color:#fff;text-align:center;padding:24px 32px;font-family:'Segoe UI',sans-serif;font-size:16px;line-height:1.8;border-bottom:4px solid #991b1b;">
+    <strong style="font-size:14px;display:block;margin-bottom:12px;letter-spacing:2px;text-transform:uppercase;opacity:0.85;">RavenHUD has ceased all development, support, and updates effective April 2026.</strong>
+    Due to <strong>Volca</strong> &mdash; a cowardly, spineless, goat fucking worm who weaponizes moderation systems against the very community members who build tools for his dying game &mdash; RavenHUD is shutting down permanently. When a game&rsquo;s leadership punishes the people creating free value for their ecosystem, the ecosystem deserves to die. <strong>Congratulations Knighter, you played yourself.</strong><br><br>
+    No more updates. No more support. No more free tools for people who don&rsquo;t deserve them.<br><br>
+    <span style="opacity:0.85;font-size:14px;">The code is MIT-licensed. Fork it if you want. Good luck maintaining 50k+ lines of TypeScript, Angular, and Electron without the person who built it.</span>
+  </div>
+
+  <header class="site-header">
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#" class="logo" aria-label="RavenHUD - Return to top">
+        <img src="assets/logo.png" alt="" width="52" height="52" aria-hidden="true">
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="#features" class="nav-link" data-i18n="nav.features">Features</a>
+        <a href="worldmap/" class="nav-link">World Map</a>
+        <a href="#download" class="nav-link" data-i18n="nav.download">Download</a>
+        <a href="#security" class="nav-link" data-i18n="nav.security">Security</a>
+        <a href="https://github.com/Pix-Elated/ravenhud" class="nav-link" target="_blank" rel="noopener noreferrer" data-i18n="nav.github">GitHub</a>
+        <a href="https://discord.gg/6nNdvKV2nb" class="nav-link" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://x.com/theRavenHud" class="nav-link" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+      <div class="language-switcher">
+        <button type="button" class="language-btn" aria-label="Change language" aria-expanded="false" aria-haspopup="listbox">
+          <img class="language-flag" src="https://flagcdn.com/w20/us.png" alt="" width="20" height="15">
+          <span class="language-btn-text">EN</span>
+          <svg class="language-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="language-dropdown" role="listbox" aria-label="Select language">
+          <button type="button" class="language-option active" data-lang="en" role="option" aria-selected="true">
+            <img class="language-flag" src="https://flagcdn.com/w20/us.png" alt="" width="20" height="15">
+            <span>English</span>
+          </button>
+          <button type="button" class="language-option" data-lang="pt" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/br.png" alt="" width="20" height="15">
+            <span>Português</span>
+          </button>
+          <button type="button" class="language-option" data-lang="es" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/mx.png" alt="" width="20" height="15">
+            <span>Español</span>
+          </button>
+          <button type="button" class="language-option" data-lang="fr" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/fr.png" alt="" width="20" height="15">
+            <span>Français</span>
+          </button>
+          <button type="button" class="language-option" data-lang="de" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/de.png" alt="" width="20" height="15">
+            <span>Deutsch</span>
+          </button>
+          <button type="button" class="language-option" data-lang="nl" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/nl.png" alt="" width="20" height="15">
+            <span>Nederlands</span>
+          </button>
+          <button type="button" class="language-option" data-lang="tr" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/tr.png" alt="" width="20" height="15">
+            <span>Türkçe</span>
+          </button>
+          <button type="button" class="language-option" data-lang="ru" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/ru.png" alt="" width="20" height="15">
+            <span>Русский</span>
+          </button>
+          <button type="button" class="language-option" data-lang="uk" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/ua.png" alt="" width="20" height="15">
+            <span>Українська</span>
+          </button>
+          <button type="button" class="language-option" data-lang="id" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/id.png" alt="" width="20" height="15">
+            <span>Indonesia</span>
+          </button>
+          <button type="button" class="language-option" data-lang="vi" role="option" aria-selected="false">
+            <img class="language-flag" src="https://flagcdn.com/w20/vn.png" alt="" width="20" height="15">
+            <span>Tiếng Việt</span>
+          </button>
+        </div>
+      </div>
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links" aria-haspopup="true">Menu</button>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <h1 id="hero-heading">
+          <span class="visually-hidden">RavenHUD - RavenQuest Companion Overlay Tool</span>
+          <img src="assets/og-image.png" alt="" class="hero-logo" width="400" height="200" aria-hidden="true">
+        </h1>
+        <p class="tagline" data-i18n="hero.tagline">Your Second Screen for RavenQuest</p>
+        <p class="description" data-i18n="hero.description">
+          Track cosmetics, calculate tradepacks, plan your farm — all in a lightweight overlay that never gets in your way.
+        </p>
+        <div class="cta-buttons">
+          <a href="#download" class="btn btn-primary btn-large">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span data-i18n="hero.download">Download for Windows</span>
+          </a>
+          <a href="demo/" class="btn btn-secondary btn-large">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span data-i18n="hero.demo">Try Demo</span>
+          </a>
+          <a href="#features" class="btn btn-secondary btn-large" data-i18n="hero.see-features">See Features</a>
+        </div>
+        <p class="version" id="version-info">Loading version...</p>
+      </div>
+      <div class="hero-preview">
+        <video autoplay loop muted playsinline controls class="preview-gif" poster="assets/og-image.png" aria-label="RavenHUD desktop application preview" width="600" height="400">
+          <source src="assets/gifs/hero-preview.webm" type="video/webm">
+          <p>Your browser does not support the video tag. <a href="assets/gifs/hero-preview.webm">Download the video</a> to view.</p>
+        </video>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features" aria-labelledby="features-heading">
+      <h2 id="features-heading" data-i18n="features.title">Features</h2>
+      <div class="features-grid">
+
+        <article class="feature-card"
+          data-feature="overlay"
+          data-icon="⚡"
+          data-title="Overlay Mode"
+          data-image="assets/gifs/overlay.gif"
+          data-description="Always-on-top transparent window that works while you play. Click-through support so it never interferes with gameplay."
+          data-details="Toggle overlay mode with a hotkey. Adjust transparency from fully opaque to nearly invisible. Click-through mode lets you interact with the game underneath.">
+          <div class="feature-icon" aria-hidden="true">⚡</div>
+          <h3 data-i18n="features.overlay.title">Overlay Mode</h3>
+          <p data-i18n="features.overlay.desc">Always-on-top transparent window that works while you play. Click-through support so it never interferes with gameplay.</p>
+          <div class="feature-preview">
+            <button type="button" class="preview-link" aria-label="View Overlay Mode details">
+              <img src="assets/gifs/overlay.gif" alt="Overlay Mode Demo" loading="lazy" width="400" height="300">
+            </button>
+          </div>
+        </article>
+
+        <article class="feature-card"
+          data-feature="cosmetics"
+          data-icon="🎨"
+          data-title="Cosmetics Tracker"
+          data-image="assets/gifs/cosmetics.gif"
+          data-description="Track your collection progress across all cosmetic categories. See what you own, what's missing, and your completion percentage."
+          data-details="Filter by mount, pet, outfit, weapon skin, and more. Mark items as owned with a single click. Progress syncs across sessions.">
+          <div class="feature-icon" aria-hidden="true">🎨</div>
+          <h3 data-i18n="features.cosmetics.title">Cosmetics Tracker</h3>
+          <p data-i18n="features.cosmetics.desc">Track your collection progress across all cosmetic categories. See what you own, what's missing, and your completion percentage.</p>
+          <div class="feature-preview">
+            <button type="button" class="preview-link" aria-label="View Cosmetics Tracker details">
+              <img src="assets/gifs/cosmetics.gif" alt="Cosmetics Tracker Demo" loading="lazy" width="400" height="300">
+            </button>
+          </div>
+        </article>
+
+        <article class="feature-card"
+          data-feature="trophies"
+          data-icon="🏆"
+          data-title="Trophy Tracker"
+          data-image="assets/gifs/trophies.gif"
+          data-description="Monitor your trophy achievements. Filter by category, search for specific trophies, and track your hunting progress."
+          data-details="Browse all in-game trophies with detailed unlock requirements. Filter by combat, exploration, crafting, and more. Search by name or description.">
+          <div class="feature-icon" aria-hidden="true">🏆</div>
+          <h3 data-i18n="features.trophies.title">Trophy Tracker</h3>
+          <p data-i18n="features.trophies.desc">Monitor your trophy achievements. Filter by category, search for specific trophies, and track your hunting progress.</p>
+          <div class="feature-preview">
+            <button type="button" class="preview-link" aria-label="View Trophy Tracker details">
+              <img src="assets/gifs/trophies.gif" alt="Trophy Tracker Demo" loading="lazy" width="400" height="300">
+            </button>
+          </div>
+        </article>
+
+        <article class="feature-card"
+          data-feature="tradepacks"
+          data-icon="📦"
+          data-title="Tradepack Calculator"
+          data-image="assets/gifs/tradepacks.gif"
+          data-description="Optimize your trade routes. Calculate profits, compare destinations, and find the best deals for your tradepacks."
+          data-details="See material costs, crafting requirements, and profit margins at a glance. Compare prices across all destinations. Factor in your owned lands for accurate calculations.">
+          <div class="feature-icon" aria-hidden="true">📦</div>
+          <h3 data-i18n="features.tradepacks.title">Tradepack Calculator</h3>
+          <p data-i18n="features.tradepacks.desc">Optimize your trade routes. Calculate profits, compare destinations, and find the best deals for your tradepacks.</p>
+          <div class="feature-preview">
+            <button type="button" class="preview-link" aria-label="View Tradepack Calculator details">
+              <img src="assets/gifs/tradepacks.gif" alt="Tradepack Calculator Demo" loading="lazy" width="400" height="300">
+            </button>
+          </div>
+        </article>
+
+        <article class="feature-card"
+          data-feature="farming"
+          data-icon="🌾"
+          data-title="Farming Cards"
+          data-image="assets/gifs/farming.gif"
+          data-description="Interactive guides for crops and animals. See growth times, yields, and optimal farming strategies at a glance."
+          data-details="View detailed stats for all farmable items including growth time, yield per harvest, XP gained, and silver value. Plan your farm layout with tile calculations.">
+          <div class="feature-icon" aria-hidden="true">🌾</div>
+          <h3 data-i18n="features.farming.title">Farming Cards</h3>
+          <p data-i18n="features.farming.desc">Interactive guides for crops and animals. See growth times, yields, and optimal farming strategies at a glance.</p>
+          <div class="feature-preview">
+            <button type="button" class="preview-link" aria-label="View Farming Cards details">
+              <img src="assets/gifs/farming.gif" alt="Farming Cards Demo" loading="lazy" width="400" height="300">
+            </button>
+          </div>
+        </article>
+
+        <article class="feature-card"
+          data-feature="land"
+          data-icon="🗺️"
+          data-title="Land Simulator"
+          data-image="assets/gifs/land-simulator.gif"
+          data-description="Plan your estate layouts before committing. Test different configurations and optimize your land usage."
+          data-details="Drag and drop buildings onto your land. See tile usage, tax costs, and efficiency ratings. Supports all community and NFT land sizes. Try it in the demo!">
+          <div class="feature-icon" aria-hidden="true">🗺️</div>
+          <h3 data-i18n="features.land.title">Land Simulator</h3>
+          <p data-i18n="features.land.desc">Plan your estate layouts before committing. Test different configurations and optimize your land usage.</p>
+          <div class="feature-preview">
+            <button type="button" class="preview-link" aria-label="View Land Simulator details">
+              <img src="assets/gifs/land-simulator.gif" alt="Land Simulator Demo" loading="lazy" width="400" height="300">
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download" aria-labelledby="download-heading">
+      <h2 id="download-heading" data-i18n="download.title">Download</h2>
+
+      <!-- Beta Warning Banner -->
+      <div class="beta-banner" role="alert">
+        <div class="beta-banner-icon">🚧</div>
+        <div class="beta-banner-content">
+          <strong class="beta-banner-title">Here be dragons!</strong>
+          <p class="beta-banner-text">
+            You're downloading a <span class="beta-tag">pre-1.0 beta</span>.
+            Things might break, crash, or summon unexpected ravens.
+            Report bugs on <a href="https://github.com/Pix-Elated/ravenhud/issues" target="_blank" rel="noopener noreferrer">GitHub</a> or <a href="https://discord.gg/6nNdvKV2nb" target="_blank" rel="noopener noreferrer">Discord</a>!
+          </p>
+        </div>
+      </div>
+
+      <div class="download-options">
+        <!-- Installer Option (Recommended) -->
+        <div class="download-card download-card-primary">
+          <div class="download-badge" data-i18n="download.recommended">Recommended</div>
+          <div class="download-info">
+            <div class="platform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+              <span data-i18n="download.windows">Windows Installer</span>
+            </div>
+            <div class="download-details">
+              <p class="filename" id="installer-filename">RavenHUD-Setup.exe</p>
+              <p class="filesize" id="installer-size">~80 MB</p>
+            </div>
+          </div>
+          <div class="download-buttons">
+            <a href="https://github.com/Pix-Elated/ravenhud/releases" class="btn btn-primary btn-large" id="installer-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span data-i18n="download.installer-btn">Download Installer</span>
+            </a>
+            <a href="https://github.com/Pix-Elated/ravenhud/releases" class="btn btn-secondary" id="installer-zip-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              <span data-i18n="download.zip-btn">ZIP</span>
+            </a>
+          </div>
+          <p class="download-feature" data-i18n="download.auto-updates">Includes automatic updates</p>
+        </div>
+
+        <!-- Portable Option -->
+        <div class="download-card download-card-secondary">
+          <div class="download-info">
+            <div class="platform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              <span data-i18n="download.portable">Portable ZIP</span>
+            </div>
+            <div class="download-details">
+              <p class="filename" id="portable-filename">RavenHUD-portable.zip</p>
+              <p class="filesize" id="portable-size">~80 MB</p>
+            </div>
+          </div>
+          <a href="https://github.com/Pix-Elated/ravenhud/releases" class="btn btn-secondary btn-large" id="portable-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span data-i18n="download.zip-btn">Download ZIP</span>
+          </a>
+          <p class="download-feature" data-i18n="download.no-install">No installation required</p>
+        </div>
+      </div>
+      <p class="version download-version" id="version-info-download">Loading version...</p>
+      <p class="download-note" data-i18n="download.note">
+        Requires Windows 10 or later. The installer version will automatically download and install updates.
+      </p>
+    </section>
+
+    <!-- Requirements Section -->
+    <section id="requirements" class="requirements" aria-labelledby="requirements-heading">
+      <h2 id="requirements-heading" data-i18n="requirements.title">System Requirements</h2>
+      <div class="requirements-grid">
+        <div class="requirement">
+          <strong data-i18n="requirements.os">OS:</strong> Windows 10 / 11
+        </div>
+        <div class="requirement">
+          <strong data-i18n="requirements.ram">RAM:</strong> 4 GB minimum
+        </div>
+        <div class="requirement">
+          <strong data-i18n="requirements.storage">Storage:</strong> ~150 MB
+        </div>
+        <div class="requirement">
+          <strong data-i18n="requirements.display">Display:</strong> 1280x720 or higher
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Section -->
+    <section id="security" class="security" aria-labelledby="security-heading">
+      <h2 id="security-heading" data-i18n="security.title">Security & Transparency</h2>
+      <p class="security-intro" data-i18n="security.intro">Every release is automatically verified for your safety.</p>
+
+      <div class="security-badges">
+        <img src="https://img.shields.io/badge/Code%20Signed-Azure%20Trusted%20Signing-0078D4?logo=microsoft" alt="Code Signed">
+        <a href="https://github.com/Pix-Elated/ravenhud/releases/latest" target="_blank" rel="noopener noreferrer" title="View latest release for VirusTotal scan link">
+          <img src="https://img.shields.io/badge/VirusTotal-Scanned-394EFF?logo=virustotal" alt="VirusTotal Scanned">
+        </a>
+      </div>
+
+
+      <div class="verify-steps">
+        <h3 data-i18n="security.verify.title">How to Verify Your Download</h3>
+        <ol>
+          <li><strong data-i18n="security.verify.step1">Check signature:</strong> <span data-i18n="security.verify.step1.detail">Right-click .exe &rarr; Properties &rarr; Digital Signatures &rarr; Should show "therealcloudvikinggmail.onmicrosoft.com"</span></li>
+          <li><strong data-i18n="security.verify.step2">VirusTotal:</strong> <span data-i18n="security.verify.step2.detail">Each release includes a link to the scan results in the release notes</span></li>
+          <li><strong data-i18n="security.verify.step3">Hash check:</strong> <span data-i18n="security.verify.step3.detail">Compare the SHA256 hash shown in release notes</span></li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>
+        <span data-i18n="footer.made-by">RavenHUD is a community project made by</span>
+        <a href="https://github.com/therealpixelated" target="_blank" rel="noopener noreferrer">therealpixelated</a>
+      </p>
+      <p class="disclaimer" data-i18n="footer.disclaimer">
+        Not affiliated with Tavernlight Games. Game assets belong to Tavernlight Games.
+      </p>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="https://github.com/Pix-Elated/ravenhud" target="_blank" rel="noopener noreferrer" data-i18n="nav.github">GitHub</a>
+        <a href="https://github.com/Pix-Elated/ravenhud/issues" target="_blank" rel="noopener noreferrer" data-i18n="footer.report-bug">Report Bug</a>
+        <a href="https://discord.gg/6nNdvKV2nb" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://x.com/theRavenHud" target="_blank" rel="noopener noreferrer">X</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Feature Lightbox Modal -->
+  <div id="featureLightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle" hidden>
+    <div class="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <button type="button" class="lightbox-close" aria-label="Close lightbox">&times;</button>
+      <div class="lightbox-header">
+        <span class="lightbox-icon" aria-hidden="true"></span>
+        <h3 id="lightboxTitle" class="lightbox-title"></h3>
+      </div>
+      <div class="lightbox-body">
+        <div class="lightbox-media">
+          <img src="" alt="" class="lightbox-image">
+        </div>
+        <div class="lightbox-info">
+          <p class="lightbox-description"></p>
+          <div class="lightbox-details"></div>
+        </div>
+      </div>
+      <div class="lightbox-nav" hidden>
+        <button type="button" class="lightbox-prev" aria-label="Previous feature" data-i18n="lightbox.previous">&larr; Previous</button>
+        <span class="lightbox-counter"></span>
+        <button type="button" class="lightbox-next" aria-label="Next feature" data-i18n="lightbox.next">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "RavenHUD",
+    "operatingSystem": "Windows 10, Windows 11",
+    "applicationCategory": "GameApplication",
+    "description": "A companion overlay tool for RavenQuest to track cosmetics, trophies, tradepacks, and more.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "therealpixelated",
+      "url": "https://github.com/therealpixelated"
+    },
+    "url": "https://therealpixelated.github.io/ravenhud",
+    "downloadUrl": "https://github.com/Pix-Elated/ravenhud/releases"
+  }
+  </script>
+  <script src="js/i18n.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <noscript>
+    <p style="text-align: center; padding: 20px; color: #e8dcc8;">
+      This site requires JavaScript for full functionality. Please enable JavaScript to use RavenHUD.
+    </p>
+  </noscript>
+
+</body>
+</html>

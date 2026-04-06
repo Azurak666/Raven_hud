@@ -1,0 +1,51 @@
+name: "Solicitação de Recurso"
+description: "Sugerir uma ideia para este projeto."
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Lista de Verificação
+      description: Por favor, confirme o seguinte antes de enviar.
+      options:
+        - label: Eu pesquisei issues existentes e isto não é uma duplicata
+          required: true
+        - label: Descrevi meu caso de uso claramente
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Isto está relacionado a um problema?
+      description: Se esta solicitação de recurso está relacionada a uma frustração ou problema, descreva aqui.
+      placeholder: "Eu sempre fico frustrado quando... / Eu gostaria de poder..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Descreva a Solução
+      description: O que você quer que aconteça? Seja específico.
+      placeholder: "Eu gostaria que o RavenHUD..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Você considerou alguma solução alternativa ou contorno?
+      placeholder: "Eu tentei... / Outra abordagem poderia ser..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Referências
+      description: Adicione mockups, capturas de tela ou links para recursos semelhantes em outros projetos.
+      placeholder: "Cole imagens ou links aqui..."
+    validations:
+      required: false

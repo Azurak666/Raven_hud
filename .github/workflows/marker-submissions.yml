@@ -1,0 +1,798 @@
+# Marker Submission Management
+# Auto-labels new map marker issues, processes embedded screenshots,
+# handles /approve and /reject commands, and auto-ingests approved markers.
+
+name: Marker Submissions
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+  schedule:
+    - cron: '*/15 * * * *' # Every 15 minutes — free tier, minimal cost
+  workflow_dispatch: # Manual ingest trigger
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  # ─── Auto-label new marker submissions ────────────────────────────────
+  auto-label:
+    if: >-
+      github.event_name == 'issues' &&
+      github.event.action == 'opened' &&
+      contains(github.event.issue.labels.*.name, 'map-markers')
+    runs-on: ubuntu-latest
+    outputs:
+      auto_approved: ${{ steps.label.outputs.auto_approved }}
+    steps:
+      - name: Checkout (for screenshot commits)
+        uses: actions/checkout@v4
+
+      - name: Parse, label, and process screenshot
+        id: label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const issueNumber = context.payload.issue.number;
+
+            // Extract JSON from the issue body
+            const jsonMatch = body.match(/```json\s*\n([\s\S]*?)\n```/);
+            if (!jsonMatch) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['needs-review', 'parse-error']
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: '⚠️ Could not find JSON data block in this submission. Please ensure the marker was exported from RavenHUD.'
+              });
+              return;
+            }
+
+            let markers;
+            try {
+              markers = JSON.parse(jsonMatch[1]);
+              if (!Array.isArray(markers)) throw new Error('Not an array');
+            } catch (e) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['needs-review', 'parse-error']
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: '⚠️ JSON data block is malformed. Please re-export from RavenHUD.'
+              });
+              return;
+            }
+
+            // Trusted authors — check authorName inside the JSON payload,
+            // NOT the GitHub issue author (issues are created via Corvid proxy)
+            const TRUSTED_AUTHORS = ['Azurak', 'Kullion', 'Pixelated', 'ThisDaniel', 'Hironet11'];
+            const markerAuthor = markers[0]?.authorName || '';
+            const isTrusted = TRUSTED_AUTHORS.some(
+              a => a.toLowerCase() === markerAuthor.toLowerCase()
+            );
+
+            if (isTrusted) {
+              core.setOutput('auto_approved', 'true');
+            }
+
+            // Auto-reject deletion requests from non-trusted users
+            const isDeletion = markers.some(m => m.deletion);
+            if (isDeletion && !isTrusted) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['rejected', 'deletion']
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: '❌ **Auto-rejected** — deletion requests are only accepted from trusted contributors.'
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed',
+                state_reason: 'not_planned'
+              });
+              return;
+            }
+
+            // Detect if this is an edit (correction) submission
+            const isEdit = markers.some(m => m.correction);
+
+            // Collect unique categories and floors
+            const categories = [...new Set(markers.map(m => m.category).filter(Boolean))];
+            const labels = [isTrusted ? 'approved' : 'needs-review'];
+            if (isEdit) labels.push('edit');
+            for (const cat of categories) {
+              labels.push(`cat:${cat}`);
+            }
+            const floors = [...new Set(markers.map(m => m.floor).filter(f => f && f !== 'surface'))];
+            for (const floor of floors) {
+              labels.push(`floor:${floor}`);
+            }
+
+            // Ensure labels exist before adding
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label
+                });
+              } catch {
+                const isCategory = label.startsWith('cat:');
+                const isFloor = label.startsWith('floor:');
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                  color: isCategory ? 'C2E0C6' : isFloor ? 'BFD4F2' : 'FBCA04'
+                });
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels
+            });
+
+            // ── Process embedded screenshot ─────────────────────────────
+            // Uses Git Trees API to batch all screenshots into one atomic commit.
+            // This avoids SHA conflicts when multiple issues are processed concurrently.
+            const ssMatch = body.match(/<!-- RHUD_SCREENSHOT:([A-Za-z0-9+/=]+) -->/);
+            let screenshotUrl = '';
+
+            if (ssMatch && markers.length > 0) {
+              try {
+                const b64 = ssMatch[1];
+                const filePaths = [];
+
+                // Create blobs for each marker's screenshot
+                const treeEntries = [];
+                for (const m of markers) {
+                  if (!m.id) continue;
+                  const filePath = `screenshots/${m.id}.webp`;
+                  filePaths.push(filePath);
+
+                  const { data: blob } = await github.rest.git.createBlob({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    content: b64,
+                    encoding: 'base64'
+                  });
+                  treeEntries.push({
+                    path: filePath,
+                    mode: '100644',
+                    type: 'blob',
+                    sha: blob.sha
+                  });
+                }
+
+                if (treeEntries.length > 0) {
+                  // Get current master HEAD
+                  const { data: ref } = await github.rest.git.getRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: 'heads/master'
+                  });
+                  const baseSha = ref.object.sha;
+
+                  // Get the base tree
+                  const { data: baseCommit } = await github.rest.git.getCommit({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    commit_sha: baseSha
+                  });
+
+                  // Create new tree with screenshot files
+                  const { data: tree } = await github.rest.git.createTree({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    base_tree: baseCommit.tree.sha,
+                    tree: treeEntries
+                  });
+
+                  // Create commit
+                  const names = markers.filter(m => m.id).map(m => m.name || m.id).join(', ');
+                  const { data: commit } = await github.rest.git.createCommit({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    message: `chore: add screenshot for ${names} (#${issueNumber})`,
+                    tree: tree.sha,
+                    parents: [baseSha]
+                  });
+
+                  // Update master ref
+                  await github.rest.git.updateRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: 'heads/master',
+                    sha: commit.sha
+                  });
+
+                  screenshotUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/master/${filePaths[0]}`;
+                  console.log(`Screenshots uploaded in single commit: ${filePaths.join(', ')}`);
+                }
+
+                // Update issue body: replace hidden comment with visible image
+                if (screenshotUrl) {
+                  const newBody = body.replace(
+                    /<!-- RHUD_SCREENSHOT:[A-Za-z0-9+/=]+ -->/,
+                    `![Screenshot](${screenshotUrl})`
+                  );
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                    body: newBody
+                  });
+                }
+              } catch (err) {
+                console.error('Failed to process screenshot:', err.message);
+              }
+            }
+
+            const count = markers.length;
+            const editTag = isEdit ? ' (edit)' : '';
+            const catList = categories.map(c => `\`${c}\``).join(', ');
+            const ssStatus = screenshotUrl
+              ? `\n📷 [Screenshot attached](${screenshotUrl})`
+              : ssMatch
+                ? '\n⚠️ Screenshot processing failed'
+                : '';
+
+            const commentBody = isTrusted
+              ? [
+                  `✅ **Parsed ${count} marker${editTag}** in ${catList}${ssStatus}`,
+                  '',
+                  `🌟 **Auto-approved** — trusted contributor. Ingestion will run automatically.`
+                ].join('\n')
+              : [
+                  `✅ **Parsed ${count} marker${editTag}** in ${catList}${ssStatus}`,
+                  '',
+                  'A maintainer will review this submission. To approve:',
+                  '- Comment `/approve` to add the `approved` label',
+                  '- Comment `/reject [reason]` to close with feedback'
+                ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: commentBody
+            });
+
+  # ─── Handle /approve and /reject commands ─────────────────────────────
+  approve-reject:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      contains(github.event.issue.labels.*.name, 'map-markers') &&
+      (startsWith(github.event.comment.body, '/approve') || startsWith(github.event.comment.body, '/reject'))
+    runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.process.outputs.approved }}
+    steps:
+      - name: Check permissions
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: perms } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.payload.comment.user.login
+            });
+            const allowed = ['admin', 'write'].includes(perms.permission);
+            core.setOutput('allowed', allowed ? 'true' : 'false');
+            core.setOutput('command', context.payload.comment.body.trim());
+
+      - name: Process command
+        id: process
+        if: steps.check.outputs.allowed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const command = `${{ steps.check.outputs.command }}`;
+            const issueNumber = context.payload.issue.number;
+
+            if (command.startsWith('/approve')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['approved']
+              });
+
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: 'needs-review'
+                });
+              } catch (e) {
+                // Label may not exist
+              }
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: '🎉 **Approved!** Automatic ingestion has been triggered.'
+              });
+
+              core.setOutput('approved', 'true');
+            } else if (command.startsWith('/reject')) {
+              const reason = command.replace('/reject', '').trim() || 'No reason provided';
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['rejected']
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: `❌ **Rejected**: ${reason}`
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed'
+              });
+            }
+
+      - name: Unauthorized
+        if: steps.check.outputs.allowed != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: '⛔ Only maintainers can use `/approve` and `/reject` commands.'
+            });
+
+  # ─── Auto-ingest approved markers into data.zip ─────────────────────
+  # Runs when:
+  #   1. /approve comment → approve-reject passes approved=true
+  #   2. Trusted author auto-approved → auto-label passes auto_approved=true
+  #   3. Manual "approved" label added → labeled event
+  #   4. Manual workflow_dispatch
+  #
+  # IMPORTANT: This job reads from data/worldmap-markers.json (the SOURCE
+  # file) and writes back to it. Then it rebuilds assets/data.zip from
+  # the data/ directory. Both the source file and the zip are committed.
+  # This prevents data loss when create-archives.js is run separately —
+  # it also reads from data/ so the markers stay in sync.
+  ingest:
+    needs: [auto-label, approve-reject]
+    if: |
+      always() && !cancelled() && (
+        (needs.approve-reject.result == 'success' && needs.approve-reject.outputs.approved == 'true') ||
+        (needs.auto-label.result == 'success' && needs.auto-label.outputs.auto_approved == 'true') ||
+        github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'schedule' ||
+        (github.event_name == 'issues' && github.event.action == 'labeled' && github.event.label.name == 'approved' && contains(github.event.issue.labels.*.name, 'map-markers'))
+      )
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ingest-markers
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Pull latest master (includes screenshots from auto-label)
+        run: git pull origin master
+
+      - name: Ingest approved markers
+        id: ingest
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Icon mapping — must match app's marker asset filenames
+            const ICONS = {
+              creature_spawn: 'elitespawn.webp',
+              dynamic_event: 'dynamic_event.webp',
+              expedition: 'expedition.webp',
+              npc_reputation: 'npc_reputation.webp'
+              // reputation_shiny uses emoji fallback — no icon file
+            };
+
+            const workspace = process.env.GITHUB_WORKSPACE;
+            const screenshotsDir = path.join(workspace, 'screenshots');
+            const communitySSDir = path.join(workspace, 'data', 'community-screenshots');
+            fs.mkdirSync(communitySSDir, { recursive: true });
+
+            // Read from SOURCE file (data/worldmap-markers.json), NOT from data.zip
+            const markersPath = path.join(workspace, 'data', 'worldmap-markers.json');
+            const existing = JSON.parse(fs.readFileSync(markersPath, 'utf8'));
+            const existingById = new Map(existing.map(m => [m.id, m]));
+
+            // Log pre-ingest state for audit
+            console.log(`Pre-ingest: ${existing.length} markers`);
+
+            // Fetch all approved non-ingested issues
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'map-markers,approved',
+              state: 'all',
+              per_page: 100
+            });
+
+            const toProcess = issues.filter(i => !i.labels.some(l => l.name === 'ingested'));
+            if (toProcess.length === 0) {
+              console.log('No new issues to ingest');
+              core.setOutput('changed', 'false');
+              return;
+            }
+
+            let totalAdded = 0;
+            let totalUpdated = 0;
+            let totalDeleted = 0;
+            let screenshotsCopied = 0;
+            const processedIssues = [];
+            const duplicateIssues = [];
+
+            for (const issue of toProcess) {
+              const body = issue.body || '';
+              const jsonMatch = body.match(/```json\s*\n([\s\S]*?)\n```/);
+              if (!jsonMatch) {
+                console.warn(`#${issue.number}: no JSON block found, skipping`);
+                continue;
+              }
+
+              let markers;
+              try {
+                markers = JSON.parse(jsonMatch[1]);
+              } catch {
+                console.warn(`#${issue.number}: invalid JSON, skipping`);
+                continue;
+              }
+              if (!Array.isArray(markers)) {
+                console.warn(`#${issue.number}: JSON is not an array, skipping`);
+                continue;
+              }
+
+              // Detect screenshot-only issues (just attaching a screenshot to an existing marker)
+              const isScreenshotOnly = issue.labels.some(l => l.name === 'screenshot-only');
+
+              // Handle deletion requests
+              const isDeletion = issue.labels.some(l => l.name === 'deletion') ||
+                markers.some(m => m.deletion);
+              if (isDeletion) {
+                let deleted = false;
+                for (const m of markers) {
+                  if (!m.id) continue;
+                  const idx = existing.findIndex(e => e.id === m.id);
+                  if (idx >= 0) {
+                    const removed = existing[idx];
+                    existing.splice(idx, 1);
+                    existingById.delete(m.id);
+                    totalDeleted++;
+                    deleted = true;
+                    console.log(`  Deleted: ${m.id} (${removed.name})`);
+                    // Remove screenshot file if it exists
+                    const ssPath = path.join(communitySSDir, `${m.id}.webp`);
+                    if (fs.existsSync(ssPath)) fs.unlinkSync(ssPath);
+                  } else {
+                    console.log(`  Delete skip (not found): ${m.id}`);
+                  }
+                }
+                if (deleted) processedIssues.push(issue.number);
+                continue;
+              }
+
+              // Extract embedded base64 screenshot if per-marker file doesn't exist yet
+              // (handles issues created before auto-label extracted screenshots)
+              const b64Match = body.match(/<!-- RHUD_SCREENSHOT:([A-Za-z0-9+/=]+) -->/);
+              if (b64Match) {
+                const buf = Buffer.from(b64Match[1], 'base64');
+                for (const m of markers) {
+                  if (!m.id) continue;
+                  const ssPath = path.join(screenshotsDir, `${m.id}.webp`);
+                  if (!fs.existsSync(ssPath)) {
+                    fs.writeFileSync(ssPath, buf);
+                    console.log(`  Extracted embedded screenshot: ${m.id}`);
+                  }
+                }
+              }
+
+              // Find screenshot: prefer per-marker ID naming, fall back to legacy
+              const legacySSPath = path.join(screenshotsDir, `issue-${issue.number}.webp`);
+              const hasLegacySS = fs.existsSync(legacySSPath);
+
+              let issueChanged = false;
+              for (const m of markers) {
+                if (!m.id || !m.category || !m.name || m.x == null || m.y == null || !m.floor) {
+                  console.warn(`#${issue.number}: marker missing required fields, skipping entry`);
+                  continue;
+                }
+
+                const markerSSPath = path.join(screenshotsDir, `${m.id}.webp`);
+                const ssSource = fs.existsSync(markerSSPath) ? markerSSPath : (hasLegacySS ? legacySSPath : null);
+
+                const existingMarker = existingById.get(m.id);
+                if (existingMarker) {
+                  // Correction: update existing marker fields in-place
+                  if (m.correction) {
+                    const fields = ['name', 'description', 'x', 'y', 'floor', 'region'];
+                    let updated = false;
+                    for (const f of fields) {
+                      if (m[f] != null && m[f] !== existingMarker[f]) {
+                        existingMarker[f] = m[f];
+                        updated = true;
+                      }
+                    }
+                    if (updated) {
+                      issueChanged = true;
+                      totalUpdated++;
+                      console.log(`  Updated: ${m.id} (${m.name})`);
+                    }
+                  }
+
+                  // Add or update screenshot
+                  // Force update for screenshot-only issues, backfill if missing otherwise
+                  if (ssSource && (!existingMarker.screenshot || isScreenshotOnly)) {
+                    const dest = path.join(communitySSDir, `${m.id}.webp`);
+                    fs.copyFileSync(ssSource, dest);
+                    existingMarker.screenshot = `community-screenshots/${m.id}.webp`;
+                    screenshotsCopied++;
+                    issueChanged = true;
+                    console.log(`  Screenshot ${isScreenshotOnly ? 'updated' : 'added'}: ${m.id}`);
+                  } else if (!m.correction && !isScreenshotOnly) {
+                    console.log(`  Duplicate skip (exact ID): ${m.id}`);
+                    duplicateIssues.push(issue.number);
+                  }
+                  continue;
+                }
+
+                // Proximity dedup for shiny markers — reject if too close to an existing one
+                if (m.category === 'reputation_shiny') {
+                  const DEDUP_RADIUS = 12; // tiles — auto-reject obvious dupes, manually clean 12-25
+                  const submitter = (m.authorName || '').toLowerCase();
+                  const nearbyDupe = existing.find(e =>
+                    e.category === 'reputation_shiny' &&
+                    e.floor === m.floor &&
+                    (e.contributedBy || '').toLowerCase() !== submitter && // same author = legit cluster
+                    Math.sqrt(Math.pow(e.x - m.x, 2) + Math.pow(e.y - m.y, 2)) < DEDUP_RADIUS
+                  );
+                  if (nearbyDupe) {
+                    console.log(`  Proximity duplicate: ${m.id} is ${Math.round(Math.sqrt(Math.pow(nearbyDupe.x - m.x, 2) + Math.pow(nearbyDupe.y - m.y, 2)))} tiles from ${nearbyDupe.id} (${nearbyDupe.contributedBy || 'unknown'})`);
+                    duplicateIssues.push(issue.number);
+                    continue;
+                  }
+                }
+
+                // Normalize legacy category keys
+                const category = m.category === 'reputation_npc' ? 'npc_reputation' : m.category;
+
+                // New marker
+                const marker = {
+                  id: m.id,
+                  source: 'base',
+                  category,
+                  name: m.name,
+                  description: m.description || '',
+                  x: m.x,
+                  y: m.y,
+                  floor: m.floor,
+                  icon: ICONS[category] || '',
+                  label: m.name.replace(/\s*\(.*\)$/, ''),
+                  region: m.region || '',
+                  trigger: '',
+                  contributedBy: m.authorName || 'Community'
+                };
+
+                if (ssSource) {
+                  const dest = path.join(communitySSDir, `${m.id}.webp`);
+                  fs.copyFileSync(ssSource, dest);
+                  marker.screenshot = `community-screenshots/${m.id}.webp`;
+                  screenshotsCopied++;
+                }
+
+                existing.push(marker);
+                existingById.set(m.id, marker);
+                totalAdded++;
+                issueChanged = true;
+              }
+
+              if (issueChanged) {
+                processedIssues.push(issue.number);
+              }
+            }
+
+            if (totalAdded === 0 && totalUpdated === 0 && totalDeleted === 0 && screenshotsCopied === 0) {
+              console.log('No changes to apply');
+              core.setOutput('changed', 'false');
+              // Still output duplicates so they get closed even without data changes
+              core.setOutput('duplicates', duplicateIssues.join(','));
+              return;
+            }
+
+            // Write back to SOURCE file (data/worldmap-markers.json)
+            fs.writeFileSync(markersPath, JSON.stringify(existing, null, 2) + '\n');
+            console.log(`Post-ingest: ${existing.length} markers (+${totalAdded} new, ${totalUpdated} updated, ${totalDeleted} deleted, ${screenshotsCopied} screenshots)`);
+
+            core.setOutput('changed', 'true');
+            core.setOutput('count', String(totalAdded + totalUpdated + totalDeleted));
+            core.setOutput('screenshots', String(screenshotsCopied));
+            core.setOutput('issues', processedIssues.join(','));
+            core.setOutput('duplicates', duplicateIssues.join(','));
+
+            // Build a descriptive summary for the commit message
+            const parts = [];
+            if (totalAdded) parts.push(`${totalAdded} added`);
+            if (totalUpdated) parts.push(`${totalUpdated} updated`);
+            if (totalDeleted) parts.push(`${totalDeleted} deleted`);
+            if (screenshotsCopied) parts.push(`${screenshotsCopied} screenshots`);
+            core.setOutput('summary', parts.join(', '));
+
+      - name: Rebuild data.zip from source and update manifest
+        if: steps.ingest.outputs.changed == 'true'
+        run: |
+          # Rebuild data.zip from the data/ SOURCE directory (not /tmp/data-extract)
+          # This keeps data/ and assets/data.zip permanently in sync.
+          cd data
+          zip -r ../assets/data.zip . \
+            -x ".api-cache/*" "temp/*" "scripts/*" "blockchain/*" "scraped/*" "ULTIMATE*" "*.html"
+          cd "$GITHUB_WORKSPACE"
+
+          # Update hash in assets-manifest.json
+          HASH=$(sha256sum assets/data.zip | cut -d' ' -f1)
+          SIZE_BYTES=$(stat -c%s assets/data.zip)
+          SIZE_MB=$(echo "scale=1; $SIZE_BYTES / 1048576" | bc)
+          FILE_COUNT=$(unzip -l assets/data.zip | tail -1 | awk '{print $2}')
+          jq \
+            --arg hash "sha256:$HASH" \
+            --argjson size "$SIZE_MB" \
+            --argjson files "$FILE_COUNT" \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+            '(.archives[] | select(.name == "data.zip")) |= (.hash = $hash | .sizeMB = $size | .files = $files) | .generatedAt = $ts' \
+            assets/assets-manifest.json > /tmp/manifest.json
+          mv /tmp/manifest.json assets/assets-manifest.json
+
+      - name: Commit source + zip + manifest
+        id: commit
+        if: steps.ingest.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/worldmap-markers.json data/community-screenshots/ assets/data.zip assets/assets-manifest.json
+          git commit -m "chore: ingest community markers (${{ steps.ingest.outputs.summary }})"
+          # Retry push — if rebase conflicts on binary files, reset and rebuild
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin master 2>&1; then
+              if git push origin master; then
+                echo "Push succeeded on attempt $i"
+                exit 0
+              fi
+            else
+              echo "Rebase conflict on attempt $i — rebuilding archive..."
+              git rebase --abort 2>/dev/null
+              git reset --hard origin/master
+              # Re-apply our data changes on top of latest master
+              git checkout HEAD@{1} -- data/worldmap-markers.json data/community-screenshots/
+              # Rebuild binary archives from the merged data
+              cd data && zip -r ../assets/data.zip . \
+                -x ".api-cache/*" "temp/*" "scripts/*" "blockchain/*" "scraped/*" "ULTIMATE*" "*.html"
+              cd "$GITHUB_WORKSPACE"
+              HASH=$(sha256sum assets/data.zip | cut -d' ' -f1)
+              SIZE_BYTES=$(stat -c%s assets/data.zip)
+              SIZE_MB=$(echo "scale=1; $SIZE_BYTES / 1048576" | bc)
+              FILE_COUNT=$(unzip -l assets/data.zip | tail -1 | awk '{print $2}')
+              jq \
+                --arg hash "sha256:$HASH" \
+                --argjson size "$SIZE_MB" \
+                --argjson files "$FILE_COUNT" \
+                --arg ts "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                '(.archives[] | select(.name == "data.zip")) |= (.hash = $hash | .sizeMB = $size | .files = $files) | .generatedAt = $ts' \
+                assets/assets-manifest.json > /tmp/manifest.json
+              mv /tmp/manifest.json assets/assets-manifest.json
+              git add data/worldmap-markers.json data/community-screenshots/ assets/data.zip assets/assets-manifest.json
+              git commit -m "chore: ingest community markers (${{ steps.ingest.outputs.summary }})"
+            fi
+            sleep $((i * 3))
+          done
+          echo "::error::All 5 push attempts failed"
+          exit 1
+
+      - name: Close and label processed issues
+        if: steps.commit.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = '${{ steps.ingest.outputs.issues }}'.split(',');
+            for (const num of issues) {
+              const n = parseInt(num);
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: n,
+                labels: ['ingested']
+              });
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: n,
+                  name: 'needs-review'
+                });
+              } catch (e) {
+                // Label may not exist
+              }
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: n,
+                state: 'closed',
+                state_reason: 'completed'
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: n,
+                body: '✅ Ingested into RavenHUD data. Thanks for contributing!'
+              });
+            }
+
+      - name: Close duplicate issues
+        if: steps.ingest.outputs.duplicates != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const dupes = '${{ steps.ingest.outputs.duplicates }}'.split(',').filter(Boolean);
+            for (const num of dupes) {
+              const n = parseInt(num);
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: n,
+                labels: ['duplicate']
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: n,
+                state: 'closed',
+                state_reason: 'not_planned'
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: n,
+                body: '🔄 Closed as duplicate — an existing shiny marker is already within 10 tiles of this location. The first submission is kept.'
+              });
+            }
