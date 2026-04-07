@@ -33,7 +33,7 @@ var CORVID_API_URL =
   'https://corvid-discord.wonderfulfield-6f0ceab3.westus2.azurecontainerapps.io';
 
 var DISCORD_CLIENT_ID = '1469858215125717155';
-var DISCORD_REDIRECT_URI = window.location.origin + (BASE_PATH || '/');
+var DISCORD_REDIRECT_URI = window.location.origin + (BASE_PATH ? BASE_PATH + '/' : '/');
 var DISCORD_SCOPES = 'identify';
 
 var GITHUB_REPO = 'Azurak666/Raven_hud';
@@ -172,6 +172,15 @@ function handleOAuthCallback() {
   var params = new URLSearchParams(window.location.search);
   var code = params.get('code');
   var state = params.get('state');
+  var oauthError = params.get('error');
+  var oauthErrorDescription = params.get('error_description');
+
+  if (oauthError) {
+    console.error('Discord OAuth rejected:', oauthError, oauthErrorDescription || '');
+    window.history.replaceState({}, '', window.location.pathname);
+    alert('Discord login was not completed. If this keeps happening, make sure this exact redirect URL is added in the Discord app settings: ' + DISCORD_REDIRECT_URI);
+    return Promise.resolve(false);
+  }
 
   if (!code || !state) return Promise.resolve(false);
 
@@ -1337,7 +1346,7 @@ function openModalForSubmit(options) {
   document.getElementById('modal-title').textContent = 'Submit a Marker';
   document.getElementById('modal-info').textContent =
     options.loginDisabled
-      ? 'Marker submissions require Discord login and are currently unavailable while login is being restored.'
+      ? 'Login with Discord first, then click submit again to add a marker.'
       : 'Click on the map to place your marker, then fill in the details below. Your submission will be reviewed before being added.';
   document.getElementById('btn-create-issue').textContent = 'Submit Marker';
 
