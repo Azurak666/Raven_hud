@@ -8,6 +8,8 @@ on:
 permissions:
   contents: write
   issues: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: marker-ingestion
@@ -42,6 +44,21 @@ jobs:
           git commit -m "Ingest approved marker issue #${{ github.event.issue.number }}"
           git pull --rebase origin master
           git push
+
+      - name: Setup Pages
+        if: steps.ingest.outputs.changed == 'true'
+        uses: actions/configure-pages@v6
+
+      - name: Upload site artifact
+        if: steps.ingest.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+      - name: Deploy to GitHub Pages
+        if: steps.ingest.outputs.changed == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Comment, label, and close issue
         if: always() && steps.ingest.outputs.changed == 'true'
