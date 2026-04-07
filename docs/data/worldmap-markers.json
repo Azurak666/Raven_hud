@@ -1115,20 +1115,6 @@
     "trigger": ""
   },
   {
-    "id": "rg_dynamic_event_243",
-    "source": "base",
-    "category": "dynamic_event",
-    "name": "Suffering From Heartburn",
-    "description": "",
-    "x": 4526,
-    "y": 1340,
-    "floor": "surface",
-    "icon": "dynamic_event_down.webp",
-    "label": "",
-    "region": "",
-    "trigger": ""
-  },
-  {
     "id": "c_00f1c9fd",
     "category": "dynamic_event",
     "name": "Suffering from Heartburn",
