@@ -6836,20 +6836,5 @@
     "trigger": "",
     "contributedBy": "Iceman | TG",
     "icon": "npc_reputation.webp"
-  },
-  {
-    "id": "c_e68a43a3",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "Test Shiny",
-    "description": "",
-    "x": 6522,
-    "y": 3528,
-    "floor": "surface",
-    "label": "",
-    "region": "",
-    "trigger": "",
-    "contributedBy": "Iceman | TG",
-    "screenshot": "community-screenshots/reputation_shiny_18d5ff8d75.webp"
   }
 ]
