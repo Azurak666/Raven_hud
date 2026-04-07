@@ -36,7 +36,19 @@ var DISCORD_CLIENT_ID = '1469858215125717155';
 var DISCORD_REDIRECT_URI = window.location.origin + (BASE_PATH || '/');
 var DISCORD_SCOPES = 'identify';
 
-var GITHUB_REPO = 'Pix-Elated/ravenhud';
+var GITHUB_REPO = 'Azurak666/Raven_hud';
+var LEGACY_SCREENSHOT_REPO = 'Pix-Elated/ravenhud';
+
+function buildScreenshotUrl(relativePath) {
+  if (!relativePath) return '';
+  return BASE_PATH + '/data/' + String(relativePath).replace(/^\/+/, '');
+}
+
+function buildLegacyScreenshotUrl(relativePath) {
+  if (!relativePath || !LEGACY_SCREENSHOT_REPO) return '';
+  return 'https://raw.githubusercontent.com/' + LEGACY_SCREENSHOT_REPO +
+    '/master/data/' + String(relativePath).replace(/^\/+/, '');
+}
 
 // Category metadata — uses game icon files when available, emoji as fallback
 var CATEGORIES = {
@@ -636,15 +648,23 @@ function showDetail(m) {
   var ssContainer = document.getElementById('detail-screenshot');
   ssContainer.innerHTML = '';
   if (m.screenshot) {
-    var ssUrl = 'https://raw.githubusercontent.com/' + GITHUB_REPO +
-      '/master/data/' + m.screenshot;
+    var ssUrl = buildScreenshotUrl(m.screenshot);
+    var fallbackUrl = buildLegacyScreenshotUrl(m.screenshot);
     var img = document.createElement('img');
     img.src = ssUrl;
     img.alt = m.name + ' screenshot';
     img.loading = 'lazy';
     img.style.cursor = 'pointer';
     img.title = 'Click to enlarge';
-    img.addEventListener('click', function () { openLightbox(ssUrl); });
+    img.addEventListener('error', function () {
+      if (fallbackUrl && img.dataset.fallbackApplied !== '1') {
+        img.dataset.fallbackApplied = '1';
+        img.src = fallbackUrl;
+        return;
+      }
+      img.style.display = 'none';
+    });
+    img.addEventListener('click', function () { openLightbox(img.currentSrc || img.src); });
     ssContainer.appendChild(img);
   }
 
