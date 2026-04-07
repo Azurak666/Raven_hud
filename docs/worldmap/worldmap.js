@@ -4,8 +4,8 @@
  * Vanilla JS + Leaflet. Loads markers from the repo's data/worldmap-markers.json
  * via raw GitHub URL (single source of truth — never duplicated).
  *
- * Discord OAuth2 PKCE for verified identity. Marker submissions open
- * prefilled GitHub Issues directly; Corvid is optional for logging only.
+ * Discord OAuth2 PKCE for verified identity. Marker submissions can be
+ * auto-sent through a small backend, with direct GitHub issue fallback.
  */
 
 /* global L */
@@ -35,6 +35,7 @@ var CORVID_API_URL =
 var DISCORD_CLIENT_ID = '1491050953221079223';
 var DISCORD_REDIRECT_URI = window.location.origin + (BASE_PATH ? BASE_PATH + '/' : '/');
 var DISCORD_SCOPES = 'identify';
+var SUBMISSION_API_URL = window.RAVENHUD_API_URL || '';
 
 var GITHUB_REPO = 'Azurak666/Raven_hud';
 var LEGACY_SCREENSHOT_REPO = 'Pix-Elated/ravenhud';
@@ -78,6 +79,20 @@ function fetchCorvidAPI(endpoint, body) {
 }
 
 var GITHUB_ISSUES_NEW_URL = 'https://github.com/' + GITHUB_REPO + '/issues/new';
+
+function getSubmissionApiBaseUrl() {
+  return String(SUBMISSION_API_URL || '').trim().replace(/\/$/, '');
+}
+
+function hasSubmissionBackend() {
+  return !!getSubmissionApiBaseUrl();
+}
+
+function getSubmissionButtonText(mode) {
+  return hasSubmissionBackend()
+    ? (mode === 'edit' ? 'Submit Edit' : 'Submit Marker')
+    : 'Open GitHub Issue';
+}
 
 function escapeMarkdownCell(value) {
   return String(value == null ? '' : value)
@@ -168,6 +183,38 @@ function openGitHubMarkerIssue(body, options) {
   }
 
   return true;
+}
+
+function submitMarkerRequest(body, options) {
+  options = options || {};
+
+  if (!hasSubmissionBackend()) {
+    try {
+      openGitHubMarkerIssue(body, options);
+      return Promise.resolve({ ok: true, data: { success: true, via: 'github-issue' } });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  var payload = Object.assign({}, body);
+  try {
+    var accessToken = sessionStorage.getItem('discord_access_token') || '';
+    if (accessToken) payload.discordAccessToken = accessToken;
+  } catch (e) { /* ignore storage errors */ }
+
+  return fetch(getSubmissionApiBaseUrl() + '/api/markers/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function (res) {
+    return res.json().catch(function () { return {}; }).then(function (data) {
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Submission failed');
+      }
+      return { ok: true, data: Object.assign({ via: 'backend' }, data) };
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -305,6 +352,9 @@ function handleOAuthCallback() {
       return res.json();
     })
     .then(function (data) {
+      try {
+        if (data && data.access_token) sessionStorage.setItem('discord_access_token', data.access_token);
+      } catch (e) { /* ignore storage errors */ }
       return fetch('https://discord.com/api/users/@me', {
         headers: { Authorization: 'Bearer ' + data.access_token }
       });
@@ -349,6 +399,7 @@ function logoutDiscord() {
   }
   discordUser = null;
   localStorage.removeItem('discord_user');
+  try { sessionStorage.removeItem('discord_access_token'); } catch (e) { /* ignore storage errors */ }
   updateAuthUI();
 }
 
@@ -989,45 +1040,49 @@ function initDetailPanel() {
 function suggestDeletion(marker) {
   var btn = document.getElementById('btn-suggest-delete');
   var originalText = btn.textContent;
+  var usingBackend = hasSubmissionBackend();
   btn.disabled = true;
-  btn.textContent = 'Opening GitHub...';
+  btn.textContent = usingBackend ? 'Submitting...' : 'Opening GitHub...';
 
-  try {
-    openGitHubMarkerIssue({
-      markers: [{
-        id: marker.id,
-        deletion: true,
-        category: marker.category,
-        name: marker.name,
-        x: marker.x,
-        y: marker.y,
-        floor: marker.floor || 'surface',
-        region: marker.region || '',
-        description: ''
-      }],
-      authorName: discordUser.globalName || discordUser.username,
-      authorDiscordId: discordUser.id
-    }, { mode: 'delete' });
-
-    btn.textContent = 'Issue Opened!';
-    btn.style.color = 'var(--success)';
-    btn.style.borderColor = 'var(--success)';
-    setTimeout(function () {
-      btn.textContent = originalText;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-      btn.disabled = false;
-    }, 3000);
-  } catch (err) {
-    console.error('Deletion suggestion error:', err);
-    btn.textContent = err.message || 'Error — try again';
-    btn.style.color = 'var(--danger)';
-    setTimeout(function () {
-      btn.textContent = originalText;
-      btn.style.color = '';
-      btn.disabled = false;
-    }, 3500);
-  }
+  submitMarkerRequest({
+    markers: [{
+      id: marker.id,
+      deletion: true,
+      category: marker.category,
+      name: marker.name,
+      x: marker.x,
+      y: marker.y,
+      floor: marker.floor || 'surface',
+      region: marker.region || '',
+      description: ''
+    }],
+    authorName: discordUser.globalName || discordUser.username,
+    authorDiscordId: discordUser.id
+  }, { mode: 'delete' })
+    .then(function (result) {
+      if (usingBackend && result.data && result.data.issueUrl) {
+        window.open(result.data.issueUrl, '_blank', 'noopener');
+      }
+      btn.textContent = usingBackend ? 'Submitted!' : 'Issue Opened!';
+      btn.style.color = 'var(--success)';
+      btn.style.borderColor = 'var(--success)';
+      setTimeout(function () {
+        btn.textContent = originalText;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        btn.disabled = false;
+      }, 3000);
+    })
+    .catch(function (err) {
+      console.error('Deletion suggestion error:', err);
+      btn.textContent = err.message || 'Error — try again';
+      btn.style.color = 'var(--danger)';
+      setTimeout(function () {
+        btn.textContent = originalText;
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3500);
+    });
 }
 
 // ---------------------------------------------------------------------------
@@ -1438,12 +1493,15 @@ function openModalForSubmit(options) {
 
   document.getElementById('submit-category').disabled = false;
 
+  var usingBackend = hasSubmissionBackend();
   document.getElementById('modal-title').textContent = 'Submit a Marker';
   document.getElementById('modal-info').textContent =
     options.loginDisabled
-      ? 'Login with Discord first, then click again to open a prefilled GitHub issue.'
-      : 'Click on the map to place your marker, then fill in the details below. A prefilled GitHub issue will open for final review.';
-  document.getElementById('btn-create-issue').textContent = 'Open GitHub Issue';
+      ? 'Login with Discord first, then submit your marker.'
+      : (usingBackend
+        ? 'Click on the map to place your marker, then fill in the details below. Your submission will be sent automatically for review.'
+        : 'Click on the map to place your marker, then fill in the details below. A prefilled GitHub issue will open for final review.');
+  document.getElementById('btn-create-issue').textContent = getSubmissionButtonText('submit');
 
   // Show author as verified Discord name
   var authorEl = document.getElementById('submit-author-display');
@@ -1484,8 +1542,10 @@ function openModalForEdit(m) {
   document.getElementById('modal-title').textContent = 'Suggest Edit';
   document.getElementById('modal-info').textContent =
     'Modify the fields you want to change. You can click the map to update the position. ' +
-    'A prefilled GitHub issue will open for final review.';
-  document.getElementById('btn-create-issue').textContent = 'Open GitHub Issue';
+    (hasSubmissionBackend()
+      ? 'Your submission will be sent automatically for review.'
+      : 'A prefilled GitHub issue will open for final review.');
+  document.getElementById('btn-create-issue').textContent = getSubmissionButtonText('edit');
 
   var authorEl = document.getElementById('submit-author-display');
   authorEl.textContent = discordUser ? (discordUser.globalName || discordUser.username) : '';
@@ -1686,8 +1746,9 @@ function submitToGitHubIssue() {
 
   var btn = document.getElementById('btn-create-issue');
   var originalText = btn.textContent;
+  var usingBackend = hasSubmissionBackend();
   btn.disabled = true;
-  btn.textContent = 'Opening GitHub...';
+  btn.textContent = usingBackend ? 'Submitting...' : 'Opening GitHub...';
 
   var isEdit = modalMode === 'edit' && editingMarker;
 
@@ -1711,7 +1772,7 @@ function submitToGitHubIssue() {
     authorName: discordUser.globalName || discordUser.username,
     authorDiscordId: discordUser.id
   };
-  if (pendingScreenshot) body.screenshot = '[Upload screenshot manually in the GitHub issue after it opens]';
+  if (pendingScreenshot) body.screenshot = pendingScreenshot;
 
   if (isEdit) {
     body.originalMarker = {
@@ -1723,26 +1784,51 @@ function submitToGitHubIssue() {
     };
   }
 
-  try {
-    openGitHubMarkerIssue(body, { mode: isEdit ? 'edit' : 'submit' });
-    btn.textContent = 'Issue Opened!';
-    btn.classList.add('btn-success');
+  submitMarkerRequest(body, { mode: isEdit ? 'edit' : 'submit' })
+    .then(function (result) {
+      if (usingBackend && result.data && result.data.issueUrl) {
+        window.open(result.data.issueUrl, '_blank', 'noopener');
+      }
 
-    if (pendingScreenshot) {
-      alert('A prefilled GitHub issue has been opened. Paste or upload your screenshot there before you submit it.');
-    }
+      btn.textContent = usingBackend ? 'Submitted!' : 'Issue Opened!';
+      btn.classList.add('btn-success');
 
-    setTimeout(function () { closeModal(); }, 1200);
-  } catch (err) {
-    console.error('Submission error:', err);
-    var msg = (err && err.message) || 'Unknown error';
-    btn.textContent = msg.length > 48 ? 'Error — try again' : msg;
-    btn.classList.add('btn-error');
-    btn.disabled = false;
-    setTimeout(function () {
-      btn.textContent = originalText;
-      btn.classList.remove('btn-error');
-      validateForm();
-    }, 4000);
-  }
+      if (isEdit) {
+        saveLocalEdit(editingMarker.id, {
+          name: name,
+          x: submitCoords.x,
+          y: submitCoords.y,
+          description: description,
+          region: region
+        });
+        var m = allMarkers.find(function (mk) { return mk.id === editingMarker.id; });
+        if (m) {
+          m.name = name;
+          m.x = submitCoords.x;
+          m.y = submitCoords.y;
+          m.description = description;
+          m.region = region;
+        }
+        renderMarkers();
+        updateStats();
+      }
+
+      if (pendingScreenshot && !usingBackend) {
+        alert('A prefilled GitHub issue has been opened. Paste or upload your screenshot there before you submit it.');
+      }
+
+      setTimeout(function () { closeModal(); }, 1200);
+    })
+    .catch(function (err) {
+      console.error('Submission error:', err);
+      var msg = (err && err.message) || 'Unknown error';
+      btn.textContent = msg.length > 48 ? 'Error — try again' : msg;
+      btn.classList.add('btn-error');
+      btn.disabled = false;
+      setTimeout(function () {
+        btn.textContent = originalText;
+        btn.classList.remove('btn-error');
+        validateForm();
+      }, 4000);
+    });
 }

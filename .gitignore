@@ -10,6 +10,8 @@ assets/images/
 
 # Node
 node_modules/
+.dev.vars
+.dev.vars.local
 
 # Data caches (transient, not committed)
 data/.api-cache/
