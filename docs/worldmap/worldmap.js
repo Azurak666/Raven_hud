@@ -497,12 +497,48 @@ function getSavedIdentity() {
   }
 }
 
-function saveIdentity(characterName, guildTag) {
+function saveIdentity(characterName, guildTag, authorName) {
   localStorage.setItem(IDENTITY_KEY, JSON.stringify({
     characterName: characterName,
     guildTag: guildTag,
+    authorName: authorName || '',
     timestamp: Date.now()
   }));
+}
+
+function getPreferredAuthorName() {
+  var identity = getSavedIdentity() || {};
+  var preferred = (identity.authorName || '').trim();
+  if (preferred) return preferred;
+  return discordUser ? (discordUser.globalName || discordUser.username || '') : '';
+}
+
+function rememberPreferredAuthorName(name) {
+  var identity = getSavedIdentity() || { characterName: '', guildTag: '' };
+  saveIdentity(identity.characterName || '', identity.guildTag || '', (name || '').trim());
+}
+
+function normalizeContributorName(name) {
+  return String(name || '').trim().toLowerCase();
+}
+
+function getContributorAliases() {
+  var aliases = [];
+  var names = [
+    getPreferredAuthorName(),
+    discordUser ? (discordUser.globalName || discordUser.username || '') : '',
+    discordUser ? (discordUser.username || '') : ''
+  ];
+
+  names.forEach(function (name) {
+    var trimmed = String(name || '').trim();
+    if (!trimmed) return;
+    aliases.push(normalizeContributorName(trimmed));
+    var baseName = trimmed.split('|')[0].trim();
+    if (baseName) aliases.push(normalizeContributorName(baseName));
+  });
+
+  return Array.from(new Set(aliases.filter(Boolean)));
 }
 
 function escapeHtml(str) {
@@ -1056,7 +1092,7 @@ function suggestDeletion(marker) {
       region: marker.region || '',
       description: ''
     }],
-    authorName: discordUser.globalName || discordUser.username,
+    authorName: getPreferredAuthorName(),
     authorDiscordId: discordUser.id
   }, { mode: 'delete' })
     .then(function (result) {
@@ -1111,10 +1147,10 @@ function showContributions() {
   var editIds = Object.keys(edits);
 
   // Find markers contributed by this user (by name match or local edits)
-  var userName = (discordUser.globalName || discordUser.username).toLowerCase();
+  var userAliases = getContributorAliases();
   var contributions = allMarkers.filter(function (m) {
     if (editIds.indexOf(m.id) >= 0) return true;
-    if (m.contributedBy && m.contributedBy.toLowerCase() === userName) return true;
+    if (m.contributedBy && userAliases.indexOf(normalizeContributorName(m.contributedBy)) >= 0) return true;
     return false;
   });
 
@@ -1162,15 +1198,30 @@ function showContributions() {
 function showLeaderboard() {
   var body = document.getElementById('leaderboard-body');
 
-  // Count contributions by author
   var counts = {};
+  var labels = {};
+  var myAliases = getContributorAliases();
+  var myDisplayName = getPreferredAuthorName();
+
   for (var m of allMarkers) {
-    var author = m.contributedBy || '';
+    var author = (m.contributedBy || '').trim();
     if (!author || author === 'Community') continue;
-    counts[author] = (counts[author] || 0) + 1;
+
+    var normalizedAuthor = normalizeContributorName(author);
+    var key = normalizedAuthor;
+    if (myAliases.indexOf(normalizedAuthor) >= 0) {
+      key = '__current_user__';
+      labels[key] = myDisplayName || author;
+    } else if (!labels[key]) {
+      labels[key] = author;
+    }
+
+    counts[key] = (counts[key] || 0) + 1;
   }
 
-  var sorted = Object.entries(counts).sort(function (a, b) { return b[1] - a[1]; });
+  var sorted = Object.keys(counts)
+    .map(function (key) { return [labels[key] || key, counts[key]]; })
+    .sort(function (a, b) { return b[1] - a[1]; });
 
   if (sorted.length === 0) {
     body.innerHTML = '<p class="info-modal-empty">No contributors yet.</p>';
@@ -1450,10 +1501,14 @@ function initModal() {
   // Overlay has pointer-events:none so map clicks pass through;
   // close only via X / Cancel buttons
 
-  var fields = ['submit-category', 'submit-name'];
+  var fields = ['submit-category', 'submit-name', 'submit-author-display'];
   fields.forEach(function (id) {
     document.getElementById(id).addEventListener('input', validateForm);
     document.getElementById(id).addEventListener('change', validateForm);
+  });
+
+  document.getElementById('submit-author-display').addEventListener('change', function () {
+    rememberPreferredAuthorName(this.value);
   });
 
   document.getElementById('submit-category').addEventListener('change', function () {
@@ -1500,9 +1555,8 @@ function openModalForSubmit(options) {
         : 'Click on the map to place your marker, then fill in the details below. A prefilled GitHub issue will open for final review.');
   document.getElementById('btn-create-issue').textContent = getSubmissionButtonText('submit');
 
-  // Show author as verified Discord name
   var authorEl = document.getElementById('submit-author-display');
-  authorEl.textContent = discordUser ? (discordUser.globalName || discordUser.username) : '';
+  authorEl.value = getPreferredAuthorName();
 
   updateCoordsDisplay();
   validateForm();
@@ -1545,7 +1599,7 @@ function openModalForEdit(m) {
   document.getElementById('btn-create-issue').textContent = getSubmissionButtonText('edit');
 
   var authorEl = document.getElementById('submit-author-display');
-  authorEl.textContent = discordUser ? (discordUser.globalName || discordUser.username) : '';
+  authorEl.value = getPreferredAuthorName();
 
   updateCoordsDisplay();
   validateForm();
@@ -1688,7 +1742,8 @@ function updateCoordsDisplay() {
 function validateForm() {
   var category = document.getElementById('submit-category').value;
   var name = document.getElementById('submit-name').value.trim();
-  var valid = category && name && submitCoords && discordUser;
+  var authorName = document.getElementById('submit-author-display').value.trim();
+  var valid = category && name && authorName && submitCoords && discordUser;
   document.getElementById('btn-create-issue').disabled = !valid;
 }
 
@@ -1738,8 +1793,11 @@ function submitToGitHubIssue() {
 
   var category = document.getElementById('submit-category').value;
   var name = document.getElementById('submit-name').value.trim();
+  var authorName = document.getElementById('submit-author-display').value.trim() || getPreferredAuthorName();
   var description = document.getElementById('submit-description').value.trim();
   var region = document.getElementById('submit-region').value.trim();
+
+  rememberPreferredAuthorName(authorName);
 
   var btn = document.getElementById('btn-create-issue');
   var originalText = btn.textContent;
@@ -1766,7 +1824,7 @@ function submitToGitHubIssue() {
 
   var body = {
     markers: [markerPayload],
-    authorName: discordUser.globalName || discordUser.username,
+    authorName: authorName,
     authorDiscordId: discordUser.id
   };
   if (pendingScreenshot) body.screenshot = pendingScreenshot;

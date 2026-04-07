@@ -119,13 +119,22 @@ body {
 
 /* Verified author display in modal */
 .author-verified {
+  width: 100%;
+  box-sizing: border-box;
   padding: 8px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--success);
   border-radius: 4px;
   font-size: 13px;
   color: var(--success);
-  border-left: 3px solid var(--success);
+}
+.author-verified::placeholder {
+  color: var(--text-secondary);
+}
+.author-verified:focus {
+  outline: none;
+  border-color: var(--success);
 }
 
 /* Submission feedback states */
