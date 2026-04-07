@@ -1407,6 +1407,8 @@ function initModal() {
   document.getElementById('submit-category').addEventListener('change', function () {
     if (previewMarker) {
       updatePreviewMarker(previewMarker.getLatLng());
+    } else if (!document.getElementById('marker-modal').hidden && map) {
+      updatePreviewMarker(map.getCenter());
     }
   });
 
