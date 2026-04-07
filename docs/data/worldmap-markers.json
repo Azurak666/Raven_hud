@@ -6821,5 +6821,20 @@
     "region": "Haddarak",
     "trigger": "",
     "contributedBy": "Iceman | TG"
+  },
+  {
+    "id": "c_06e73d3a",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "test npc",
+    "description": "",
+    "x": 6525,
+    "y": 3575,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Iceman | TG",
+    "icon": "npc_reputation.webp"
   }
 ]
