@@ -62,10 +62,9 @@ body {
   align-items: center;
 }
 
-.btn-submit {
+.btn-submit,
+.btn-donate {
   padding: 6px 14px;
-  background: var(--accent-primary);
-  color: var(--bg-primary);
   border: none;
   border-radius: 4px;
   font-size: 13px;
@@ -73,10 +72,23 @@ body {
   cursor: pointer;
   transition: background 0.15s;
 }
+
+.btn-submit {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+}
 .btn-submit:hover:not(:disabled) { background: var(--accent-hover); }
 .btn-submit:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.btn-donate {
+  background: #2e7d32;
+  color: #fff;
+}
+.btn-donate:hover {
+  background: #388e3c;
 }
 
 /* Discord auth */
@@ -851,6 +863,36 @@ body {
   font-size: 13px;
   text-align: center;
   padding: 20px 0;
+}
+
+.donate-text {
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.wallet-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.wallet-label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
+}
+
+.wallet-address {
+  display: block;
+  color: var(--accent-primary);
+  font-size: 12px;
+  word-break: break-all;
 }
 
 .leaderboard-row {

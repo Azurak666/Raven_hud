@@ -18,6 +18,7 @@
       <span class="header-title">World Map</span>
     </a>
     <div class="header-actions">
+      <button id="btn-donate" class="btn-donate" title="Support RavenHUD">Donate</button>
       <button id="btn-discord-login" class="btn-discord" title="Login with Discord" style="display:none">Login with Discord</button>
       <div id="discord-user-display" class="discord-user" style="display:none">
         <span id="discord-username" class="discord-name"></span>
@@ -134,6 +135,26 @@
       </div>
       <div class="info-modal-body" id="leaderboard-body">
         <p class="info-modal-empty">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-modal-overlay" id="donate-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Support RavenHUD</h3>
+        <button class="modal-close" id="donate-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">Appeciate donations so i can buy t8 gems..eh i mean i can keep this site updated :)</p>
+        <div class="wallet-box">
+          <div class="wallet-label">Immutable wallet address</div>
+          <code id="donate-wallet-address" class="wallet-address">0xe69165e7781468bf0979419d0def401b13a3ac50</code>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="btn-copy-wallet" type="button">Copy Address</button>
+          <button class="btn-secondary" id="btn-close-donate" type="button">Close</button>
+        </div>
       </div>
     </div>
   </div>

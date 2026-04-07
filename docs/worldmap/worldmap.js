@@ -39,6 +39,7 @@ var SUBMISSION_API_URL = window.RAVENHUD_API_URL || '';
 
 var GITHUB_REPO = 'Azurak666/Raven_hud';
 var LEGACY_SCREENSHOT_REPO = 'Pix-Elated/ravenhud';
+var DONATE_WALLET_ADDRESS = '0xe69165e7781468bf0979419d0def401b13a3ac50';
 
 function buildScreenshotUrl(relativePath) {
   if (!relativePath) return '';
@@ -803,6 +804,7 @@ async function init() {
   initDetailPanel();
   initModal();
   initAuth();
+  initDonate();
   initLeaderboard();
   updateAuthUI();
   syncCollectedStateFromBackend();
@@ -832,6 +834,44 @@ async function init() {
 function initAuth() {
   document.getElementById('btn-discord-login').addEventListener('click', startDiscordLogin);
   document.getElementById('btn-discord-logout').addEventListener('click', logoutDiscord);
+}
+
+function initDonate() {
+  var openBtn = document.getElementById('btn-donate');
+  var modal = document.getElementById('donate-modal');
+  var closeBtn = document.getElementById('donate-close');
+  var closeActionBtn = document.getElementById('btn-close-donate');
+  var copyBtn = document.getElementById('btn-copy-wallet');
+  var walletEl = document.getElementById('donate-wallet-address');
+
+  function closeDonateModal() {
+    modal.hidden = true;
+  }
+
+  openBtn.addEventListener('click', function () {
+    walletEl.textContent = DONATE_WALLET_ADDRESS;
+    modal.hidden = false;
+  });
+
+  closeBtn.addEventListener('click', closeDonateModal);
+  closeActionBtn.addEventListener('click', closeDonateModal);
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeDonateModal();
+  });
+
+  copyBtn.addEventListener('click', function () {
+    navigator.clipboard.writeText(DONATE_WALLET_ADDRESS).then(function () {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(function () {
+        copyBtn.textContent = 'Copy Address';
+      }, 1400);
+    }).catch(function () {
+      copyBtn.textContent = 'Copy failed';
+      setTimeout(function () {
+        copyBtn.textContent = 'Copy Address';
+      }, 1400);
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------
