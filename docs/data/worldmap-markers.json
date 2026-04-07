@@ -1199,20 +1199,6 @@
     "trigger": ""
   },
   {
-    "id": "c_9111cf25",
-    "category": "dynamic_event",
-    "name": "Test",
-    "x": 4142,
-    "y": 2067,
-    "floor": "surface",
-    "region": "Rohna Woods",
-    "description": "",
-    "source": "base",
-    "icon": "",
-    "contributedBy": "Pixelated",
-    "screenshot": "community-screenshots/c_9111cf25.webp"
-  },
-  {
     "id": "rg_dynamic_event_248",
     "source": "base",
     "category": "dynamic_event",
