@@ -3030,10 +3030,12 @@
     "y": 1633,
     "floor": "surface",
     "region": "Coldreach Isle",
-    "description": "deep inside all the way on the right side.",
+    "description": "deep inside all the way on the right side",
     "source": "base",
     "contributedBy": "rike_arx7",
-    "screenshot": "community-screenshots/c_d06276e1.webp"
+    "screenshot": "community-screenshots/c_d06276e1.webp",
+    "lastEditedBy": "Azurak | TRG",
+    "lastEditedAt": "2026-04-07T17:16:53.591Z"
   },
   {
     "id": "c_309366b1",
