@@ -4,8 +4,8 @@
  * Vanilla JS + Leaflet. Loads markers from the repo's data/worldmap-markers.json
  * via raw GitHub URL (single source of truth — never duplicated).
  *
- * Discord OAuth2 PKCE for verified identity. Submissions go through
- * Corvid (Discord bot API) which proxies GitHub Issue creation.
+ * Discord OAuth2 PKCE for verified identity. Marker submissions open
+ * prefilled GitHub Issues directly; Corvid is optional for logging only.
  */
 
 /* global L */
@@ -75,6 +75,99 @@ function fetchCorvidAPI(endpoint, body) {
       return { ok: res.ok, data: data };
     });
   });
+}
+
+var GITHUB_ISSUES_NEW_URL = 'https://github.com/' + GITHUB_REPO + '/issues/new';
+
+function escapeMarkdownCell(value) {
+  return String(value == null ? '' : value)
+    .replace(/\|/g, '\\|')
+    .replace(/\r?\n/g, '<br>');
+}
+
+function buildMarkerIssueTitle(marker, authorName, mode) {
+  if (mode === 'delete') return 'Delete Marker: ' + marker.name + ' (by ' + authorName + ')';
+  if (mode === 'edit') return 'Edit Marker: ' + marker.name + ' (by ' + authorName + ')';
+  return 'Map Marker: ' + marker.name + ' (by ' + authorName + ')';
+}
+
+function buildMarkerIssueBody(body, options) {
+  options = options || {};
+  var marker = (body.markers && body.markers[0]) || {};
+  var issuePayload = {
+    markers: body.markers || [],
+    authorName: body.authorName || '',
+    authorDiscordId: body.authorDiscordId || ''
+  };
+
+  if (body.originalMarker) issuePayload.originalMarker = body.originalMarker;
+  if (options.mode === 'delete') issuePayload.deletionRequest = true;
+  if (body.screenshot) {
+    issuePayload.screenshot = '[Upload screenshot manually in the GitHub issue after it opens]';
+  }
+
+  var lines = [
+    '# RavenHUD Map Marker Contribution',
+    '',
+    'Exported: ' + new Date().toISOString().slice(0, 10),
+    'Contributor: ' + (body.authorName || 'Unknown'),
+    body.authorDiscordId ? 'Discord ID: ' + body.authorDiscordId : '',
+    '',
+    '| Category | Name | X | Y | Floor | Description | Author |',
+    '| --- | --- | --- | --- | --- | --- | --- |',
+    '| ' + [
+      escapeMarkdownCell(marker.category || ''),
+      escapeMarkdownCell(marker.name || ''),
+      escapeMarkdownCell(marker.x || ''),
+      escapeMarkdownCell(marker.y || ''),
+      escapeMarkdownCell(marker.floor || 'surface'),
+      escapeMarkdownCell(marker.description || ''),
+      escapeMarkdownCell(body.authorName || '')
+    ].join(' | ') + ' |',
+    ''
+  ];
+
+  if (options.mode === 'edit' && body.originalMarker) {
+    lines.push('**Requested change:** update an existing marker entry.');
+    lines.push('');
+  }
+
+  if (options.mode === 'delete') {
+    lines.push('**Requested change:** review and remove this marker if needed.');
+    lines.push('');
+  }
+
+  if (body.screenshot) {
+    lines.push('> A screenshot was included in the site form. Please paste or upload it manually in the GitHub issue before submitting.');
+    lines.push('');
+  }
+
+  lines.push('<details>');
+  lines.push('<summary>Raw JSON (for automated import)</summary>');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(issuePayload, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('</details>');
+
+  return lines.filter(Boolean).join('\n');
+}
+
+function openGitHubMarkerIssue(body, options) {
+  options = options || {};
+  var marker = (body.markers && body.markers[0]) || {};
+  var params = new URLSearchParams();
+  params.set('title', buildMarkerIssueTitle(marker, body.authorName || 'Unknown', options.mode));
+  params.set('labels', 'map-markers');
+  params.set('body', buildMarkerIssueBody(body, options));
+
+  var popup = window.open(GITHUB_ISSUES_NEW_URL + '?' + params.toString(), '_blank', 'noopener');
+  if (!popup) {
+    throw new Error('Popup blocked. Allow pop-ups to open the GitHub issue.');
+  }
+
+  return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -419,9 +512,9 @@ async function init() {
   // identity log. Used by Corvid's /cluster admin command to detect evasion.
   var fingerprint = await computeFingerprint();
 
-  // Log identity to Corvid — only on first visit or new identity, not every page load
+  // Optional identity log — send it in the background so the site never waits on Corvid
   try {
-    await fetch(CORVID_API_URL + '/api/identity-log', {
+    fetch(CORVID_API_URL + '/api/identity-log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -432,7 +525,7 @@ async function init() {
         fingerprint: fingerprint,
         discordId: discordUser ? discordUser.id : undefined
       })
-    });
+    }).catch(function () { /* Fail-open: if Corvid is down, continue */ });
   } catch (e) { /* Fail-open: if Corvid is down, continue */ }
 
   // Discord login is separate — restore saved session and handle OAuth callback
@@ -897,50 +990,44 @@ function suggestDeletion(marker) {
   var btn = document.getElementById('btn-suggest-delete');
   var originalText = btn.textContent;
   btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.textContent = 'Opening GitHub...';
 
-  var body = {
-    markers: [{
-      id: marker.id,
-      deletion: true,
-      category: marker.category,
-      name: marker.name,
-      x: marker.x,
-      y: marker.y,
-      floor: marker.floor || 'surface',
-      region: marker.region || '',
-      description: ''
-    }],
-    authorName: discordUser.globalName || discordUser.username,
-    authorDiscordId: discordUser.id
-  };
+  try {
+    openGitHubMarkerIssue({
+      markers: [{
+        id: marker.id,
+        deletion: true,
+        category: marker.category,
+        name: marker.name,
+        x: marker.x,
+        y: marker.y,
+        floor: marker.floor || 'surface',
+        region: marker.region || '',
+        description: ''
+      }],
+      authorName: discordUser.globalName || discordUser.username,
+      authorDiscordId: discordUser.id
+    }, { mode: 'delete' });
 
-  fetchCorvidAPI('/api/markers/submit', body)
-    .then(function (result) {
-      if (result.ok && result.data.success) {
-        btn.textContent = 'Submitted!';
-        btn.style.color = 'var(--success)';
-        btn.style.borderColor = 'var(--success)';
-        setTimeout(function () {
-          btn.textContent = originalText;
-          btn.style.color = '';
-          btn.style.borderColor = '';
-          btn.disabled = false;
-        }, 3000);
-      } else {
-        throw new Error(result.data.error || 'Failed');
-      }
-    })
-    .catch(function (err) {
-      console.error('Deletion suggestion error:', err);
-      btn.textContent = 'Error — try again';
-      btn.style.color = 'var(--danger)';
-      setTimeout(function () {
-        btn.textContent = originalText;
-        btn.style.color = '';
-        btn.disabled = false;
-      }, 3000);
-    });
+    btn.textContent = 'Issue Opened!';
+    btn.style.color = 'var(--success)';
+    btn.style.borderColor = 'var(--success)';
+    setTimeout(function () {
+      btn.textContent = originalText;
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      btn.disabled = false;
+    }, 3000);
+  } catch (err) {
+    console.error('Deletion suggestion error:', err);
+    btn.textContent = err.message || 'Error — try again';
+    btn.style.color = 'var(--danger)';
+    setTimeout(function () {
+      btn.textContent = originalText;
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 3500);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1288,7 +1375,7 @@ function onSearch(e) {
 }
 
 // ---------------------------------------------------------------------------
-// Modal (Submit new / Suggest edit — via Corvid API)
+// Modal (Submit new / Suggest edit — opens GitHub issues)
 // ---------------------------------------------------------------------------
 
 function initModal() {
@@ -1317,7 +1404,7 @@ function initModal() {
     document.getElementById(id).addEventListener('change', validateForm);
   });
 
-  btnCreate.addEventListener('click', submitToCorvid);
+  btnCreate.addEventListener('click', submitToGitHubIssue);
 
   // Screenshot paste from clipboard
   document.getElementById('btn-paste-screenshot').addEventListener('click', pasteScreenshot);
@@ -1346,9 +1433,9 @@ function openModalForSubmit(options) {
   document.getElementById('modal-title').textContent = 'Submit a Marker';
   document.getElementById('modal-info').textContent =
     options.loginDisabled
-      ? 'Login with Discord first, then click submit again to add a marker.'
-      : 'Click on the map to place your marker, then fill in the details below. Your submission will be reviewed before being added.';
-  document.getElementById('btn-create-issue').textContent = 'Submit Marker';
+      ? 'Login with Discord first, then click again to open a prefilled GitHub issue.'
+      : 'Click on the map to place your marker, then fill in the details below. A prefilled GitHub issue will open for final review.';
+  document.getElementById('btn-create-issue').textContent = 'Open GitHub Issue';
 
   // Show author as verified Discord name
   var authorEl = document.getElementById('submit-author-display');
@@ -1389,8 +1476,8 @@ function openModalForEdit(m) {
   document.getElementById('modal-title').textContent = 'Suggest Edit';
   document.getElementById('modal-info').textContent =
     'Modify the fields you want to change. You can click the map to update the position. ' +
-    'Your suggestion will be reviewed before being applied.';
-  document.getElementById('btn-create-issue').textContent = 'Submit Edit';
+    'A prefilled GitHub issue will open for final review.';
+  document.getElementById('btn-create-issue').textContent = 'Open GitHub Issue';
 
   var authorEl = document.getElementById('submit-author-display');
   authorEl.textContent = discordUser ? (discordUser.globalName || discordUser.username) : '';
@@ -1581,7 +1668,7 @@ function applyLocalEdits() {
 // Submit / Edit
 // ---------------------------------------------------------------------------
 
-function submitToCorvid() {
+function submitToGitHubIssue() {
   if (!discordUser || !submitCoords) return;
 
   var category = document.getElementById('submit-category').value;
@@ -1592,7 +1679,7 @@ function submitToCorvid() {
   var btn = document.getElementById('btn-create-issue');
   var originalText = btn.textContent;
   btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.textContent = 'Opening GitHub...';
 
   var isEdit = modalMode === 'edit' && editingMarker;
 
@@ -1606,7 +1693,6 @@ function submitToCorvid() {
   if (description) markerPayload.description = description;
   if (region) markerPayload.region = region;
 
-  // For edits: include original ID and correction flag so ingestion updates in-place
   if (isEdit) {
     markerPayload.id = editingMarker.id;
     markerPayload.correction = true;
@@ -1617,9 +1703,8 @@ function submitToCorvid() {
     authorName: discordUser.globalName || discordUser.username,
     authorDiscordId: discordUser.id
   };
-  if (pendingScreenshot) body.screenshot = pendingScreenshot;
+  if (pendingScreenshot) body.screenshot = '[Upload screenshot manually in the GitHub issue after it opens]';
 
-  // For edits: include original values so the issue can show what changed
   if (isEdit) {
     body.originalMarker = {
       name: editingMarker.name,
@@ -1630,49 +1715,26 @@ function submitToCorvid() {
     };
   }
 
-  fetchCorvidAPI('/api/markers/submit', body)
-    .then(function (result) {
-      if (result.ok && result.data.success) {
-        btn.textContent = 'Submitted!';
-        btn.classList.add('btn-success');
+  try {
+    openGitHubMarkerIssue(body, { mode: isEdit ? 'edit' : 'submit' });
+    btn.textContent = 'Issue Opened!';
+    btn.classList.add('btn-success');
 
-        // Persist edit locally so the user sees their change immediately
-        if (isEdit) {
-          saveLocalEdit(editingMarker.id, {
-            name: name,
-            x: submitCoords.x,
-            y: submitCoords.y,
-            description: description,
-            region: region
-          });
-          // Apply to in-memory marker too
-          var m = allMarkers.find(function (mk) { return mk.id === editingMarker.id; });
-          if (m) {
-            m.name = name;
-            m.x = submitCoords.x;
-            m.y = submitCoords.y;
-            m.description = description;
-            m.region = region;
-          }
-          renderMarkers();
-          updateStats();
-        }
+    if (pendingScreenshot) {
+      alert('A prefilled GitHub issue has been opened. Paste or upload your screenshot there before you submit it.');
+    }
 
-        setTimeout(function () { closeModal(); }, 1500);
-      } else {
-        throw new Error(result.data.error || 'Submission failed');
-      }
-    })
-    .catch(function (err) {
-      console.error('Submission error:', err);
-      var msg = (err && err.message) || 'Unknown error';
-      btn.textContent = msg.length > 40 ? 'Error — try again' : msg;
-      btn.classList.add('btn-error');
-      btn.disabled = false;
-      setTimeout(function () {
-        btn.textContent = originalText;
-        btn.classList.remove('btn-error');
-        validateForm();
-      }, 4000);
-    });
+    setTimeout(function () { closeModal(); }, 1200);
+  } catch (err) {
+    console.error('Submission error:', err);
+    var msg = (err && err.message) || 'Unknown error';
+    btn.textContent = msg.length > 48 ? 'Error — try again' : msg;
+    btn.classList.add('btn-error');
+    btn.disabled = false;
+    setTimeout(function () {
+      btn.textContent = originalText;
+      btn.classList.remove('btn-error');
+      validateForm();
+    }, 4000);
+  }
 }
