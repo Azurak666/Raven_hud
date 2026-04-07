@@ -88,6 +88,11 @@ function hasSubmissionBackend() {
   return !!getSubmissionApiBaseUrl();
 }
 
+function getDiscordAccessToken() {
+  try { return sessionStorage.getItem('discord_access_token') || ''; }
+  catch (e) { return ''; }
+}
+
 function getSubmissionButtonText(mode) {
   return hasSubmissionBackend()
     ? (mode === 'edit' ? 'Submit Edit' : 'Submit Marker')
@@ -234,25 +239,189 @@ var discordUser = null; // { id, username, globalName, avatar }
 var previewMarker = null; // L.Marker for position preview
 var pendingScreenshot = null; // base64 webp string
 var hideCollected = false; // Filter: hide collected shiny/NPC markers
+var collectedSyncTimer = null;
+var collectedSyncInFlight = null;
 
-// Shiny collection checklist (persisted to localStorage)
-function getShinyCollectedKey() {
-  return 'rhud_shiny_collected_' + (discordUser ? discordUser.id : 'local');
+// Shiny collection checklist (stored locally and synced to the backend when available)
+function getShinyCollectedKey(userId) {
+  return 'rhud_shiny_collected_' + (userId || (discordUser ? discordUser.id : 'local'));
+}
+
+function getShinyCollectedUpdatedKey(userId) {
+  return 'rhud_shiny_collected_updated_' + (userId || (discordUser ? discordUser.id : 'local'));
+}
+
+function sanitizeCollectedState(state) {
+  var clean = {};
+  if (!state || typeof state !== 'object') return clean;
+
+  Object.keys(state).forEach(function (markerId) {
+    if (!state[markerId]) return;
+    var stamp = Number(state[markerId]);
+    clean[markerId] = Number.isFinite(stamp) && stamp > 0 ? stamp : Date.now();
+  });
+
+  return clean;
+}
+
+function getCollectedStateForUser(userId) {
+  try {
+    return sanitizeCollectedState(JSON.parse(localStorage.getItem(getShinyCollectedKey(userId)) || '{}'));
+  } catch (e) {
+    return {};
+  }
+}
+
+function getCollectedUpdatedAtForUser(userId) {
+  try {
+    var stamp = Number(localStorage.getItem(getShinyCollectedUpdatedKey(userId)) || '0');
+    return Number.isFinite(stamp) && stamp > 0 ? stamp : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function saveCollectedStateForUser(userId, state, updatedAt) {
+  var clean = sanitizeCollectedState(state);
+  var stamp = Number(updatedAt);
+  if (!Number.isFinite(stamp) || stamp <= 0) stamp = Date.now();
+  localStorage.setItem(getShinyCollectedKey(userId), JSON.stringify(clean));
+  localStorage.setItem(getShinyCollectedUpdatedKey(userId), String(stamp));
+  return clean;
 }
 
 function getShinyCollected() {
-  try { return JSON.parse(localStorage.getItem(getShinyCollectedKey()) || '{}'); }
-  catch (e) { return {}; }
+  return getCollectedStateForUser();
+}
+
+function setShinyCollected(state, updatedAt) {
+  return saveCollectedStateForUser('', state, updatedAt);
+}
+
+function getShinyCollectedUpdatedAt() {
+  return getCollectedUpdatedAtForUser();
+}
+
+function mergeCollectedStates() {
+  var merged = {};
+
+  for (var i = 0; i < arguments.length; i += 1) {
+    var source = sanitizeCollectedState(arguments[i]);
+    Object.keys(source).forEach(function (markerId) {
+      var stamp = Number(source[markerId]) || Date.now();
+      if (!merged[markerId] || stamp > Number(merged[markerId])) {
+        merged[markerId] = stamp;
+      }
+    });
+  }
+
+  return merged;
+}
+
+function syncCollectedToBackend(state, updatedAt) {
+  if (!discordUser || !hasSubmissionBackend()) {
+    return Promise.resolve({ ok: false, skipped: true });
+  }
+
+  var accessToken = getDiscordAccessToken();
+  if (!accessToken) {
+    return Promise.resolve({ ok: false, skipped: true, reason: 'missing-token' });
+  }
+
+  return fetch(getSubmissionApiBaseUrl() + '/api/collection', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      discordAccessToken: accessToken,
+      state: sanitizeCollectedState(state),
+      updatedAt: updatedAt || getShinyCollectedUpdatedAt()
+    })
+  }).then(function (res) {
+    return res.json().catch(function () { return {}; }).then(function (data) {
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Collection sync failed');
+      }
+      return { ok: true, data: data };
+    });
+  });
+}
+
+function refreshCollectedViews() {
+  if (!allMarkers || allMarkers.length === 0) return;
+  buildSidebar();
+  renderMarkers();
+  updateStats();
+  if (currentDetailMarker) showDetail(currentDetailMarker);
+}
+
+function scheduleCollectedSync() {
+  if (collectedSyncTimer) {
+    clearTimeout(collectedSyncTimer);
+  }
+
+  collectedSyncTimer = setTimeout(function () {
+    collectedSyncTimer = null;
+    syncCollectedToBackend(getShinyCollected(), getShinyCollectedUpdatedAt())
+      .catch(function (err) {
+        console.warn('Collected marks sync unavailable:', err);
+      });
+  }, 350);
+}
+
+function syncCollectedStateFromBackend() {
+  if (collectedSyncInFlight) return collectedSyncInFlight;
+  if (!discordUser || !hasSubmissionBackend()) return Promise.resolve(false);
+
+  var localState = getShinyCollected();
+  var localUpdatedAt = getShinyCollectedUpdatedAt();
+
+  collectedSyncInFlight = syncCollectedToBackend(localState, localUpdatedAt)
+    .then(function (result) {
+      if (!result || result.skipped) return false;
+      var data = result && result.data ? result.data : {};
+      setShinyCollected(data.state || localState, data.updatedAt || localUpdatedAt || Date.now());
+      refreshCollectedViews();
+      return true;
+    })
+    .catch(function (err) {
+      console.warn('Collected marks sync skipped:', err);
+      return false;
+    })
+    .finally(function () {
+      collectedSyncInFlight = null;
+    });
+
+  return collectedSyncInFlight;
+}
+
+function promoteGuestCollectedStateToUser() {
+  if (!discordUser) return;
+
+  var guestState = getCollectedStateForUser('local');
+  var userState = getCollectedStateForUser(discordUser.id);
+  var merged = mergeCollectedStates(userState, guestState);
+  var mergedUpdatedAt = Math.max(
+    getCollectedUpdatedAtForUser(discordUser.id),
+    getCollectedUpdatedAtForUser('local')
+  );
+
+  if (mergedUpdatedAt <= 0 && Object.keys(merged).length > 0) {
+    mergedUpdatedAt = Date.now();
+  }
+
+  saveCollectedStateForUser(discordUser.id, merged, mergedUpdatedAt);
 }
 
 function toggleShinyCollected(markerId) {
   var state = getShinyCollected();
+  var updatedAt = Date.now();
   if (state[markerId]) {
     delete state[markerId];
   } else {
-    state[markerId] = Date.now();
+    state[markerId] = updatedAt;
   }
-  localStorage.setItem(getShinyCollectedKey(), JSON.stringify(state));
+  setShinyCollected(state, updatedAt);
+  scheduleCollectedSync();
   return !!state[markerId];
 }
 
@@ -371,6 +540,7 @@ function handleOAuthCallback() {
         avatar: user.avatar
       };
       localStorage.setItem('discord_user', JSON.stringify(discordUser));
+      promoteGuestCollectedStateToUser();
 
       updateAuthUI();
       return true;
@@ -386,6 +556,7 @@ function loadSavedDiscordUser() {
     var saved = localStorage.getItem('discord_user');
     if (saved) {
       discordUser = JSON.parse(saved);
+      promoteGuestCollectedStateToUser();
     }
   } catch (e) {
     localStorage.removeItem('discord_user');
@@ -393,9 +564,9 @@ function loadSavedDiscordUser() {
 }
 
 function logoutDiscord() {
-  // Save current collection to user's key before logging out
+  // Save current collection to the user's local cache before logging out
   if (discordUser) {
-    localStorage.setItem('rhud_shiny_collected_' + discordUser.id, JSON.stringify(getShinyCollected()));
+    saveCollectedStateForUser(discordUser.id, getShinyCollected(), getShinyCollectedUpdatedAt());
   }
   discordUser = null;
   localStorage.removeItem('discord_user');
@@ -626,6 +797,7 @@ async function init() {
   initAuth();
   initContributions();
   updateAuthUI();
+  syncCollectedStateFromBackend();
 
   try {
     var res = await fetch(DATA_URL);

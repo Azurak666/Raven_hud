@@ -18,6 +18,40 @@ export default {
       return json({ ok: true, service: 'ravenhud-marker-api' }, 200, cors);
     }
 
+    if (url.pathname === '/api/collection' && request.method === 'POST') {
+      try {
+        assertCollectedMarksEnv(env);
+        const body = await request.json().catch(() => ({}));
+        const verifiedUser = await getVerifiedDiscordUser(body.discordAccessToken);
+
+        if (!verifiedUser) {
+          throw httpError(401, 'Discord login required to sync collected marks.');
+        }
+
+        const existing = await loadCollectedMarksRecord(env, verifiedUser.id);
+        const incomingState = Object.prototype.hasOwnProperty.call(body, 'state')
+          ? sanitizeCollectedState(body.state)
+          : null;
+        const incomingUpdatedAt = normalizeTimestamp(body.updatedAt);
+        const nextRecord = resolveCollectedMarksRecord(existing, incomingState, incomingUpdatedAt, verifiedUser.id);
+
+        if (nextRecord.shouldSave) {
+          await saveCollectedMarksRecord(env, verifiedUser.id, nextRecord.record);
+        }
+
+        return json({
+          success: true,
+          via: 'backend',
+          userId: verifiedUser.id,
+          state: nextRecord.record.state,
+          updatedAt: nextRecord.record.updatedAt
+        }, 200, cors);
+      } catch (error) {
+        const status = error && error.status ? error.status : 500;
+        return json({ success: false, error: error.message || 'Unknown error' }, status, cors);
+      }
+    }
+
     if (url.pathname === '/api/markers/submit' && request.method === 'POST') {
       try {
         assertEnv(env);
@@ -55,6 +89,12 @@ export default {
 function assertEnv(env) {
   if (!env.GITHUB_TOKEN) throw httpError(500, 'Missing GITHUB_TOKEN secret.');
   if (!env.GITHUB_REPO) throw httpError(500, 'Missing GITHUB_REPO variable.');
+}
+
+function assertCollectedMarksEnv(env) {
+  if (!env.COLLECTED_MARKS) {
+    throw httpError(503, 'Collected marks sync is not configured yet.');
+  }
 }
 
 function validateMarkerPayload(body) {
@@ -112,6 +152,71 @@ function httpError(status, message) {
   const error = new Error(message);
   error.status = status;
   return error;
+}
+
+function normalizeTimestamp(value) {
+  const stamp = Number(value);
+  return Number.isFinite(stamp) && stamp > 0 ? Math.round(stamp) : 0;
+}
+
+function sanitizeCollectedState(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  const clean = {};
+  for (const [markerId, rawStamp] of Object.entries(value)) {
+    if (!markerId) continue;
+    clean[String(markerId)] = normalizeTimestamp(rawStamp) || Date.now();
+  }
+  return clean;
+}
+
+function getCollectedMarksKey(userId) {
+  return `collected:${String(userId || 'unknown')}`;
+}
+
+async function loadCollectedMarksRecord(env, userId) {
+  const record = await env.COLLECTED_MARKS.get(getCollectedMarksKey(userId), 'json');
+  if (!record || typeof record !== 'object') {
+    return { userId, state: {}, updatedAt: 0 };
+  }
+
+  return {
+    userId,
+    state: sanitizeCollectedState(record.state),
+    updatedAt: normalizeTimestamp(record.updatedAt)
+  };
+}
+
+async function saveCollectedMarksRecord(env, userId, record) {
+  await env.COLLECTED_MARKS.put(getCollectedMarksKey(userId), JSON.stringify({
+    userId,
+    state: sanitizeCollectedState(record.state),
+    updatedAt: normalizeTimestamp(record.updatedAt) || Date.now()
+  }));
+}
+
+function resolveCollectedMarksRecord(existingRecord, incomingState, incomingUpdatedAt, userId) {
+  const current = existingRecord || { userId, state: {}, updatedAt: 0 };
+
+  if (!incomingState) {
+    return { shouldSave: false, record: current };
+  }
+
+  const nextUpdatedAt = incomingUpdatedAt || Date.now();
+  if (nextUpdatedAt >= current.updatedAt) {
+    return {
+      shouldSave: true,
+      record: {
+        userId,
+        state: sanitizeCollectedState(incomingState),
+        updatedAt: nextUpdatedAt
+      }
+    };
+  }
+
+  return { shouldSave: false, record: current };
 }
 
 async function getVerifiedDiscordUser(accessToken) {
