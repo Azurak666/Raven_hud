@@ -18,6 +18,7 @@
       <span class="header-title">World Map</span>
     </a>
     <div class="header-actions">
+      <button id="btn-info" class="btn-info" title="About RavenHUD">Info</button>
       <button id="btn-donate" class="btn-donate" title="Support RavenHUD">Donate</button>
       <button id="btn-discord-login" class="btn-discord" title="Login with Discord" style="display:none">Login with Discord</button>
       <div id="discord-user-display" class="discord-user" style="display:none">
@@ -154,6 +155,21 @@
         <div class="modal-actions">
           <button class="btn-primary" id="btn-copy-wallet" type="button">Copy Address</button>
           <button class="btn-secondary" id="btn-close-donate" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-modal-overlay" id="about-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Info</h3>
+        <button class="modal-close" id="about-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">Made submits and "collected" behind discord sign to avoid getting spammed by false submits and keeping "collected" data safe.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-close-about" type="button">Close</button>
         </div>
       </div>
     </div>

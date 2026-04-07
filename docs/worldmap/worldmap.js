@@ -804,6 +804,7 @@ async function init() {
   initDetailPanel();
   initModal();
   initAuth();
+  initInfoModal();
   initDonate();
   initLeaderboard();
   updateAuthUI();
@@ -834,6 +835,27 @@ async function init() {
 function initAuth() {
   document.getElementById('btn-discord-login').addEventListener('click', startDiscordLogin);
   document.getElementById('btn-discord-logout').addEventListener('click', logoutDiscord);
+}
+
+function initInfoModal() {
+  var openBtn = document.getElementById('btn-info');
+  var modal = document.getElementById('about-modal');
+  var closeBtn = document.getElementById('about-close');
+  var closeActionBtn = document.getElementById('btn-close-about');
+
+  function closeInfoModal() {
+    modal.hidden = true;
+  }
+
+  openBtn.addEventListener('click', function () {
+    modal.hidden = false;
+  });
+
+  closeBtn.addEventListener('click', closeInfoModal);
+  closeActionBtn.addEventListener('click', closeInfoModal);
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeInfoModal();
+  });
 }
 
 function initDonate() {
