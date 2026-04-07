@@ -23,12 +23,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
+          ref: master
           fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 20
+
+      - name: Sync latest master
+        run: |
+          git fetch origin master
+          git checkout -B master origin/master
 
       - name: Ingest marker issue into map data
         id: ingest
@@ -41,8 +47,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/worldmap-markers.json
           git commit -m "Ingest approved marker issue #${{ github.event.issue.number }}"
-          git pull --rebase origin master
-          git push
+          git push origin HEAD:master
 
       - name: Trigger GitHub Pages deploy
         if: steps.ingest.outputs.changed == 'true'
@@ -57,21 +62,27 @@ jobs:
             });
 
       - name: Comment, label, and close issue
-        if: always() && steps.ingest.outputs.changed == 'true'
+        if: success() && steps.ingest.outputs.summary != ''
         uses: actions/github-script@v8
         with:
           script: |
+            const changed = `${{ steps.ingest.outputs.changed }}` === 'true';
             const category = `${{ steps.ingest.outputs.category }}`;
-            const summary = `${{ steps.ingest.outputs.summary }}`;
-            const labels = ['ingested'];
-            if (category) labels.push(`cat:${category}`);
+            const summary = `${{ steps.ingest.outputs.summary }}` || 'No marker changes were needed.';
+            const labels = [];
+            if (changed) {
+              labels.push('ingested');
+              if (category) labels.push(`cat:${category}`);
+            }
 
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              labels
-            });
+            if (labels.length) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels
+              });
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
