@@ -6808,20 +6808,5 @@
     "region": "Darzuac",
     "trigger": "",
     "contributedBy": "Azurak"
-  },
-  {
-    "id": "c_d1654b7d",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "testmark",
-    "description": "testing",
-    "x": 1722,
-    "y": 1823,
-    "floor": "surface",
-    "label": "",
-    "region": "",
-    "trigger": "",
-    "contributedBy": "Azurak | TRG",
-    "screenshot": "community-screenshots/reputation_shiny_e61d83fed0.webp"
   }
 ]
