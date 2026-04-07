@@ -1096,7 +1096,8 @@ function suggestDeletion(marker) {
     authorDiscordId: discordUser.id
   }, { mode: 'delete' })
     .then(function (result) {
-      btn.textContent = usingBackend ? 'Submitted!' : 'Issue Opened!';
+      var wasDuplicate = !!(result && result.data && result.data.duplicate);
+      btn.textContent = wasDuplicate ? 'Already Pending' : (usingBackend ? 'Submitted!' : 'Issue Opened!');
       btn.style.color = 'var(--success)';
       btn.style.borderColor = 'var(--success)';
       setTimeout(function () {
@@ -1841,7 +1842,8 @@ function submitToGitHubIssue() {
 
   submitMarkerRequest(body, { mode: isEdit ? 'edit' : 'submit' })
     .then(function (result) {
-      btn.textContent = usingBackend ? 'Submitted!' : 'Issue Opened!';
+      var wasDuplicate = !!(result && result.data && result.data.duplicate);
+      btn.textContent = wasDuplicate ? 'Already Pending' : (usingBackend ? 'Submitted!' : 'Issue Opened!');
       btn.classList.add('btn-success');
 
       if (isEdit) {

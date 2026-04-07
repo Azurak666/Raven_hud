@@ -39,7 +39,8 @@ export default {
           via: 'backend',
           issueNumber: issue.number,
           issueUrl: issue.html_url,
-          screenshotUrl: screenshotUrl
+          screenshotUrl: screenshotUrl,
+          duplicate: !!issue.duplicate
         }, 200, cors);
       } catch (error) {
         const status = error && error.status ? error.status : 500;
@@ -160,6 +161,11 @@ async function maybeUploadScreenshot(base64Data, marker, env) {
 }
 
 async function createGitHubIssue(body, marker, mode, screenshotUrl, env) {
+  const existing = await findExistingOpenMarkerIssue(marker, mode, env);
+  if (existing) {
+    return { ...existing, duplicate: true };
+  }
+
   const labels = ['map-markers', 'cat:' + marker.category];
   if (mode === 'edit') labels.push('suggested-edit');
   if (mode === 'delete') labels.push('suggested-deletion');
@@ -172,6 +178,32 @@ async function createGitHubIssue(body, marker, mode, screenshotUrl, env) {
       labels
     })
   });
+}
+
+async function findExistingOpenMarkerIssue(marker, mode, env) {
+  if (!marker || !marker.id) return null;
+  if (mode !== 'delete' && mode !== 'edit') return null;
+
+  const labels = ['map-markers', mode === 'delete' ? 'suggested-deletion' : 'suggested-edit'];
+  const params = new URLSearchParams({
+    state: 'open',
+    labels: labels.join(','),
+    per_page: '100'
+  });
+
+  const issues = await githubApi(env, '/issues?' + params.toString(), {
+    method: 'GET'
+  });
+
+  const markerId = String(marker.id);
+  const needleA = `"id": "${markerId}"`;
+  const needleB = `"id":"${markerId}"`;
+
+  return (issues || []).find((issue) => {
+    if (!issue || issue.pull_request) return false;
+    const body = String(issue.body || '');
+    return body.includes(needleA) || body.includes(needleB);
+  }) || null;
 }
 
 function buildMarkerIssueTitle(marker, authorName, mode) {
