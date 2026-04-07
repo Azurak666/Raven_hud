@@ -1060,9 +1060,6 @@ function suggestDeletion(marker) {
     authorDiscordId: discordUser.id
   }, { mode: 'delete' })
     .then(function (result) {
-      if (usingBackend && result.data && result.data.issueUrl) {
-        window.open(result.data.issueUrl, '_blank', 'noopener');
-      }
       btn.textContent = usingBackend ? 'Submitted!' : 'Issue Opened!';
       btn.style.color = 'var(--success)';
       btn.style.borderColor = 'var(--success)';
@@ -1786,10 +1783,6 @@ function submitToGitHubIssue() {
 
   submitMarkerRequest(body, { mode: isEdit ? 'edit' : 'submit' })
     .then(function (result) {
-      if (usingBackend && result.data && result.data.issueUrl) {
-        window.open(result.data.issueUrl, '_blank', 'noopener');
-      }
-
       btn.textContent = usingBackend ? 'Submitted!' : 'Issue Opened!';
       btn.classList.add('btn-success');
 
