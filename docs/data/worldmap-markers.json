@@ -6809,20 +6809,6 @@
     "contributedBy": "Azurak"
   },
   {
-    "id": "c_4289aa2c",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "Hogs shiny",
-    "description": "",
-    "x": 6452,
-    "y": 3216,
-    "floor": "surface",
-    "label": "",
-    "region": "Haddarak",
-    "trigger": "",
-    "contributedBy": "Iceman | TG"
-  },
-  {
     "id": "c_06e73d3a",
     "source": "base",
     "category": "npc_reputation",
