@@ -1107,7 +1107,7 @@ function showDetail(m) {
   if (m.category === 'reputation_shiny' || m.category === 'npc_reputation') {
     if (!discordUser) {
       shinySection.innerHTML =
-        '<button type="button" class="btn-secondary">Login with Discord to mark collected</button>';
+        '<button type="button" class="btn-secondary">Login with Discord to mark as collected</button>';
       shinySection.querySelector('button').addEventListener('click', function () {
         startDiscordLogin();
       });
