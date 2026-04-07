@@ -291,15 +291,18 @@ function saveCollectedStateForUser(userId, state, updatedAt) {
 }
 
 function getShinyCollected() {
-  return getCollectedStateForUser();
+  if (!discordUser) return {};
+  return getCollectedStateForUser(discordUser.id);
 }
 
 function setShinyCollected(state, updatedAt) {
-  return saveCollectedStateForUser('', state, updatedAt);
+  if (!discordUser) return {};
+  return saveCollectedStateForUser(discordUser.id, state, updatedAt);
 }
 
 function getShinyCollectedUpdatedAt() {
-  return getCollectedUpdatedAtForUser();
+  if (!discordUser) return 0;
+  return getCollectedUpdatedAtForUser(discordUser.id);
 }
 
 function mergeCollectedStates() {
@@ -413,6 +416,11 @@ function promoteGuestCollectedStateToUser() {
 }
 
 function toggleShinyCollected(markerId) {
+  if (!discordUser) {
+    startDiscordLogin();
+    return false;
+  }
+
   var state = getShinyCollected();
   var updatedAt = Date.now();
   if (state[markerId]) {
@@ -1035,60 +1043,69 @@ function showDetail(m) {
   // Shiny collection toggle
   var shinySection = document.getElementById('detail-shiny');
   if (m.category === 'reputation_shiny' || m.category === 'npc_reputation') {
-    var collected = getShinyCollected();
-    var isCollected = !!collected[m.id];
-    shinySection.innerHTML =
-      '<label class="shiny-check-label">' +
-      '<input type="checkbox" ' + (isCollected ? 'checked' : '') + ' />' +
-      '<span>' + (isCollected ? 'Collected' : 'Mark as Collected') + '</span>' +
-      '<span class="save-flash" style="display:none">Saved</span>' +
-      '</label>';
-    shinySection.querySelector('input').addEventListener('change', function () {
-      var nowCollected = toggleShinyCollected(m.id);
-      this.nextElementSibling.textContent = nowCollected ? 'Collected' : 'Mark as Collected';
-      var flash = shinySection.querySelector('.save-flash');
-      flash.style.display = '';
-      setTimeout(function () { flash.style.display = 'none'; }, 1500);
+    if (!discordUser) {
+      shinySection.innerHTML =
+        '<button type="button" class="btn-secondary">Login with Discord to mark collected</button>';
+      shinySection.querySelector('button').addEventListener('click', function () {
+        startDiscordLogin();
+      });
+      shinySection.style.display = 'block';
+    } else {
+      var collected = getShinyCollected();
+      var isCollected = !!collected[m.id];
+      shinySection.innerHTML =
+        '<label class="shiny-check-label">' +
+        '<input type="checkbox" ' + (isCollected ? 'checked' : '') + ' />' +
+        '<span>' + (isCollected ? 'Collected' : 'Mark as Collected') + '</span>' +
+        '<span class="save-flash" style="display:none">Saved</span>' +
+        '</label>';
+      shinySection.querySelector('input').addEventListener('change', function () {
+        var nowCollected = toggleShinyCollected(m.id);
+        this.nextElementSibling.textContent = nowCollected ? 'Collected' : 'Mark as Collected';
+        var flash = shinySection.querySelector('.save-flash');
+        flash.style.display = '';
+        setTimeout(function () { flash.style.display = 'none'; }, 1500);
 
-      // Swap icon on the single marker instead of rebuilding all markers
-      var lm = leafletMarkers.get(m.id);
-      if (lm) {
-        var newIcon = nowCollected
-          ? getCachedIcon('_shiny_collected')
-          : getCachedIcon(m.category);
-        lm.setIcon(newIcon);
-      }
-
-      // Update sidebar item inline instead of rebuilding entire sidebar
-      var sidebarItem = document.querySelector('.marker-item[data-marker-id="' + m.id + '"]');
-      if (sidebarItem) {
-        var nameSpan = sidebarItem.querySelector('.marker-item-name');
-        if (nowCollected) {
-          sidebarItem.classList.add('shiny-collected');
-          nameSpan.textContent = '\u2713 ' + m.name;
-          if (hideCollected) sidebarItem.style.display = 'none';
-        } else {
-          sidebarItem.classList.remove('shiny-collected');
-          sidebarItem.style.display = '';
-          nameSpan.textContent = m.name;
+        // Swap icon on the single marker instead of rebuilding all markers
+        var lm = leafletMarkers.get(m.id);
+        if (lm) {
+          var newIcon = nowCollected
+            ? getCachedIcon('_shiny_collected')
+            : getCachedIcon(m.category);
+          lm.setIcon(newIcon);
         }
-      }
 
-      // Hide marker on map when filter is active
-      if (hideCollected && nowCollected && lm) {
-        clusterGroup.removeLayer(lm);
-        leafletMarkers.delete(m.id);
-      }
+        // Update sidebar item inline instead of rebuilding entire sidebar
+        var sidebarItem = document.querySelector('.marker-item[data-marker-id="' + m.id + '"]');
+        if (sidebarItem) {
+          var nameSpan = sidebarItem.querySelector('.marker-item-name');
+          if (nowCollected) {
+            sidebarItem.classList.add('shiny-collected');
+            nameSpan.textContent = '\u2713 ' + m.name;
+            if (hideCollected) sidebarItem.style.display = 'none';
+          } else {
+            sidebarItem.classList.remove('shiny-collected');
+            sidebarItem.style.display = '';
+            nameSpan.textContent = m.name;
+          }
+        }
 
-      // Update the progress counter in the category row
-      var progress = getRepProgress(m.category);
-      var catRow = document.querySelector('input[data-category="' + m.category + '"]');
-      if (catRow) {
-        var countSpan = catRow.parentElement.querySelector('.cat-count');
-        if (countSpan) countSpan.textContent = progress.collected + '/' + progress.total;
-      }
-    });
-    shinySection.style.display = 'block';
+        // Hide marker on map when filter is active
+        if (hideCollected && nowCollected && lm) {
+          clusterGroup.removeLayer(lm);
+          leafletMarkers.delete(m.id);
+        }
+
+        // Update the progress counter in the category row
+        var progress = getRepProgress(m.category);
+        var catRow = document.querySelector('input[data-category="' + m.category + '"]');
+        if (catRow) {
+          var countSpan = catRow.parentElement.querySelector('.cat-count');
+          if (countSpan) countSpan.textContent = progress.collected + '/' + progress.total;
+        }
+      });
+      shinySection.style.display = 'block';
+    }
   } else {
     shinySection.style.display = 'none';
   }
@@ -1470,11 +1487,16 @@ function buildSidebar() {
       var filterRow = document.createElement('div');
       filterRow.className = 'cat-row hide-collected-row';
       filterRow.innerHTML =
-        '<input type="checkbox" id="hide-collected-toggle" ' + (hideCollected ? 'checked' : '') + ' />' +
-        '<span class="cat-label" style="font-style:italic;opacity:0.8">Hide collected</span>';
+        '<input type="checkbox" id="hide-collected-toggle" ' + (hideCollected ? 'checked' : '') + (discordUser ? '' : ' disabled') + ' />' +
+        '<span class="cat-label" style="font-style:italic;opacity:0.8">' + (discordUser ? 'Hide collected' : 'Hide collected (login required)') + '</span>';
       body.appendChild(filterRow);
       filterRow.querySelector('input').addEventListener('change', function (e) {
         e.stopPropagation();
+        if (!discordUser) {
+          this.checked = false;
+          startDiscordLogin();
+          return;
+        }
         hideCollected = this.checked;
         renderMarkers();
         // Toggle visibility of collected items in sidebar
