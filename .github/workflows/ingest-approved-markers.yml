@@ -1,0 +1,76 @@
+name: Ingest Approved Marker Issues
+
+on:
+  issues:
+    types:
+      - labeled
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: marker-ingestion
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: github.event.label.name == 'approved' && contains(github.event.issue.labels.*.name, 'map-markers')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Ingest marker issue into map data
+        id: ingest
+        run: node .github/scripts/ingest-approved-marker-issue.mjs
+
+      - name: Commit ingested marker data
+        if: steps.ingest.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/worldmap-markers.json
+          git commit -m "Ingest approved marker issue #${{ github.event.issue.number }}"
+          git pull --rebase origin master
+          git push
+
+      - name: Comment, label, and close issue
+        if: always() && steps.ingest.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const category = `${{ steps.ingest.outputs.category }}`;
+            const summary = `${{ steps.ingest.outputs.summary }}`;
+            const labels = ['ingested'];
+            if (category) labels.push(`cat:${category}`);
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `✅ ${summary}`
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+              state_reason: 'completed'
+            });
