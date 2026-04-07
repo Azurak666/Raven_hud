@@ -795,7 +795,7 @@ async function init() {
   initDetailPanel();
   initModal();
   initAuth();
-  initContributions();
+  initLeaderboard();
   updateAuthUI();
   syncCollectedStateFromBackend();
 
@@ -1292,80 +1292,14 @@ function suggestDeletion(marker) {
 }
 
 // ---------------------------------------------------------------------------
-// My Contributions & Leaderboard
+// Leaderboard
 // ---------------------------------------------------------------------------
 
-function initContributions() {
-  document.getElementById('btn-my-contributions').addEventListener('click', showContributions);
-  document.getElementById('contributions-close').addEventListener('click', function () {
-    document.getElementById('contributions-modal').hidden = true;
-  });
+function initLeaderboard() {
   document.getElementById('btn-leaderboard').addEventListener('click', showLeaderboard);
   document.getElementById('leaderboard-close').addEventListener('click', function () {
     document.getElementById('leaderboard-modal').hidden = true;
   });
-}
-
-function showContributions() {
-  var body = document.getElementById('contributions-body');
-
-  if (!discordUser) {
-    body.innerHTML = '<p class="info-modal-empty">Login with Discord to see your contributions.</p>';
-    document.getElementById('contributions-modal').hidden = false;
-    return;
-  }
-
-  // Find local edits
-  var edits = getLocalEdits();
-  var editIds = Object.keys(edits);
-
-  // Find markers contributed by this user (by name match or local edits)
-  var userAliases = getContributorAliases();
-  var contributions = allMarkers.filter(function (m) {
-    if (editIds.indexOf(m.id) >= 0) return true;
-    if (m.contributedBy && userAliases.indexOf(normalizeContributorName(m.contributedBy)) >= 0) return true;
-    return false;
-  });
-
-  if (contributions.length === 0) {
-    body.innerHTML = '<p class="info-modal-empty">No contributions yet. Submit or edit markers to see them here.</p>';
-  } else {
-    body.innerHTML = '';
-    contributions.sort(function (a, b) { return a.name.localeCompare(b.name); });
-    for (var m of contributions) {
-      var cat = CATEGORIES[m.category];
-      var item = document.createElement('div');
-      item.className = 'contrib-item';
-      var isEdit = editIds.indexOf(m.id) >= 0;
-      var catIcon = (cat && cat.icon)
-        ? '<img src="' + BASE_PATH + '/worldmap/markers/' + cat.icon + '" width="16" height="16" style="vertical-align:text-bottom">'
-        : (cat ? cat.emoji : '');
-      item.innerHTML =
-        '<span class="contrib-emoji">' + catIcon + '</span>' +
-        '<span class="contrib-name">' + m.name + '</span>' +
-        '<span class="contrib-status ' + (isEdit ? 'pending' : 'submitted') + '">' +
-        (isEdit ? 'Edited' : 'Submitted') + '</span>';
-      item.dataset.markerId = m.id;
-      item.dataset.x = m.x;
-      item.dataset.y = m.y;
-      item.addEventListener('click', function (e) {
-        document.getElementById('contributions-modal').hidden = true;
-        onMarkerItemClick(e);
-      });
-      body.appendChild(item);
-    }
-  }
-
-  // Update badge
-  var badge = document.getElementById('contrib-count');
-  if (contributions.length > 0) {
-    badge.textContent = contributions.length;
-    badge.hidden = false;
-  } else {
-    badge.hidden = true;
-  }
-
-  document.getElementById('contributions-modal').hidden = false;
 }
 
 function showLeaderboard() {

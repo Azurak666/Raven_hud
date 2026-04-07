@@ -354,17 +354,6 @@ body {
   border-color: var(--accent-primary);
 }
 
-.badge {
-  background: var(--accent-primary);
-  color: var(--bg-primary);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 10px;
-  min-width: 16px;
-  text-align: center;
-}
-
 /* Stats */
 .sidebar-stats {
   padding: 10px 14px;
@@ -809,7 +798,7 @@ body {
 }
 
 /* ============================================================
-   Info Modals (Contributions, Leaderboard)
+   Info Modal (Leaderboard)
    ============================================================ */
 .info-modal-overlay {
   position: fixed;
@@ -862,45 +851,6 @@ body {
   font-size: 13px;
   text-align: center;
   padding: 20px 0;
-}
-
-.contrib-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.contrib-item:hover {
-  background: var(--bg-tertiary);
-}
-
-.contrib-item .contrib-emoji {
-  font-size: 16px;
-}
-
-.contrib-item .contrib-name {
-  flex: 1;
-  color: var(--text-primary);
-}
-
-.contrib-item .contrib-status {
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 8px;
-}
-
-.contrib-status.pending {
-  background: #665500;
-  color: #ffcc00;
-}
-
-.contrib-status.submitted {
-  background: #335500;
-  color: #88cc44;
 }
 
 .leaderboard-row {

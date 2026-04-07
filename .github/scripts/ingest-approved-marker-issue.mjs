@@ -129,7 +129,10 @@ function applyMarkerChange(data, marker, payload) {
     }
 
     next.source = 'base';
-    if (payload.authorName) next.contributedBy = payload.authorName;
+    if (payload.authorName) {
+      next.lastEditedBy = payload.authorName;
+      next.lastEditedAt = new Date().toISOString();
+    }
     if (screenshot) next.screenshot = screenshot;
     applyCategoryDefaults(next, marker.category);
 
