@@ -1404,6 +1404,12 @@ function initModal() {
     document.getElementById(id).addEventListener('change', validateForm);
   });
 
+  document.getElementById('submit-category').addEventListener('change', function () {
+    if (previewMarker) {
+      updatePreviewMarker(previewMarker.getLatLng());
+    }
+  });
+
   btnCreate.addEventListener('click', submitToGitHubIssue);
 
   // Screenshot paste from clipboard
