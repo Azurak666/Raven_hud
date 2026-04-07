@@ -242,6 +242,44 @@ var pendingScreenshot = null; // base64 webp string
 var hideCollected = false; // Filter: hide collected shiny/NPC markers
 var collectedSyncTimer = null;
 var collectedSyncInFlight = null;
+var UI_PREFERENCES_KEY = 'rhud_ui_preferences';
+
+function loadUiPreferences() {
+  try {
+    var raw = localStorage.getItem(UI_PREFERENCES_KEY);
+    if (!raw) return {};
+
+    var prefs = JSON.parse(raw);
+    return prefs && typeof prefs === 'object' ? prefs : {};
+  } catch (e) {
+    localStorage.removeItem(UI_PREFERENCES_KEY);
+    return {};
+  }
+}
+
+function saveUiPreferences() {
+  try {
+    localStorage.setItem(UI_PREFERENCES_KEY, JSON.stringify({
+      visibility: visibility,
+      hideCollected: !!hideCollected
+    }));
+  } catch (e) { /* ignore storage errors */ }
+}
+
+function applyUiPreferences() {
+  var prefs = loadUiPreferences();
+  var savedVisibility = prefs && typeof prefs.visibility === 'object' ? prefs.visibility : {};
+
+  Object.keys(CATEGORIES).forEach(function (key) {
+    if (typeof savedVisibility[key] === 'boolean') {
+      visibility[key] = savedVisibility[key];
+    }
+  });
+
+  if (typeof prefs.hideCollected === 'boolean') {
+    hideCollected = prefs.hideCollected;
+  }
+}
 
 // Shiny collection checklist (stored locally and synced to the backend when available)
 function getShinyCollectedKey(userId) {
@@ -823,6 +861,7 @@ async function init() {
   for (var key of Object.keys(CATEGORIES)) {
     visibility[key] = true;
   }
+  applyUiPreferences();
 
   // Apply any locally-persisted edits before rendering
   applyLocalEdits();
@@ -1560,6 +1599,7 @@ function buildSidebar() {
           return;
         }
         hideCollected = this.checked;
+        saveUiPreferences();
         renderMarkers();
         // Toggle visibility of collected items in sidebar
         var items = document.querySelectorAll('.marker-item.shiny-collected');
@@ -1589,6 +1629,7 @@ function buildSidebar() {
   container.addEventListener('change', function (e) {
     if (e.target.dataset.category) {
       visibility[e.target.dataset.category] = e.target.checked;
+      saveUiPreferences();
       renderMarkers();
       updateStats();
     }
