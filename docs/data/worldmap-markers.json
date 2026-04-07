@@ -1403,10 +1403,10 @@
     "y": 2531,
     "floor": "surface",
     "region": "Glademire Fort",
-    "description": "kill bandits around jensen house",
+    "description": "kill bandits around jensen house test edit",
     "source": "base",
-    "icon": "",
-    "contributedBy": "Azurak",
+    "icon": "dynamic_event.webp",
+    "contributedBy": "Iceman | TG",
     "screenshot": "community-screenshots/c_083f9f16.webp"
   },
   {
