@@ -5376,21 +5376,6 @@
     "screenshot": "community-screenshots/c_f63966b4.webp"
   },
   {
-    "id": "c_c1469319",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "Shiny chest with the missing book",
-    "description": "",
-    "x": 2780,
-    "y": 725,
-    "floor": "surface",
-    "icon": "",
-    "label": "Shiny chest with the missing book",
-    "region": "",
-    "trigger": "",
-    "contributedBy": "ThisDaniel"
-  },
-  {
     "id": "c_c5972bfe",
     "source": "base",
     "category": "reputation_shiny",
