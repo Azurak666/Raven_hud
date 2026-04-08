@@ -1834,7 +1834,7 @@
   },
   {
     "id": "npc_reputation_4237_2702",
-    "name": "Dawn",
+    "name": "The Sledge",
     "category": "npc_reputation",
     "x": 4237,
     "y": 2702,
@@ -1842,7 +1842,9 @@
     "region": "",
     "description": "Gives 10 rep",
     "source": "base",
-    "icon": "npc_reputation.webp"
+    "icon": "npc_reputation.webp",
+    "lastEditedBy": "Nycho Teste",
+    "lastEditedAt": "2026-04-08T15:47:06.825Z"
   },
   {
     "id": "npc_reputation_4822_2684",
