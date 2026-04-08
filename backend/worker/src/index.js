@@ -202,17 +202,25 @@ async function saveCollectedMarksRecord(env, userId, record) {
 function resolveCollectedMarksRecord(existingRecord, incomingState, incomingUpdatedAt, userId) {
   const current = existingRecord || { userId, state: {}, updatedAt: 0 };
 
-  if (!incomingState) {
+  if (incomingState == null) {
     return { shouldSave: false, record: current };
   }
 
-  const nextUpdatedAt = incomingUpdatedAt || Date.now();
+  const cleanIncomingState = sanitizeCollectedState(incomingState);
+  const nextUpdatedAt = normalizeTimestamp(incomingUpdatedAt);
+
+  // Initial loads on a fresh domain can legitimately have no local state yet.
+  // Do not let an empty payload with no timestamp wipe newer KV data.
+  if (!nextUpdatedAt) {
+    return { shouldSave: false, record: current };
+  }
+
   if (nextUpdatedAt >= current.updatedAt) {
     return {
       shouldSave: true,
       record: {
         userId,
-        state: sanitizeCollectedState(incomingState),
+        state: cleanIncomingState,
         updatedAt: nextUpdatedAt
       }
     };

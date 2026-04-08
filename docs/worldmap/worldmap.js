@@ -29,8 +29,7 @@ var MAP_CONFIG = {
   maxZoom: 7
 };
 
-var CORVID_API_URL =
-  'https://corvid-discord.wonderfulfield-6f0ceab3.westus2.azurecontainerapps.io';
+var CORVID_API_URL = String(window.RAVENHUD_CORVID_API_URL || '').trim();
 
 var DISCORD_CLIENT_ID = '1491050953221079223';
 var DISCORD_REDIRECT_URI = window.location.origin + (BASE_PATH ? BASE_PATH + '/' : '/');
@@ -68,6 +67,10 @@ var GROUP_ORDER = ['Events', 'Exploration', 'Reputation'];
  * POST to a Corvid API endpoint. Returns { ok, data } or throws.
  */
 function fetchCorvidAPI(endpoint, body) {
+  if (!CORVID_API_URL) {
+    return Promise.resolve({ ok: false, skipped: true, data: null });
+  }
+
   return fetch(CORVID_API_URL + endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -413,14 +416,21 @@ function syncCollectedToBackend(state, updatedAt) {
     return Promise.resolve({ ok: false, skipped: true, reason: 'missing-token' });
   }
 
+  var cleanState = sanitizeCollectedState(state);
+  var nextUpdatedAt = Number(updatedAt || getShinyCollectedUpdatedAt()) || 0;
+  var payload = {
+    discordAccessToken: accessToken
+  };
+
+  if (nextUpdatedAt > 0 || Object.keys(cleanState).length > 0) {
+    payload.state = cleanState;
+    payload.updatedAt = nextUpdatedAt > 0 ? nextUpdatedAt : Date.now();
+  }
+
   return fetch(getSubmissionApiBaseUrl() + '/api/collection', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      discordAccessToken: accessToken,
-      state: sanitizeCollectedState(state),
-      updatedAt: updatedAt || getShinyCollectedUpdatedAt()
-    })
+    body: JSON.stringify(payload)
   }).then(function (res) {
     return res.json().catch(function () { return {}; }).then(function (data) {
       if (!res.ok || !data.success) {
@@ -865,21 +875,23 @@ async function init() {
   // identity log. Used by Corvid's /cluster admin command to detect evasion.
   var fingerprint = await computeFingerprint();
 
-  // Optional identity log — send it in the background so the site never waits on Corvid
-  try {
-    fetch(CORVID_API_URL + '/api/identity-log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        characterName: identity.characterName,
-        guildTag: identity.guildTag,
-        timestamp: new Date().toISOString(),
-        isNewIdentity: isNewIdentity,
-        fingerprint: fingerprint,
-        discordId: discordUser ? discordUser.id : undefined
-      })
-    }).catch(function () { /* Fail-open: if Corvid is down, continue */ });
-  } catch (e) { /* Fail-open: if Corvid is down, continue */ }
+  // Optional identity log — send it in the background only when Corvid is configured.
+  if (CORVID_API_URL) {
+    try {
+      fetch(CORVID_API_URL + '/api/identity-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          characterName: identity.characterName,
+          guildTag: identity.guildTag,
+          timestamp: new Date().toISOString(),
+          isNewIdentity: isNewIdentity,
+          fingerprint: fingerprint,
+          discordId: discordUser ? discordUser.id : undefined
+        })
+      }).catch(function () { /* Fail-open: if Corvid is down, continue */ });
+    } catch (e) { /* Fail-open: if Corvid is down, continue */ }
+  }
 
   // Discord login is separate — restore saved session and handle OAuth callback
   loadSavedDiscordUser();
