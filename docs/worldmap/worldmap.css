@@ -30,6 +30,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   padding: 0 16px;
   height: 48px;
   background: var(--bg-secondary);
@@ -41,22 +42,36 @@ body {
   display: flex;
   align-items: center;
   gap: 18px;
+  min-height: 100%;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .header-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-height: 100%;
   text-decoration: none;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
-.header-nav-link {
+.header-title,
+.header-nav-link,
+.header-nav-link:visited {
+  display: inline-flex;
+  align-items: center;
+  min-height: 100%;
   color: var(--accent-primary);
   text-decoration: none;
   font-size: 16px;
   font-weight: 600;
   line-height: 1;
+  white-space: nowrap;
+}
+
+.header-nav-link {
   transition: color 0.15s;
 }
 
