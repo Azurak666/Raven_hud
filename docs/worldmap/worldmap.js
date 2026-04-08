@@ -17,6 +17,7 @@
 var BASE_PATH = window.location.pathname.replace(/(?:index\.html)?\/?$/, '');
 
 var DATA_URL = BASE_PATH + '/data/worldmap-markers.json';
+var CONTRIBUTIONS_URL = BASE_PATH + '/data/worldmap-contributions.json';
 
 var TILE_URL = 'https://assets.ravenquest.tools/map/{z}/{x}/{y}.png';
 
@@ -276,6 +277,7 @@ var map;
 var rc;
 var clusterGroup;
 var allMarkers = [];
+var contributionLog = [];
 var leafletMarkers = new Map(); // id -> L.Marker
 var visibility = {};
 var submitCoords = null;
@@ -803,6 +805,29 @@ function rememberPreferredAuthorName(name) {
   saveIdentity(identity.characterName || '', identity.guildTag || '', (name || '').trim());
 }
 
+function normalizeContributorName(name) {
+  return String(name || '').trim().toLowerCase();
+}
+
+function getContributorAliases() {
+  var aliases = [];
+  var names = [
+    getPreferredAuthorName(),
+    discordUser ? (discordUser.globalName || discordUser.username || '') : '',
+    discordUser ? (discordUser.username || '') : ''
+  ];
+
+  names.forEach(function (name) {
+    var trimmed = String(name || '').trim();
+    if (!trimmed) return;
+    aliases.push(normalizeContributorName(trimmed));
+    var baseName = trimmed.split('|')[0].trim();
+    if (baseName) aliases.push(normalizeContributorName(baseName));
+  });
+
+  return Array.from(new Set(aliases.filter(Boolean)));
+}
+
 function escapeHtml(str) {
   var div = document.createElement('div');
   div.textContent = str;
@@ -853,6 +878,20 @@ function updateAuthUI() {
 
 document.addEventListener('DOMContentLoaded', init);
 
+async function loadContributionLog() {
+  try {
+    var res = await fetch(CONTRIBUTIONS_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    contributionLog = Array.isArray(data) ? data : [];
+  } catch (err) {
+    contributionLog = [];
+    if (!String((err && err.message) || err || '').includes('HTTP 404')) {
+      console.warn('Failed to load contribution log:', err);
+    }
+  }
+}
+
 async function init() {
   var identity = getSavedIdentity() || { characterName: '', guildTag: '' };
   var isNewIdentity = false;
@@ -890,6 +929,7 @@ async function init() {
   initAuth();
   initInfoModal();
   initDonate();
+  initLeaderboard();
   updateAuthUI();
   syncCollectedStateFromBackend();
 
@@ -901,6 +941,8 @@ async function init() {
     console.error('Failed to load markers:', err);
     allMarkers = [];
   }
+
+  await loadContributionLog();
 
   // Default all categories visible
   for (var key of Object.keys(CATEGORIES)) {
@@ -1452,6 +1494,131 @@ function suggestDeletion(marker) {
         btn.disabled = false;
       }, 3500);
     });
+}
+
+// ---------------------------------------------------------------------------
+// Leaderboard
+// ---------------------------------------------------------------------------
+
+function initLeaderboard() {
+  document.getElementById('btn-leaderboard').addEventListener('click', showLeaderboard);
+  document.getElementById('leaderboard-close').addEventListener('click', function () {
+    document.getElementById('leaderboard-modal').hidden = true;
+  });
+}
+
+function getLeaderboardAction(action) {
+  var normalized = String(action || '').trim().toLowerCase();
+  if (normalized === 'delete' || normalized === 'removed') return 'delete';
+  if (normalized === 'edit' || normalized === 'updated') return 'edit';
+  return 'submit';
+}
+
+function buildLeaderboardFallbackKey(markerId, author, action) {
+  return String(markerId || '') + '|' + normalizeContributorName(author) + '|' + getLeaderboardAction(action);
+}
+
+function addLeaderboardContribution(counts, labels, aliases, displayName, author, action, amount) {
+  var trimmed = String(author || '').trim();
+  if (!trimmed || trimmed === 'Community') return;
+
+  var normalizedAuthor = normalizeContributorName(trimmed);
+  var key = normalizedAuthor;
+  if (aliases.indexOf(normalizedAuthor) >= 0) {
+    key = '__current_user__';
+    labels[key] = displayName || trimmed;
+  } else if (!labels[key]) {
+    labels[key] = trimmed;
+  }
+
+  if (!counts[key]) {
+    counts[key] = { total: 0, submit: 0, edit: 0, delete: 0 };
+  }
+
+  var contributionAction = getLeaderboardAction(action);
+  var increment = Number(amount);
+  increment = Number.isFinite(increment) && increment > 0 ? increment : 1;
+
+  counts[key].total += increment;
+  counts[key][contributionAction] += increment;
+}
+
+function showLeaderboard() {
+  var body = document.getElementById('leaderboard-body');
+
+  var counts = {};
+  var labels = {};
+  var myAliases = getContributorAliases();
+  var myDisplayName = getPreferredAuthorName();
+  var loggedFallbackKeys = {};
+  var seenLogIds = {};
+
+  for (var entry of contributionLog) {
+    if (!entry) continue;
+
+    var logId = String(entry.id || '') || JSON.stringify(entry);
+    if (seenLogIds[logId]) continue;
+    seenLogIds[logId] = true;
+
+    addLeaderboardContribution(
+      counts,
+      labels,
+      myAliases,
+      myDisplayName,
+      entry.authorName,
+      entry.action,
+      entry.count
+    );
+
+    loggedFallbackKeys[buildLeaderboardFallbackKey(entry.markerId, entry.authorName, entry.action)] = true;
+  }
+
+  for (var m of allMarkers) {
+    var submitKey = buildLeaderboardFallbackKey(m.id, m.contributedBy, 'submit');
+    if (m.contributedBy && !loggedFallbackKeys[submitKey]) {
+      addLeaderboardContribution(counts, labels, myAliases, myDisplayName, m.contributedBy, 'submit', 1);
+    }
+
+    var editKey = buildLeaderboardFallbackKey(m.id, m.lastEditedBy, 'edit');
+    if (m.lastEditedBy && !loggedFallbackKeys[editKey]) {
+      addLeaderboardContribution(counts, labels, myAliases, myDisplayName, m.lastEditedBy, 'edit', 1);
+    }
+  }
+
+  var sorted = Object.keys(counts)
+    .map(function (key) {
+      return { name: labels[key] || key, stats: counts[key] };
+    })
+    .sort(function (a, b) {
+      if (b.stats.total !== a.stats.total) return b.stats.total - a.stats.total;
+      return a.name.localeCompare(b.name);
+    });
+
+  if (sorted.length === 0) {
+    body.innerHTML = '<p class="info-modal-empty">No contributors yet.</p>';
+  } else {
+    body.innerHTML = '';
+    for (var i = 0; i < sorted.length; i++) {
+      var row = document.createElement('div');
+      row.className = 'leaderboard-row';
+      var rank = i + 1;
+      var medal = rank === 1 ? '\uD83E\uDD47' : rank === 2 ? '\uD83E\uDD48' : rank === 3 ? '\uD83E\uDD49' : '';
+      var stats = sorted[i].stats;
+      var breakdown = [];
+      if (stats.submit) breakdown.push(stats.submit + ' add' + (stats.submit > 1 ? 's' : ''));
+      if (stats.edit) breakdown.push(stats.edit + ' edit' + (stats.edit > 1 ? 's' : ''));
+      if (stats.delete) breakdown.push(stats.delete + ' delete' + (stats.delete > 1 ? 's' : ''));
+
+      row.innerHTML =
+        '<span class="leaderboard-rank">' + (medal || '#' + rank) + '</span>' +
+        '<span class="leaderboard-name">' + sorted[i].name + '</span>' +
+        '<span class="leaderboard-count">' + stats.total + ' contribution' + (stats.total > 1 ? 's' : '') +
+        (breakdown.length ? ' • ' + breakdown.join(', ') : '') + '</span>';
+      body.appendChild(row);
+    }
+  }
+
+  document.getElementById('leaderboard-modal').hidden = false;
 }
 
 // ---------------------------------------------------------------------------
