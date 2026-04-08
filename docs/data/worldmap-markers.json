@@ -5826,16 +5826,17 @@
     "source": "base",
     "category": "reputation_shiny",
     "name": "Gilead rumalos shiny",
-    "description": "",
+    "description": "not from the door from the side",
     "x": 1905,
     "y": 3560,
     "floor": "surface",
-    "icon": "",
     "label": "Gilead rumalos shiny",
     "region": "Rumalos",
     "trigger": "",
     "contributedBy": "Azurak",
-    "screenshot": "community-screenshots/c_dbef6eb5.webp"
+    "screenshot": "community-screenshots/c_dbef6eb5.webp",
+    "lastEditedBy": "Azurak | TRG",
+    "lastEditedAt": "2026-04-08T08:55:36.629Z"
   },
   {
     "id": "c_7c8c5bd2",
