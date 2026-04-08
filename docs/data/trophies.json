@@ -984,7 +984,7 @@
     },
     {
       "id": "moa_carnival_trophy",
-      "name": "Moa Carnival Trophy",
+      "name": "Carnival Moa Trophy",
       "bonuses": [
         {
           "stat": "Gathering EXP",
@@ -1000,7 +1000,7 @@
     },
     {
       "id": "munk_carnival_trophy",
-      "name": "Munk Carnival Trophy",
+      "name": "Carnival Tent Trophy",
       "bonuses": [
         {
           "stat": "Crafting EXP",

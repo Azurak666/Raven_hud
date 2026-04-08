@@ -32,6 +32,10 @@
   ];
   var STORAGE_PREFIX = 'rhud_trophy_owned_';
   var UPDATED_PREFIX = 'rhud_trophy_owned_updated_';
+  var TROPHY_ICON_OVERRIDES = {
+    moa_carnival_trophy: './icons/special/carnival_moa_trophy.svg',
+    munk_carnival_trophy: './icons/special/carnival_tent_trophy.svg'
+  };
   var trophies = [];
   var ownedState = {};
   var searchQuery = '';
@@ -585,12 +589,14 @@
   function normalizeTrophies(items) {
     return items
       .map(function (item) {
+        var trophyId = String(item.id || '');
         var bonuses = normalizeBonuses(item);
         var group = inferGroup(item.type || '');
         var metaText = item.category || item.creature || (item.type || 'Trophy');
+        var iconPath = TROPHY_ICON_OVERRIDES[trophyId] || ('./icons/creature/' + encodeURIComponent(trophyId) + '.webp');
 
         return {
-          id: String(item.id || ''),
+          id: trophyId,
           name: String(item.name || 'Unknown Trophy'),
           type: String(item.type || ''),
           category: String(item.category || ''),
@@ -598,7 +604,7 @@
           bonuses: bonuses,
           group: group,
           metaText: metaText,
-          iconPath: './icons/creature/' + encodeURIComponent(String(item.id || '')) + '.webp',
+          iconPath: iconPath,
           searchBlob: [item.name, item.category, item.creature, item.type, bonuses.map(formatBonus).join(' ')].join(' ').toLowerCase()
         };
       })
