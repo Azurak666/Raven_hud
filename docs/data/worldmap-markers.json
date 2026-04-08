@@ -1821,16 +1821,18 @@
   },
   {
     "id": "npc_reputation_1848_2665",
-    "name": "Darla",
+    "name": "Darla Darling",
     "category": "npc_reputation",
     "x": 1848,
     "y": 2665,
     "floor": "surface",
     "region": "",
-    "description": "Gives 10 rep",
+    "description": "Gives 10 rep Darling",
     "source": "base",
     "icon": "npc_reputation.webp",
-    "screenshot": "community-screenshots/npc_reputation_1848_2665.webp"
+    "screenshot": "community-screenshots/npc_reputation_1848_2665.webp",
+    "lastEditedBy": "Azurak | TRG",
+    "lastEditedAt": "2026-04-08T17:30:58.635Z"
   },
   {
     "id": "npc_reputation_4237_2702",
