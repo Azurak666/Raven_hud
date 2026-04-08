@@ -3446,16 +3446,17 @@
     "source": "base",
     "category": "reputation_shiny",
     "name": "Hadarrak tiger bug shiny",
-    "description": "in sand on the beach",
+    "description": "in sand on the beach, reward is citrine",
     "x": 5990,
     "y": 3401,
     "floor": "surface",
-    "icon": "",
     "label": "Hadarrak tiger bug shiny",
     "region": "Dras Ashar",
     "trigger": "",
     "contributedBy": "Azurak",
-    "screenshot": "community-screenshots/c_b3a006a9.webp"
+    "screenshot": "community-screenshots/c_b3a006a9.webp",
+    "lastEditedBy": "rike_arx7",
+    "lastEditedAt": "2026-04-08T15:43:24.643Z"
   },
   {
     "id": "c_745aae65",
