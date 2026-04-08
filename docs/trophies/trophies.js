@@ -35,7 +35,7 @@
   var TROPHY_ICON_OVERRIDES = {
     moa_carnival_trophy: './icons/special/carnival_moa_trophy.svg',
     munk_carnival_trophy: './icons/special/carnival_tent_trophy.svg',
-    orc_trophy: './icons/special/orc_trophy.svg'
+    orc_trophy: './icons/special/orc_trophy.png'
   };
   var trophies = [];
   var ownedState = {};
