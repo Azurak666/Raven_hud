@@ -1,4 +1,6 @@
 const DEFAULT_ALLOWED_ORIGINS = [
+  'https://ravenhudmap.com',
+  'https://www.ravenhudmap.com',
   'https://azurak666.github.io',
   'http://127.0.0.1:4173',
   'http://localhost:4173'

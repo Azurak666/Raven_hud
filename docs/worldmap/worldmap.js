@@ -90,8 +90,50 @@ function hasSubmissionBackend() {
 }
 
 function getDiscordAccessToken() {
-  try { return sessionStorage.getItem('discord_access_token') || ''; }
-  catch (e) { return ''; }
+  try {
+    var token = sessionStorage.getItem('discord_access_token') ||
+      localStorage.getItem('discord_access_token') || '';
+    var expiresAt = Number(
+      sessionStorage.getItem('discord_access_token_expires_at') ||
+      localStorage.getItem('discord_access_token_expires_at') || '0'
+    );
+
+    if (expiresAt > 0 && Date.now() >= expiresAt) return '';
+    return token;
+  } catch (e) {
+    return '';
+  }
+}
+
+function storeDiscordSession(tokenData) {
+  if (!tokenData || !tokenData.access_token) return;
+
+  var expiresAt = Number(tokenData.expires_in);
+  expiresAt = Number.isFinite(expiresAt) && expiresAt > 0
+    ? Date.now() + (expiresAt * 1000) - 60000
+    : 0;
+
+  try {
+    sessionStorage.setItem('discord_access_token', tokenData.access_token);
+    localStorage.setItem('discord_access_token', tokenData.access_token);
+
+    if (expiresAt > 0) {
+      sessionStorage.setItem('discord_access_token_expires_at', String(expiresAt));
+      localStorage.setItem('discord_access_token_expires_at', String(expiresAt));
+    }
+  } catch (e) { /* ignore storage errors */ }
+}
+
+function clearDiscordSession() {
+  try {
+    sessionStorage.removeItem('discord_access_token');
+    sessionStorage.removeItem('discord_access_token_expires_at');
+  } catch (e) { /* ignore storage errors */ }
+
+  try {
+    localStorage.removeItem('discord_access_token');
+    localStorage.removeItem('discord_access_token_expires_at');
+  } catch (e) { /* ignore storage errors */ }
 }
 
 function getSubmissionButtonText(mode) {
@@ -205,7 +247,7 @@ function submitMarkerRequest(body, options) {
 
   var payload = Object.assign({}, body);
   try {
-    var accessToken = sessionStorage.getItem('discord_access_token') || '';
+    var accessToken = getDiscordAccessToken();
     if (accessToken) payload.discordAccessToken = accessToken;
   } catch (e) { /* ignore storage errors */ }
 
@@ -367,6 +409,7 @@ function syncCollectedToBackend(state, updatedAt) {
 
   var accessToken = getDiscordAccessToken();
   if (!accessToken) {
+    console.warn('Collected marks sync requires logging in with Discord again on this domain.');
     return Promise.resolve({ ok: false, skipped: true, reason: 'missing-token' });
   }
 
@@ -568,9 +611,7 @@ function handleOAuthCallback() {
       return res.json();
     })
     .then(function (data) {
-      try {
-        if (data && data.access_token) sessionStorage.setItem('discord_access_token', data.access_token);
-      } catch (e) { /* ignore storage errors */ }
+      storeDiscordSession(data);
       return fetch('https://discord.com/api/users/@me', {
         headers: { Authorization: 'Bearer ' + data.access_token }
       });
@@ -601,12 +642,19 @@ function handleOAuthCallback() {
 function loadSavedDiscordUser() {
   try {
     var saved = localStorage.getItem('discord_user');
-    if (saved) {
-      discordUser = JSON.parse(saved);
-      promoteGuestCollectedStateToUser();
+    if (!saved) return;
+
+    if (!getDiscordAccessToken()) {
+      localStorage.removeItem('discord_user');
+      clearDiscordSession();
+      return;
     }
+
+    discordUser = JSON.parse(saved);
+    promoteGuestCollectedStateToUser();
   } catch (e) {
     localStorage.removeItem('discord_user');
+    clearDiscordSession();
   }
 }
 
@@ -617,7 +665,7 @@ function logoutDiscord() {
   }
   discordUser = null;
   localStorage.removeItem('discord_user');
-  try { sessionStorage.removeItem('discord_access_token'); } catch (e) { /* ignore storage errors */ }
+  clearDiscordSession();
   updateAuthUI();
 }
 

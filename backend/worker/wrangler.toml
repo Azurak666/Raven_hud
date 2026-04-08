@@ -5,7 +5,7 @@ compatibility_date = "2026-04-07"
 [vars]
 GITHUB_REPO = "Azurak666/Raven_hud"
 GITHUB_BRANCH = "master"
-ALLOWED_ORIGINS = "https://azurak666.github.io,http://127.0.0.1:4173,http://localhost:4173"
+ALLOWED_ORIGINS = "https://ravenhudmap.com,https://www.ravenhudmap.com,https://azurak666.github.io,http://127.0.0.1:4173,http://localhost:4173"
 
 [[kv_namespaces]]
 binding = "COLLECTED_MARKS"
