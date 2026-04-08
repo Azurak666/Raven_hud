@@ -386,35 +386,6 @@ body {
   text-overflow: ellipsis;
 }
 
-/* Sidebar bottom buttons */
-.sidebar-actions {
-  padding: 8px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  border-top: 1px solid var(--border-color);
-}
-
-.btn-sidebar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  color: var(--text-primary);
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-sidebar:hover {
-  background: var(--bg-secondary);
-  border-color: var(--accent-primary);
-}
-
 /* Stats */
 .sidebar-stats {
   padding: 10px 14px;
@@ -859,7 +830,7 @@ body {
 }
 
 /* ============================================================
-   Info Modal (Leaderboard)
+   Info Modals
    ============================================================ */
 .info-modal-overlay {
   position: fixed;
@@ -942,36 +913,6 @@ body {
   color: var(--accent-primary);
   font-size: 12px;
   word-break: break-all;
-}
-
-.leaderboard-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-bottom: 1px solid var(--border-color);
-  font-size: 13px;
-}
-
-.leaderboard-row:last-child {
-  border-bottom: none;
-}
-
-.leaderboard-rank {
-  font-weight: 700;
-  color: var(--accent-primary);
-  min-width: 24px;
-  text-align: center;
-}
-
-.leaderboard-name {
-  flex: 1;
-  color: var(--text-primary);
-}
-
-.leaderboard-count {
-  color: var(--text-secondary);
-  font-size: 12px;
 }
 
 /* ============================================================
