@@ -430,6 +430,7 @@ function buildMarkerIssueTitle(marker, authorName, mode) {
 
 function buildMarkerIssueBody(body, options) {
   const marker = (body.markers && body.markers[0]) || {};
+  const originalMarker = body.originalMarker || {};
   const issuePayload = {
     markers: body.markers || [],
     authorName: body.authorName || '',
@@ -446,30 +447,57 @@ function buildMarkerIssueBody(body, options) {
     'Exported: ' + new Date().toISOString().slice(0, 10),
     'Contributor: ' + (body.authorName || 'Unknown'),
     body.authorDiscordId ? 'Discord ID: ' + body.authorDiscordId : '',
-    '',
-    '| Category | Name | X | Y | Floor | Description | Author |',
-    '| --- | --- | --- | --- | --- | --- | --- |',
-    '| ' + [
-      escapeMarkdownCell(marker.category || ''),
-      escapeMarkdownCell(marker.name || ''),
-      escapeMarkdownCell(marker.x || ''),
-      escapeMarkdownCell(marker.y || ''),
-      escapeMarkdownCell(marker.floor || 'surface'),
-      escapeMarkdownCell(marker.description || ''),
-      escapeMarkdownCell(body.authorName || '')
-    ].join(' | ') + ' |',
     ''
   ];
 
   if (options.mode === 'edit' && body.originalMarker) {
     lines.push('**Requested change:** update an existing marker entry.');
     lines.push('');
-  }
+    lines.push('### Changes Requested');
+    lines.push('');
 
-  if (options.mode === 'delete') {
+    const changeLines = buildMarkerChangeLines(originalMarker, marker);
+    if (changeLines.length) {
+      lines.push(...changeLines);
+    } else {
+      lines.push('- No field-level differences were detected in the submitted values.');
+    }
+
+    lines.push('');
+    lines.push('### Original Marker');
+    lines.push('');
+    lines.push('| Category | Name | X | Y | Floor | Description | Region |');
+    lines.push('| --- | --- | --- | --- | --- | --- | --- |');
+    lines.push('| ' + [
+      escapeMarkdownCell(originalMarker.category || marker.category || ''),
+      escapeMarkdownCell(originalMarker.name || ''),
+      escapeMarkdownCell(originalMarker.x || ''),
+      escapeMarkdownCell(originalMarker.y || ''),
+      escapeMarkdownCell(originalMarker.floor || 'surface'),
+      escapeMarkdownCell(originalMarker.description || ''),
+      escapeMarkdownCell(originalMarker.region || '')
+    ].join(' | ') + ' |');
+    lines.push('');
+    lines.push('### Updated Marker');
+    lines.push('');
+  } else if (options.mode === 'delete') {
     lines.push('**Requested change:** review and remove this marker if needed.');
     lines.push('');
   }
+
+  lines.push('| Category | Name | X | Y | Floor | Description | Region | Author |');
+  lines.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
+  lines.push('| ' + [
+    escapeMarkdownCell(marker.category || ''),
+    escapeMarkdownCell(marker.name || ''),
+    escapeMarkdownCell(marker.x || ''),
+    escapeMarkdownCell(marker.y || ''),
+    escapeMarkdownCell(marker.floor || 'surface'),
+    escapeMarkdownCell(marker.description || ''),
+    escapeMarkdownCell(marker.region || ''),
+    escapeMarkdownCell(body.authorName || '')
+  ].join(' | ') + ' |');
+  lines.push('');
 
   if (options.screenshotUrl) {
     lines.push('![Submitted screenshot](' + options.screenshotUrl + ')');
@@ -486,6 +514,36 @@ function buildMarkerIssueBody(body, options) {
   lines.push('</details>');
 
   return lines.filter(Boolean).join('\n');
+}
+
+function buildMarkerChangeLines(originalMarker, updatedMarker) {
+  const fields = [
+    ['category', 'Category', ''],
+    ['name', 'Name', ''],
+    ['x', 'X', ''],
+    ['y', 'Y', ''],
+    ['floor', 'Floor', 'surface'],
+    ['description', 'Description', ''],
+    ['region', 'Region', '']
+  ];
+
+  return fields.reduce((items, [key, label, fallback]) => {
+    const before = normalizeMarkerFieldValue(originalMarker[key], fallback);
+    const after = normalizeMarkerFieldValue(updatedMarker[key], fallback);
+    if (before === after) return items;
+    items.push(`- **${label}:** ${formatMarkerChangeValue(before)} → ${formatMarkerChangeValue(after)}`);
+    return items;
+  }, []);
+}
+
+function normalizeMarkerFieldValue(value, fallback = '') {
+  const normalized = value == null || value === '' ? fallback : value;
+  return String(normalized == null ? '' : normalized).trim();
+}
+
+function formatMarkerChangeValue(value) {
+  const text = escapeMarkdownCell(normalizeMarkerFieldValue(value) || '(empty)');
+  return '`' + text.replace(/`/g, '\\`') + '`';
 }
 
 function escapeMarkdownCell(value) {

@@ -161,6 +161,7 @@ function buildMarkerIssueTitle(marker, authorName, mode) {
 function buildMarkerIssueBody(body, options) {
   options = options || {};
   var marker = (body.markers && body.markers[0]) || {};
+  var originalMarker = body.originalMarker || {};
   var issuePayload = {
     markers: body.markers || [],
     authorName: body.authorName || '',
@@ -179,30 +180,57 @@ function buildMarkerIssueBody(body, options) {
     'Exported: ' + new Date().toISOString().slice(0, 10),
     'Contributor: ' + (body.authorName || 'Unknown'),
     body.authorDiscordId ? 'Discord ID: ' + body.authorDiscordId : '',
-    '',
-    '| Category | Name | X | Y | Floor | Description | Author |',
-    '| --- | --- | --- | --- | --- | --- | --- |',
-    '| ' + [
-      escapeMarkdownCell(marker.category || ''),
-      escapeMarkdownCell(marker.name || ''),
-      escapeMarkdownCell(marker.x || ''),
-      escapeMarkdownCell(marker.y || ''),
-      escapeMarkdownCell(marker.floor || 'surface'),
-      escapeMarkdownCell(marker.description || ''),
-      escapeMarkdownCell(body.authorName || '')
-    ].join(' | ') + ' |',
     ''
   ];
 
   if (options.mode === 'edit' && body.originalMarker) {
     lines.push('**Requested change:** update an existing marker entry.');
     lines.push('');
-  }
+    lines.push('### Changes Requested');
+    lines.push('');
 
-  if (options.mode === 'delete') {
+    var changeLines = buildMarkerChangeLines(originalMarker, marker);
+    if (changeLines.length) {
+      lines = lines.concat(changeLines);
+    } else {
+      lines.push('- No field-level differences were detected in the submitted values.');
+    }
+
+    lines.push('');
+    lines.push('### Original Marker');
+    lines.push('');
+    lines.push('| Category | Name | X | Y | Floor | Description | Region |');
+    lines.push('| --- | --- | --- | --- | --- | --- | --- |');
+    lines.push('| ' + [
+      escapeMarkdownCell(originalMarker.category || marker.category || ''),
+      escapeMarkdownCell(originalMarker.name || ''),
+      escapeMarkdownCell(originalMarker.x || ''),
+      escapeMarkdownCell(originalMarker.y || ''),
+      escapeMarkdownCell(originalMarker.floor || 'surface'),
+      escapeMarkdownCell(originalMarker.description || ''),
+      escapeMarkdownCell(originalMarker.region || '')
+    ].join(' | ') + ' |');
+    lines.push('');
+    lines.push('### Updated Marker');
+    lines.push('');
+  } else if (options.mode === 'delete') {
     lines.push('**Requested change:** review and remove this marker if needed.');
     lines.push('');
   }
+
+  lines.push('| Category | Name | X | Y | Floor | Description | Region | Author |');
+  lines.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
+  lines.push('| ' + [
+    escapeMarkdownCell(marker.category || ''),
+    escapeMarkdownCell(marker.name || ''),
+    escapeMarkdownCell(marker.x || ''),
+    escapeMarkdownCell(marker.y || ''),
+    escapeMarkdownCell(marker.floor || 'surface'),
+    escapeMarkdownCell(marker.description || ''),
+    escapeMarkdownCell(marker.region || ''),
+    escapeMarkdownCell(body.authorName || '')
+  ].join(' | ') + ' |');
+  lines.push('');
 
   if (body.screenshot) {
     lines.push('> A screenshot was included in the site form. Please paste or upload it manually in the GitHub issue before submitting.');
@@ -219,6 +247,39 @@ function buildMarkerIssueBody(body, options) {
   lines.push('</details>');
 
   return lines.filter(Boolean).join('\n');
+}
+
+function buildMarkerChangeLines(originalMarker, updatedMarker) {
+  var fields = [
+    ['category', 'Category', ''],
+    ['name', 'Name', ''],
+    ['x', 'X', ''],
+    ['y', 'Y', ''],
+    ['floor', 'Floor', 'surface'],
+    ['description', 'Description', ''],
+    ['region', 'Region', '']
+  ];
+
+  return fields.reduce(function (items, field) {
+    var key = field[0];
+    var label = field[1];
+    var fallback = field[2];
+    var before = normalizeMarkerFieldValue(originalMarker[key], fallback);
+    var after = normalizeMarkerFieldValue(updatedMarker[key], fallback);
+    if (before === after) return items;
+    items.push('- **' + label + ':** ' + formatMarkerChangeValue(before) + ' → ' + formatMarkerChangeValue(after));
+    return items;
+  }, []);
+}
+
+function normalizeMarkerFieldValue(value, fallback) {
+  var normalized = (value == null || value === '') ? (fallback || '') : value;
+  return String(normalized == null ? '' : normalized).trim();
+}
+
+function formatMarkerChangeValue(value) {
+  var text = escapeMarkdownCell(normalizeMarkerFieldValue(value) || '(empty)');
+  return '`' + text.replace(/`/g, '\\`') + '`';
 }
 
 function openGitHubMarkerIssue(body, options) {
@@ -2216,9 +2277,12 @@ function submitToGitHubIssue() {
 
   if (isEdit) {
     body.originalMarker = {
+      id: editingMarker.id,
+      category: editingMarker.category || category,
       name: editingMarker.name,
       x: editingMarker.x,
       y: editingMarker.y,
+      floor: editingMarker.floor || 'surface',
       description: editingMarker.description || '',
       region: editingMarker.region || ''
     };
