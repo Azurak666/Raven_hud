@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RavenHUD - Trophy Tracker</title>
+  <meta name="description" content="Track owned RavenQuest trophies locally with separate saved state and base bonus totals." />
+  <link rel="icon" href="../assets/favicon.png" />
+  <link rel="stylesheet" href="trophies.css" />
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-brand-wrap">
+      <a href="../" class="header-brand">
+        <img src="../assets/logo.png" alt="RavenHUD" class="header-logo" />
+        <span class="header-title">World Map</span>
+      </a>
+      <a href="./" class="header-nav-link active" aria-current="page">Trophies</a>
+    </div>
+
+    <div class="header-actions">
+      <button id="btn-info" class="btn-info" title="About RavenHUD">Info</button>
+      <button id="btn-donate" class="btn-donate" title="Support RavenHUD">Donate</button>
+      <button id="btn-discord-login" class="btn-discord" title="Login with Discord">Login with Discord</button>
+      <div id="discord-user-display" class="discord-user" style="display:none">
+        <span id="discord-username" class="discord-name"></span>
+        <button id="btn-discord-logout" class="btn-logout" title="Logout" aria-label="Logout">&times;</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="toolbar">
+      <div class="toolbar-copy">
+        <h1>Trophy Tracker</h1>
+        <p>
+          Mark trophies as <strong>Owned</strong> to track your bonuses and collection progress.
+        </p>
+      </div>
+
+      <label class="search-control" for="search-input">
+        <span>Search trophies</span>
+        <input id="search-input" type="search" placeholder="Search by name, creature, or bonus…" />
+      </label>
+    </section>
+
+    <section class="layout">
+      <div class="group-grid" id="group-grid" aria-live="polite"></div>
+
+      <aside class="stats-panel">
+        <div class="stats-card hero-card">
+          <h2>Base Collection</h2>
+          <div class="progress-summary">
+            <strong id="base-progress-text">0 / 0</strong>
+            <span id="base-progress-percent">0%</span>
+          </div>
+          <div class="progress-bar" aria-hidden="true">
+            <div id="base-progress-fill" class="progress-fill"></div>
+          </div>
+          <p class="muted-text" id="result-summary">Loading trophies…</p>
+        </div>
+
+        <div class="stats-card">
+          <div class="stats-card-header">
+            <h2>STAT BONUSES</h2>
+            <span id="bonus-count" class="count-pill">0</span>
+          </div>
+          <div id="bonus-list" class="bonus-list">
+            <p class="empty-state">No owned trophies yet.</p>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+  </main>
+
+  <div class="info-modal-overlay" id="donate-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Support RavenHUD</h3>
+        <button class="modal-close" id="donate-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">Appeciate donations so i can buy t8 gems..eh i mean i can keep this site updated :)</p>
+        <div class="wallet-box">
+          <div class="wallet-label">Immutable wallet address</div>
+          <code id="donate-wallet-address" class="wallet-address">0xe69165e7781468bf0979419d0def401b13a3ac50</code>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="btn-copy-wallet" type="button">Copy Address</button>
+          <button class="btn-secondary" id="btn-close-donate" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-modal-overlay" id="about-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Info</h3>
+        <button class="modal-close" id="about-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">Marker submits and the "Collected" tracker are now behind Discord sign-in to help prevent false submissions and keep player collection data safe.</p>
+        <p class="donate-text">Special thanks to Pixelated for originally creating it.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-close-about" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.RAVENHUD_API_URL = 'https://ravenhud-marker-api.azurak666.workers.dev';
+  </script>
+  <script src="trophies.js"></script>
+</body>
+</html>

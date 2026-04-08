@@ -37,12 +37,31 @@ body {
   z-index: 1000;
 }
 
+.header-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
 .header-brand {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
   color: var(--text-primary);
+}
+
+.header-nav-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.header-nav-link:hover {
+  color: var(--accent-hover);
 }
 
 .header-logo {
@@ -65,12 +84,16 @@ body {
 .btn-submit,
 .btn-donate,
 .btn-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 6px 14px;
   border: none;
   border-radius: 4px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.15s;
 }
 

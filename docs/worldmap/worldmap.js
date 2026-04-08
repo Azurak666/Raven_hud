@@ -370,7 +370,9 @@ function getCollectedUpdatedAtForUser(userId) {
 function saveCollectedStateForUser(userId, state, updatedAt) {
   var clean = sanitizeCollectedState(state);
   var stamp = Number(updatedAt);
-  if (!Number.isFinite(stamp) || stamp <= 0) stamp = Date.now();
+  if (!Number.isFinite(stamp) || stamp <= 0) {
+    stamp = Object.keys(clean).length > 0 ? Date.now() : 0;
+  }
   localStorage.setItem(getShinyCollectedKey(userId), JSON.stringify(clean));
   localStorage.setItem(getShinyCollectedUpdatedKey(userId), String(stamp));
   return clean;
@@ -407,10 +409,12 @@ function mergeCollectedStates() {
   return merged;
 }
 
-function syncCollectedToBackend(state, updatedAt) {
+function syncCollectedToBackend(state, updatedAt, options) {
   if (!discordUser || !hasSubmissionBackend()) {
     return Promise.resolve({ ok: false, skipped: true });
   }
+
+  options = options || {};
 
   var accessToken = getDiscordAccessToken();
   if (!accessToken) {
@@ -420,13 +424,16 @@ function syncCollectedToBackend(state, updatedAt) {
 
   var cleanState = sanitizeCollectedState(state);
   var nextUpdatedAt = Number(updatedAt || getShinyCollectedUpdatedAt()) || 0;
+  var hasEntries = Object.keys(cleanState).length > 0;
+  var allowEmptyState = !!options.allowEmptyState;
   var payload = {
     discordAccessToken: accessToken
   };
 
-  if (nextUpdatedAt > 0 || Object.keys(cleanState).length > 0) {
+  if (hasEntries || (allowEmptyState && nextUpdatedAt > 0)) {
     payload.state = cleanState;
     payload.updatedAt = nextUpdatedAt > 0 ? nextUpdatedAt : Date.now();
+    payload.allowEmptyState = allowEmptyState;
   }
 
   return fetch(getSubmissionApiBaseUrl() + '/api/collection', {
@@ -451,14 +458,16 @@ function refreshCollectedViews() {
   if (currentDetailMarker) showDetail(currentDetailMarker);
 }
 
-function scheduleCollectedSync() {
+function scheduleCollectedSync(options) {
   if (collectedSyncTimer) {
     clearTimeout(collectedSyncTimer);
   }
 
+  var syncOptions = options || {};
+
   collectedSyncTimer = setTimeout(function () {
     collectedSyncTimer = null;
-    syncCollectedToBackend(getShinyCollected(), getShinyCollectedUpdatedAt())
+    syncCollectedToBackend(getShinyCollected(), getShinyCollectedUpdatedAt(), syncOptions)
       .catch(function (err) {
         console.warn('Collected marks sync unavailable:', err);
       });
@@ -523,7 +532,7 @@ function toggleShinyCollected(markerId) {
     state[markerId] = updatedAt;
   }
   setShinyCollected(state, updatedAt);
-  scheduleCollectedSync();
+  scheduleCollectedSync({ allowEmptyState: true });
   return !!state[markerId];
 }
 

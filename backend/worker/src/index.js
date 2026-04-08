@@ -3,7 +3,9 @@ const DEFAULT_ALLOWED_ORIGINS = [
   'https://www.ravenhudmap.com',
   'https://azurak666.github.io',
   'http://127.0.0.1:4173',
-  'http://localhost:4173'
+  'http://localhost:4173',
+  'http://127.0.0.1:8123',
+  'http://localhost:8123'
 ];
 
 export default {
@@ -35,10 +37,48 @@ export default {
           ? sanitizeCollectedState(body.state)
           : null;
         const incomingUpdatedAt = normalizeTimestamp(body.updatedAt);
-        const nextRecord = resolveCollectedMarksRecord(existing, incomingState, incomingUpdatedAt, verifiedUser.id);
+        const nextRecord = resolveCollectedMarksRecord(existing, incomingState, incomingUpdatedAt, verifiedUser.id, {
+          allowEmptyState: body.allowEmptyState === true
+        });
 
         if (nextRecord.shouldSave) {
           await saveCollectedMarksRecord(env, verifiedUser.id, nextRecord.record);
+        }
+
+        return json({
+          success: true,
+          via: 'backend',
+          userId: verifiedUser.id,
+          state: nextRecord.record.state,
+          updatedAt: nextRecord.record.updatedAt
+        }, 200, cors);
+      } catch (error) {
+        const status = error && error.status ? error.status : 500;
+        return json({ success: false, error: error.message || 'Unknown error' }, status, cors);
+      }
+    }
+
+    if (url.pathname === '/api/trophies' && request.method === 'POST') {
+      try {
+        assertCollectedTrophiesEnv(env);
+        const body = await request.json().catch(() => ({}));
+        const verifiedUser = await getVerifiedDiscordUser(body.discordAccessToken);
+
+        if (!verifiedUser) {
+          throw httpError(401, 'Discord login required to sync collected trophies.');
+        }
+
+        const existing = await loadCollectedTrophiesRecord(env, verifiedUser.id);
+        const incomingState = Object.prototype.hasOwnProperty.call(body, 'state')
+          ? sanitizeCollectedState(body.state)
+          : null;
+        const incomingUpdatedAt = normalizeTimestamp(body.updatedAt);
+        const nextRecord = resolveCollectedMarksRecord(existing, incomingState, incomingUpdatedAt, verifiedUser.id, {
+          allowEmptyState: body.allowEmptyState === true
+        });
+
+        if (nextRecord.shouldSave) {
+          await saveCollectedTrophiesRecord(env, verifiedUser.id, nextRecord.record);
         }
 
         return json({
@@ -96,6 +136,12 @@ function assertEnv(env) {
 function assertCollectedMarksEnv(env) {
   if (!env.COLLECTED_MARKS) {
     throw httpError(503, 'Collected marks sync is not configured yet.');
+  }
+}
+
+function assertCollectedTrophiesEnv(env) {
+  if (!env.COLLECTED_TROPHIES) {
+    throw httpError(503, 'Collected trophies sync is not configured yet.');
   }
 }
 
@@ -178,6 +224,10 @@ function getCollectedMarksKey(userId) {
   return `collected:${String(userId || 'unknown')}`;
 }
 
+function getCollectedTrophiesKey(userId) {
+  return `trophies:${String(userId || 'unknown')}`;
+}
+
 async function loadCollectedMarksRecord(env, userId) {
   const record = await env.COLLECTED_MARKS.get(getCollectedMarksKey(userId), 'json');
   if (!record || typeof record !== 'object') {
@@ -199,7 +249,28 @@ async function saveCollectedMarksRecord(env, userId, record) {
   }));
 }
 
-function resolveCollectedMarksRecord(existingRecord, incomingState, incomingUpdatedAt, userId) {
+async function loadCollectedTrophiesRecord(env, userId) {
+  const record = await env.COLLECTED_TROPHIES.get(getCollectedTrophiesKey(userId), 'json');
+  if (!record || typeof record !== 'object') {
+    return { userId, state: {}, updatedAt: 0 };
+  }
+
+  return {
+    userId,
+    state: sanitizeCollectedState(record.state),
+    updatedAt: normalizeTimestamp(record.updatedAt)
+  };
+}
+
+async function saveCollectedTrophiesRecord(env, userId, record) {
+  await env.COLLECTED_TROPHIES.put(getCollectedTrophiesKey(userId), JSON.stringify({
+    userId,
+    state: sanitizeCollectedState(record.state),
+    updatedAt: normalizeTimestamp(record.updatedAt) || Date.now()
+  }));
+}
+
+function resolveCollectedMarksRecord(existingRecord, incomingState, incomingUpdatedAt, userId, options = {}) {
   const current = existingRecord || { userId, state: {}, updatedAt: 0 };
 
   if (incomingState == null) {
@@ -207,12 +278,35 @@ function resolveCollectedMarksRecord(existingRecord, incomingState, incomingUpda
   }
 
   const cleanIncomingState = sanitizeCollectedState(incomingState);
+  const currentState = sanitizeCollectedState(current.state);
   const nextUpdatedAt = normalizeTimestamp(incomingUpdatedAt);
+  const allowEmptyState = !!options.allowEmptyState;
+  const incomingIsEmpty = Object.keys(cleanIncomingState).length === 0;
+  const currentHasEntries = Object.keys(currentState).length > 0;
 
   // Initial loads on a fresh domain can legitimately have no local state yet.
   // Do not let an empty payload with no timestamp wipe newer KV data.
   if (!nextUpdatedAt) {
-    return { shouldSave: false, record: current };
+    return {
+      shouldSave: false,
+      record: {
+        userId,
+        state: currentState,
+        updatedAt: normalizeTimestamp(current.updatedAt)
+      }
+    };
+  }
+
+  // Protect against first-login empty local syncs overwriting real saved progress.
+  if (incomingIsEmpty && currentHasEntries && !allowEmptyState) {
+    return {
+      shouldSave: false,
+      record: {
+        userId,
+        state: currentState,
+        updatedAt: normalizeTimestamp(current.updatedAt)
+      }
+    };
   }
 
   if (nextUpdatedAt >= current.updatedAt) {
@@ -226,7 +320,14 @@ function resolveCollectedMarksRecord(existingRecord, incomingState, incomingUpda
     };
   }
 
-  return { shouldSave: false, record: current };
+  return {
+    shouldSave: false,
+    record: {
+      userId,
+      state: currentState,
+      updatedAt: normalizeTimestamp(current.updatedAt)
+    }
+  };
 }
 
 async function getVerifiedDiscordUser(accessToken) {

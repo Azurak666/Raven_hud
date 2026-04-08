@@ -5,8 +5,12 @@ compatibility_date = "2026-04-07"
 [vars]
 GITHUB_REPO = "Azurak666/Raven_hud"
 GITHUB_BRANCH = "master"
-ALLOWED_ORIGINS = "https://ravenhudmap.com,https://www.ravenhudmap.com,https://azurak666.github.io,http://127.0.0.1:4173,http://localhost:4173"
+ALLOWED_ORIGINS = "https://ravenhudmap.com,https://www.ravenhudmap.com,https://azurak666.github.io,http://127.0.0.1:4173,http://localhost:4173,http://127.0.0.1:8123,http://localhost:8123"
 
 [[kv_namespaces]]
 binding = "COLLECTED_MARKS"
 id = "02f0108e6b474802bcba732ec25cb234"
+
+[[kv_namespaces]]
+binding = "COLLECTED_TROPHIES"
+id = "e661d4f1d54f4b29814098b962fc6113"
