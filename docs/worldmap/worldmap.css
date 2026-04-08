@@ -395,6 +395,10 @@ body {
   border-top: 1px solid var(--border-color);
 }
 
+.sidebar-actions[hidden] {
+  display: none !important;
+}
+
 .btn-sidebar {
   display: flex;
   align-items: center;
