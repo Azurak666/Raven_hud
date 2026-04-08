@@ -11,6 +11,7 @@ const CATEGORY_ICONS = {
 
 const ROOT = process.cwd();
 const DATA_FILE = path.join(ROOT, 'docs', 'data', 'worldmap-markers.json');
+const CONTRIBUTIONS_FILE = path.join(ROOT, 'docs', 'data', 'worldmap-contributions.json');
 
 main();
 
@@ -56,15 +57,26 @@ function main() {
   }
 
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  const contributions = readJsonArray(CONTRIBUTIONS_FILE);
   const changes = [];
+  let contributionLogChanged = false;
 
-  for (const marker of markers) {
+  for (const [index, marker] of markers.entries()) {
     const outcome = applyMarkerChange(data, marker, payload);
-    if (outcome.changed) changes.push(outcome);
+    if (outcome.changed) {
+      changes.push(outcome);
+      if (recordContribution(contributions, outcome, marker, payload, issue, index)) {
+        contributionLogChanged = true;
+      }
+    }
   }
 
   if (changes.length > 0) {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2) + '\n');
+  }
+
+  if (contributionLogChanged) {
+    fs.writeFileSync(CONTRIBUTIONS_FILE, JSON.stringify(contributions, null, 2) + '\n');
   }
 
   const mode = inferMode(markers[0], payload);
@@ -152,6 +164,50 @@ function applyMarkerChange(data, marker, payload) {
   const entry = buildNewMarker(data, marker, payload, screenshot);
   data.push(entry);
   return { changed: true, action: 'added', id: entry.id };
+}
+
+function readJsonArray(filePath) {
+  if (!fs.existsSync(filePath)) return [];
+
+  const raw = fs.readFileSync(filePath, 'utf8');
+  if (!raw.trim()) return [];
+
+  const data = JSON.parse(raw);
+  return Array.isArray(data) ? data : [];
+}
+
+function recordContribution(log, outcome, marker, payload, issue, index) {
+  const authorName = String(payload.authorName || '').trim();
+  if (!authorName) return false;
+
+  const action = inferMode(marker, payload);
+  const entry = {
+    id: buildContributionId(issue?.number, outcome.id || marker.id || marker.name || 'marker', action, index),
+    authorName,
+    action,
+    markerId: String(outcome.id || marker.id || ''),
+    markerName: String(marker.name || ''),
+    category: String(marker.category || ''),
+    issueNumber: Number(issue?.number || 0) || undefined,
+    recordedAt: issue?.closed_at || issue?.updated_at || new Date().toISOString()
+  };
+
+  if (log.some((item) => item && item.id === entry.id)) {
+    return false;
+  }
+
+  log.push(entry);
+  return true;
+}
+
+function buildContributionId(issueNumber, markerId, action, index) {
+  return [
+    'issue',
+    String(issueNumber || 'unknown'),
+    String(action || 'submit'),
+    String(markerId || 'marker'),
+    String(index || 0)
+  ].join(':');
 }
 
 function buildNewMarker(data, marker, payload, screenshot) {

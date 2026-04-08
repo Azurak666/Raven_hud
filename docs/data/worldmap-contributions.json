@@ -1,0 +1,2549 @@
+[
+  {
+    "id": "legacy:submit:c_056a08a8:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_056a08a8",
+    "markerName": "As Above So Below",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_5ab312cf:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_5ab312cf",
+    "markerName": "Greedy gliders",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_3223145f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_3223145f",
+    "markerName": "Lit Beacons",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_67ffc7bd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_67ffc7bd",
+    "markerName": "Look dont touch",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_26e9360d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_26e9360d",
+    "markerName": "Open waters",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_3b086f58:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_3b086f58",
+    "markerName": "Piss drunk patron",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4ef4990e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4ef4990e",
+    "markerName": "Sealed Amidst the Fire",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_00f1c9fd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_00f1c9fd",
+    "markerName": "Suffering from Heartburn",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_50a96162:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_50a96162",
+    "markerName": "The shroom shaman",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_083f9f16:iceman-tg",
+    "authorName": "Iceman | TG",
+    "action": "submit",
+    "markerId": "c_083f9f16",
+    "markerName": "Thirsty Bandits",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9c0a637c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9c0a637c",
+    "markerName": "Trespassers Will Be Shot",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:rg_dynamic_event_267:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "rg_dynamic_event_267",
+    "markerName": "Undead Harvesting",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ec6a595b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ec6a595b",
+    "markerName": "Sajecho Beach shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7dcdeddc:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7dcdeddc",
+    "markerName": "Blotch dragon shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6ec8274e:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "c_6ec8274e",
+    "markerName": "Chewacabra Caves Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c8ecfcb3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c8ecfcb3",
+    "markerName": "Ostera Crowmaiden shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b4a58cd3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b4a58cd3",
+    "markerName": "Harbor Gallowstown shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_72eeac06:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_72eeac06",
+    "markerName": "Gilead shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4249b6f6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4249b6f6",
+    "markerName": "Gilead shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_97ee3051:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_97ee3051",
+    "markerName": "Gilead shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_093e28a6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_093e28a6",
+    "markerName": "Gilead turtle shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_85bfbd9c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_85bfbd9c",
+    "markerName": "Glademire Chapel of skorn shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_67a6763e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_67a6763e",
+    "markerName": "Glademire bear shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_08c3d826:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_08c3d826",
+    "markerName": "Glademire cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ddaf7162:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ddaf7162",
+    "markerName": "Glademire elf shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_5d2e237d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_5d2e237d",
+    "markerName": "Glademire goblin shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_de68262a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_de68262a",
+    "markerName": "Glademire goblin shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_110fa9f3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_110fa9f3",
+    "markerName": "Glademire shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f8f7e82f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f8f7e82f",
+    "markerName": "Glademire shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_73cca8bc:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_73cca8bc",
+    "markerName": "Glademire shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c98ee47a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c98ee47a",
+    "markerName": "Glademire swamp shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_38078dd1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_38078dd1",
+    "markerName": "Glademire toad cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_541edee7:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_541edee7",
+    "markerName": "Glademire troll shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f4fdce88:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f4fdce88",
+    "markerName": "Glademire trunk shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8b89e422:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8b89e422",
+    "markerName": "Glademire under chapel shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8ec889c5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8ec889c5",
+    "markerName": "Glademire wolf cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_239db438:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_239db438",
+    "markerName": "Sajecho Goblin cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_eba0853c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_eba0853c",
+    "markerName": "Sajecho Goblin cave shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_206e78a6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_206e78a6",
+    "markerName": "Sajecho Goblin cave shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ea967add:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ea967add",
+    "markerName": "Sajecho Goblin shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d06276e1:rike-arx7",
+    "authorName": "rike_arx7",
+    "action": "submit",
+    "markerId": "c_d06276e1",
+    "markerName": "Group hog Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:edit:c_d06276e1:azurak-trg",
+    "authorName": "Azurak | TRG",
+    "action": "edit",
+    "markerId": "c_d06276e1",
+    "markerName": "Group hog Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": "2026-04-07T17:16:53.591Z"
+  },
+  {
+    "id": "legacy:submit:c_309366b1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_309366b1",
+    "markerName": "Hadarrak  Alqwalen shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ac0f8420:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ac0f8420",
+    "markerName": "Hadarrak Alqwalen demon shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_99c414c7:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_99c414c7",
+    "markerName": "Hadarrak Alqwalen shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6decd7b1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6decd7b1",
+    "markerName": "Hadarrak Black dragon shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_5bdd04d1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_5bdd04d1",
+    "markerName": "Hadarrak Broken bludd shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_30ffe315:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_30ffe315",
+    "markerName": "Hadarrak Broken bludd shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_69fb3739:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_69fb3739",
+    "markerName": "Hadarrak Ghaz shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b5a54f97:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b5a54f97",
+    "markerName": "Hadarrak Orkwatch shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_12bcd55e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_12bcd55e",
+    "markerName": "Hadarrak Shark shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_fd4d47cb:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_fd4d47cb",
+    "markerName": "Hadarrak Turtle shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_476ff408:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_476ff408",
+    "markerName": "Hadarrak black dragon shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b1a1989f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b1a1989f",
+    "markerName": "Hadarrak buried nest shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c4cdec6e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c4cdec6e",
+    "markerName": "Hadarrak demon shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e3f075a3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e3f075a3",
+    "markerName": "Hadarrak djinn shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_a3352ee5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_a3352ee5",
+    "markerName": "Hadarrak ghaz shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_2d23f5bf:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_2d23f5bf",
+    "markerName": "Hadarrak hidden passage shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_11df3327:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_11df3327",
+    "markerName": "Hadarrak high galdoz shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_38b7addc:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_38b7addc",
+    "markerName": "Hadarrak jackal shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_25e3a12f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_25e3a12f",
+    "markerName": "Hadarrak jackal shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d5fe240a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d5fe240a",
+    "markerName": "Hadarrak minotaur shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d7cfdf80:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d7cfdf80",
+    "markerName": "Hadarrak minotaur shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cac8174b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cac8174b",
+    "markerName": "Hadarrak oasis shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9f7259ca:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9f7259ca",
+    "markerName": "Hadarrak orkvesh shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_02a0b752:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_02a0b752",
+    "markerName": "Hadarrak shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_221666c8:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_221666c8",
+    "markerName": "Hadarrak shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_56a67a14:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_56a67a14",
+    "markerName": "Hadarrak shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_23b2efb1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_23b2efb1",
+    "markerName": "Hadarrak shiny 4",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6497bfc9:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6497bfc9",
+    "markerName": "Hadarrak shiny 5",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_84f08cba:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_84f08cba",
+    "markerName": "Hadarrak skeleton shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b3a006a9:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b3a006a9",
+    "markerName": "Hadarrak tiger bug shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_745aae65:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_745aae65",
+    "markerName": "Hadarrak troll shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0083927b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0083927b",
+    "markerName": "Hadrrak note on tree shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cd3c138f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cd3c138f",
+    "markerName": "Glademire Hookmask camp shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_44ae7c43:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_44ae7c43",
+    "markerName": "Jackal shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9fd8e0cd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9fd8e0cd",
+    "markerName": "Gilead Kaiman shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b0eb4801:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b0eb4801",
+    "markerName": "Harbor Lighthouse shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e0708177:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e0708177",
+    "markerName": "Harbor Lighthouse shiny 2 & 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_a9e998b1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_a9e998b1",
+    "markerName": "Harbor Lighthouse shiny 4",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0c102ede:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0c102ede",
+    "markerName": "Harbor Lighthouse shiny 5",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7acb5672:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7acb5672",
+    "markerName": "Mount shiver shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cea68c83:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cea68c83",
+    "markerName": "Ostera Morningstar shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_71d7b9e4:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_71d7b9e4",
+    "markerName": "Sajecho Pirate Key",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_672bc0c6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_672bc0c6",
+    "markerName": "Harbor Pirate shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_004f6646:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_004f6646",
+    "markerName": "Harbor Pirate shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b79973a5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b79973a5",
+    "markerName": "Harbor Rat shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4fbf8a9c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4fbf8a9c",
+    "markerName": "Rohna Dwarf shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8150b3da:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8150b3da",
+    "markerName": "Rohna Hog shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_a8df27c6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_a8df27c6",
+    "markerName": "Rohna brotherhood shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7af67322:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7af67322",
+    "markerName": "Rohna brotherhood shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_438d85a4:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_438d85a4",
+    "markerName": "Rohna brotherhood shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b1377fd0:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b1377fd0",
+    "markerName": "Rohna dwarf shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ea6523ec:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ea6523ec",
+    "markerName": "Rohna goblin shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8b1321cf:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8b1321cf",
+    "markerName": "Rohna shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b06fe33f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b06fe33f",
+    "markerName": "Rohna wolf cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_3d2812d0:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_3d2812d0",
+    "markerName": "Rohna Saltdusk shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_23340ce1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_23340ce1",
+    "markerName": "Rohna Saltdusk shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_79f1db89:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_79f1db89",
+    "markerName": "Gilead Saurian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_07d872af:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_07d872af",
+    "markerName": "Skeleton shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c89cf7eb:kulion",
+    "authorName": "Kulion",
+    "action": "submit",
+    "markerId": "c_c89cf7eb",
+    "markerName": "Despair Skorn's Deslation #2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_31ef7fa4:kulion",
+    "authorName": "Kulion",
+    "action": "submit",
+    "markerId": "c_31ef7fa4",
+    "markerName": "Despair Skorn's Desolation #1",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_50baa999:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_50baa999",
+    "markerName": "Sajecho Spider shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_71d8e818:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_71d8e818",
+    "markerName": "Rohna Spider shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_35ce7645:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_35ce7645",
+    "markerName": "Glademire Stonecrush ruins shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_40148511:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_40148511",
+    "markerName": "Sajecho Toad Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6abecbec:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6abecbec",
+    "markerName": "Sajecho Tower of everliving shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1afea048:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1afea048",
+    "markerName": "Harbor Troll shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_994d0d3e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_994d0d3e",
+    "markerName": "Harbor Turtle shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_dc34564e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_dc34564e",
+    "markerName": "Glademire Warlord rest shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_23081944:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_23081944",
+    "markerName": "Glademire Warlord rest shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_60cd9250:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_60cd9250",
+    "markerName": "Harbor Wurm shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e5c0c917:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e5c0c917",
+    "markerName": "Zephyr bear shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_a260c8de:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_a260c8de",
+    "markerName": "Zephyr farm shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d9a531cf:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d9a531cf",
+    "markerName": "Zephyr fort mercury shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4bc26b78:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4bc26b78",
+    "markerName": "Zephyr hookmask shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1ad504ef:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1ad504ef",
+    "markerName": "Zephyr hookmask shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e96800e5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e96800e5",
+    "markerName": "Zephyr morningstar shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_efd699a9:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_efd699a9",
+    "markerName": "Zephyr morningstar shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_51cd1623:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_51cd1623",
+    "markerName": "Zephyr morningstar shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c0e2731b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c0e2731b",
+    "markerName": "Zephyr zorian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_2f82548c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_2f82548c",
+    "markerName": "Rohna Zorian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7c01918f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7c01918f",
+    "markerName": "Forsaken shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_66d6d57b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_66d6d57b",
+    "markerName": "Gilead Saurian shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_476b2d14:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_476b2d14",
+    "markerName": "Gilead saurian shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_57faa917:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_57faa917",
+    "markerName": "Gilead saurian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6f42cd5b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6f42cd5b",
+    "markerName": "Gilead mines shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_293fdc76:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_293fdc76",
+    "markerName": "Gilead mine shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0820d277:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0820d277",
+    "markerName": "Gilead mines shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f3aeed38:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f3aeed38",
+    "markerName": "Gilead pirate key",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_98f436e6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_98f436e6",
+    "markerName": "Gilead pirate shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cc6e1d76:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cc6e1d76",
+    "markerName": "Gilead Kaiman shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0ec089b5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0ec089b5",
+    "markerName": "Despair castle shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7a6e305a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7a6e305a",
+    "markerName": "Despair castle shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ea2f2bd3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ea2f2bd3",
+    "markerName": "Despair castle shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b564acbe:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b564acbe",
+    "markerName": "Despair gazer shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_15d753e8:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_15d753e8",
+    "markerName": "Despair drake shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1808dceb:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1808dceb",
+    "markerName": "Despair twisted steps shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0da3f001:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0da3f001",
+    "markerName": "Despair waterfall shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_93c24b86:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_93c24b86",
+    "markerName": "Despair skorn shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f824cebb:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f824cebb",
+    "markerName": "Despair wurm shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_5237072c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_5237072c",
+    "markerName": "Despair trunk shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4594f308:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4594f308",
+    "markerName": "Forsaken vampire shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_bb97da98:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_bb97da98",
+    "markerName": "Forsaken Council shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_2433b537:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_2433b537",
+    "markerName": "Forsaken shiny 4",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ce2819a5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ce2819a5",
+    "markerName": "Forsaken shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_34f6f7a6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_34f6f7a6",
+    "markerName": "Forsaken wraith shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9ebfff47:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9ebfff47",
+    "markerName": "Forsaken vampire shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_54a8c68e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_54a8c68e",
+    "markerName": "Forsaken sombershade shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f16ee866:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f16ee866",
+    "markerName": "Forsaken vampire shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_78264fda:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_78264fda",
+    "markerName": "Forsaken graveyard shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6e8d2ca4:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6e8d2ca4",
+    "markerName": "Forsaken shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4e0b8441:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4e0b8441",
+    "markerName": "Bog deathhold shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f14dbee2:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f14dbee2",
+    "markerName": "Bog deathold shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0cb8494c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0cb8494c",
+    "markerName": "Bog basement shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4b9d1647:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4b9d1647",
+    "markerName": "Bog rat shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e1ff0ebf:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e1ff0ebf",
+    "markerName": "Bog shiny 4",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_19a89193:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_19a89193",
+    "markerName": "Bog shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_a2dfb3f4:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_a2dfb3f4",
+    "markerName": "Bog gazer shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_38c1deda:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_38c1deda",
+    "markerName": "Bog shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_23985876:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_23985876",
+    "markerName": "Bog hag shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7b2a434a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7b2a434a",
+    "markerName": "Bog shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_44cb473a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_44cb473a",
+    "markerName": "Bog rat shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8f364acd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8f364acd",
+    "markerName": "Bog rat Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8d12706a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8d12706a",
+    "markerName": "Bog wurms shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d6bf3e88:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d6bf3e88",
+    "markerName": "Glaceforde froll shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4acef5dd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4acef5dd",
+    "markerName": "Frosthog",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cd619e9b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cd619e9b",
+    "markerName": "Glaceforde saint alesk shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_82759972:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_82759972",
+    "markerName": "Glaceforde blizzardbeast shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ff4f94ce:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ff4f94ce",
+    "markerName": "Glaceforde zorian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_2f6215e9:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_2f6215e9",
+    "markerName": "Glaceforde shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4969dff2:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4969dff2",
+    "markerName": "Glaceforde winterborn shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_589d3297:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_589d3297",
+    "markerName": "Glaceforde winterborn shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_51639d9a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_51639d9a",
+    "markerName": "Glaceforde wolf shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_374141d7:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_374141d7",
+    "markerName": "Glaceforde witnerborn shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_bc53d4da:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_bc53d4da",
+    "markerName": "Glaceforde skeleton shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8a435816:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8a435816",
+    "markerName": "Glaceforde spider shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6d742399:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6d742399",
+    "markerName": "Glaceforde graveyard shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_62b07f52:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_62b07f52",
+    "markerName": "Glaceforde yeti shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8e4b004c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8e4b004c",
+    "markerName": "Glaceforde yeti shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c0fe0bd6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c0fe0bd6",
+    "markerName": "Glaceforde drake shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_3eb8300c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_3eb8300c",
+    "markerName": "Glaceforde under saint alesk shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_09a897ed:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_09a897ed",
+    "markerName": "Glaceforde under saint alesk shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4d86c934:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_4d86c934",
+    "markerName": "Never enough fur",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b9816c32:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_b9816c32",
+    "markerName": "She sells seashells",
+    "category": "dynamic_event",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6c430321:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_6c430321",
+    "markerName": "Blotch Shiny in the tree",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4124873f:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_4124873f",
+    "markerName": "Blotch Shiny in the tree",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_788a2f56:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_788a2f56",
+    "markerName": "Shiny in one of the racks, it doesnt glow as treasure, need to press F",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f9d3a953:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_f9d3a953",
+    "markerName": "Glaceforde Key for one of the chests with the trinket deep udnerground",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c1084410:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_c1084410",
+    "markerName": "Glaceforde Left side chest with the trinket, deep underground",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9f7c4b24:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_9f7c4b24",
+    "markerName": "Right side chest with the trinket",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ab576918:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_ab576918",
+    "markerName": "Shiny chest in the Igneas castle",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b363b879:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_b363b879",
+    "markerName": "Glaceforde Underground Froll cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f63966b4:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_f63966b4",
+    "markerName": "High level Frost drakes (lvl 75) shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c5972bfe:thisdaniel",
+    "authorName": "ThisDaniel",
+    "action": "submit",
+    "markerId": "c_c5972bfe",
+    "markerName": "Glaceforde Shiny on the fox mountain",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_30f9ef39:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_30f9ef39",
+    "markerName": "Glaceforde fox shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d3a442de:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d3a442de",
+    "markerName": "Glaceforde dwarf shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d3954833:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d3954833",
+    "markerName": "Mr. Vinlow",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_bfe023b9:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_bfe023b9",
+    "markerName": "Nirolo",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f65f869d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f65f869d",
+    "markerName": "Lorekeeper Havel",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_44854130:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_44854130",
+    "markerName": "King Eden",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_07f0cced:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_07f0cced",
+    "markerName": "Blotch house shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_da890871:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_da890871",
+    "markerName": "Blotch ruins shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c387ecc6:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c387ecc6",
+    "markerName": "Blotch tower shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_14287b33:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_14287b33",
+    "markerName": "Blotch spider cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_b10bd9bc:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_b10bd9bc",
+    "markerName": "Elder coast poisonpetal shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e3147ef8:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e3147ef8",
+    "markerName": "Elder coast crowfell shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_bc716fa4:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_bc716fa4",
+    "markerName": "Elder coast fungi shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_52b0f580:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_52b0f580",
+    "markerName": "Glademire slum shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_92db4139:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_92db4139",
+    "markerName": "Karuxa",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_dc94c7e1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_dc94c7e1",
+    "markerName": "Frost steppes ito yami shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9877bc84:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9877bc84",
+    "markerName": "Matron Savala",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_77f5de9f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_77f5de9f",
+    "markerName": "Tristan ironwood",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_850bd577:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_850bd577",
+    "markerName": "Glademire drunken ritual shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0c3346dd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0c3346dd",
+    "markerName": "Glademire drunken ritual shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_040c49f7:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_040c49f7",
+    "markerName": "Hobbs",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_97e80b43:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_97e80b43",
+    "markerName": "Sergeant Buster",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9f4e66b2:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9f4e66b2",
+    "markerName": "Elder coast cart shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_03b20269:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_03b20269",
+    "markerName": "Ostera drake shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1f53cd70:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1f53cd70",
+    "markerName": "Blotch hag cave",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6e7c8fec:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6e7c8fec",
+    "markerName": "Blotch log shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7ab2ae23:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7ab2ae23",
+    "markerName": "Blotch spider cave shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_eed6eebd:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_eed6eebd",
+    "markerName": "Glaceforde dwarf shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_dbef6eb5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_dbef6eb5",
+    "markerName": "Gilead rumalos shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7c8c5bd2:iceman-tg",
+    "authorName": "Iceman | TG",
+    "action": "submit",
+    "markerId": "c_7c8c5bd2",
+    "markerName": "Era",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f5db39fe:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_f5db39fe",
+    "markerName": "Sajecho Bilepit Elite hookmask shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e181a28d:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_e181a28d",
+    "markerName": "Elder coast Thormarok mountain shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_bfe3b7bf:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_bfe3b7bf",
+    "markerName": "Frost steppes Dimlight camps shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_733b5815:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_733b5815",
+    "markerName": "Elder coast crowfell north east shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d73f8989:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_d73f8989",
+    "markerName": "Frost steppes Coldstring burrows spider shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_003129d3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_003129d3",
+    "markerName": "Frost steppes the fingers shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6a746a8a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6a746a8a",
+    "markerName": "Frost steppes the fingers shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e307a13a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e307a13a",
+    "markerName": "Elder coast toadstool shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d67bac3c:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_d67bac3c",
+    "markerName": "Hadarak DRAS MARNA underground shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_3e5146e7:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_3e5146e7",
+    "markerName": "ALLUIN",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_3c8ca24e:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_3c8ca24e",
+    "markerName": "Zyradan",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1a65320a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1a65320a",
+    "markerName": "Gilead lvl 80 saurian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c658ead3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c658ead3",
+    "markerName": "Glaceforde gazer shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4cbe3a1d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4cbe3a1d",
+    "markerName": "Hadarrak ghaz shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_12dafc6c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_12dafc6c",
+    "markerName": "Glaceforde wraith shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_80bd0abb:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_80bd0abb",
+    "markerName": "Glaceforde matchwood shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_2d15e156:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_2d15e156",
+    "markerName": "Glaceforde wraith shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_eabd8197:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_eabd8197",
+    "markerName": "Hadarrak elite jackal shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6f874d82:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6f874d82",
+    "markerName": "Hadarrak fox cave shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_656a327a:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "c_656a327a",
+    "markerName": "Sajecho Dynamic Cave Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7de134b8:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "c_7de134b8",
+    "markerName": "Forsaken Greyspike Hidden Bookshelf Path Shiny (R)",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_6dbef35e:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_6dbef35e",
+    "markerName": "Glaceforde froll shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_77c97695:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_77c97695",
+    "markerName": "Hadarrak tar graveyard shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1ffe6762:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1ffe6762",
+    "markerName": "Beaty",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_e4b9e8cc:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_e4b9e8cc",
+    "markerName": "Hadarrak Jaffar hills toad shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_fa474a2f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_fa474a2f",
+    "markerName": "Hadarrak 80+ toad shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_549644df:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_549644df",
+    "markerName": "Zephyr 80+ hookmasks",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_687c3258:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_687c3258",
+    "markerName": "Zephyr hookmask 80+ shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ba909583:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ba909583",
+    "markerName": "Bog 70+ rat shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_522e749a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_522e749a",
+    "markerName": "Bog rat key shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_29b506d5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_29b506d5",
+    "markerName": "Forsaken Greyspike Hidden Bookshelf Path Shiny (L)",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c7008fad:hironet11",
+    "authorName": "Hironet11",
+    "action": "submit",
+    "markerId": "c_c7008fad",
+    "markerName": "SUN LI",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_0b0722a3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_0b0722a3",
+    "markerName": "Rohna spider shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cefb4c0b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cefb4c0b",
+    "markerName": "Rohna high level zorian shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_7aedfe22:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_7aedfe22",
+    "markerName": "Elder coast mossolith barrel shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_fc162cd4:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_fc162cd4",
+    "markerName": "Elder coast dwarf shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_19eee7e5:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_19eee7e5",
+    "markerName": "Elder coast magma fungi shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_c0e7dcdb:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_c0e7dcdb",
+    "markerName": "Forsaken the club shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f05bfbb3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f05bfbb3",
+    "markerName": "Forsaken the club shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_07931f60:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_07931f60",
+    "markerName": "Hadarrak high level ghaz shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_ccaded7b:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_ccaded7b",
+    "markerName": "Hadarrak jackal shiny 3",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_cda0815f:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_cda0815f",
+    "markerName": "Glademire lvl 80+ troll shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9480094d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9480094d",
+    "markerName": "Hadarrak high lvl minotaur shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_4effc2cb:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_4effc2cb",
+    "markerName": "Despair skorn puzzle shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_8513f68a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_8513f68a",
+    "markerName": "Despair skorn demon puzzle shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9241618b:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "c_9241618b",
+    "markerName": "Anashi",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_dddadd2e:darkryno",
+    "authorName": "DarkRyNo",
+    "action": "submit",
+    "markerId": "c_dddadd2e",
+    "markerName": "Despair Drake Shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_88bc8717:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "c_88bc8717",
+    "markerName": "Jorda",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_a42f089c:pixelated",
+    "authorName": "Pixelated",
+    "action": "submit",
+    "markerId": "c_a42f089c",
+    "markerName": "Surard",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_1234197a:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_1234197a",
+    "markerName": "Hadarrak jaffar hill 80+ toads shiny 2",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_982ee03c:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_982ee03c",
+    "markerName": "Hadarrak ghaz table shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_f446adc3:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_f446adc3",
+    "markerName": "Ostera elite orc shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_10b230db:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_10b230db",
+    "markerName": "Forsaken Humanity lost shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_2952b000:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_2952b000",
+    "markerName": "Harbor pirate island shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_d925573d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_d925573d",
+    "markerName": "Sajecho pirate island shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_45ecc71d:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_45ecc71d",
+    "markerName": "Gilead pirate island shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_9f45e0b1:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_9f45e0b1",
+    "markerName": "Goblin dungeon shiny",
+    "category": "reputation_shiny",
+    "recordedAt": ""
+  },
+  {
+    "id": "legacy:submit:c_27ff04fc:azurak",
+    "authorName": "Azurak",
+    "action": "submit",
+    "markerId": "c_27ff04fc",
+    "markerName": "Mircella",
+    "category": "npc_reputation",
+    "recordedAt": ""
+  }
+]
