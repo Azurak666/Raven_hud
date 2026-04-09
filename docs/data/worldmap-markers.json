@@ -3557,7 +3557,7 @@
     "source": "base",
     "category": "reputation_shiny",
     "name": "Harbor Lighthouse shiny 2 & 3",
-    "description": "need 4/5 hournal key from shiny 3 opens shiny 4",
+    "description": "need 4/5 Journal key from shiny 3 opens shiny 4",
     "x": 1766,
     "y": 2342,
     "floor": "surface",
@@ -3566,8 +3566,8 @@
     "trigger": "",
     "contributedBy": "Azurak",
     "screenshot": "community-screenshots/c_e0708177.webp",
-    "lastEditedBy": "Azurak | TRG",
-    "lastEditedAt": "2026-04-09T13:50:58.024Z"
+    "lastEditedBy": "Jybrael | SUS",
+    "lastEditedAt": "2026-04-09T17:47:27.568Z"
   },
   {
     "id": "c_a9e998b1",
