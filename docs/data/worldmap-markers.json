@@ -88,14 +88,16 @@
     "source": "base",
     "category": "dynamic_event",
     "name": "A Bloody Infestation",
-    "description": "",
+    "description": "reward, 50 Labor hammer",
     "x": 4954,
     "y": 1723,
     "floor": "surface",
-    "icon": "dynamic_event_down.webp",
+    "icon": "dynamic_event.webp",
     "label": "",
     "region": "",
-    "trigger": ""
+    "trigger": "",
+    "lastEditedBy": "rike_arx7",
+    "lastEditedAt": "2026-04-09T11:41:40.859Z"
   },
   {
     "id": "rg_dynamic_event_178",
