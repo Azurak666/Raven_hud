@@ -1616,6 +1616,7 @@ function showLeaderboard() {
 
   for (var entry of contributionLog) {
     if (!entry) continue;
+    if (getLeaderboardAction(entry.action) !== 'submit') continue;
 
     var logId = String(entry.id || '') || JSON.stringify(entry);
     if (seenLogIds[logId]) continue;
@@ -1627,22 +1628,17 @@ function showLeaderboard() {
       myAliases,
       myDisplayName,
       entry.authorName,
-      entry.action,
+      'submit',
       entry.count
     );
 
-    loggedFallbackKeys[buildLeaderboardFallbackKey(entry.markerId, entry.authorName, entry.action)] = true;
+    loggedFallbackKeys[buildLeaderboardFallbackKey(entry.markerId, entry.authorName, 'submit')] = true;
   }
 
   for (var m of allMarkers) {
     var submitKey = buildLeaderboardFallbackKey(m.id, m.contributedBy, 'submit');
     if (m.contributedBy && !loggedFallbackKeys[submitKey]) {
       addLeaderboardContribution(counts, labels, myAliases, myDisplayName, m.contributedBy, 'submit', 1);
-    }
-
-    var editKey = buildLeaderboardFallbackKey(m.id, m.lastEditedBy, 'edit');
-    if (m.lastEditedBy && !loggedFallbackKeys[editKey]) {
-      addLeaderboardContribution(counts, labels, myAliases, myDisplayName, m.lastEditedBy, 'edit', 1);
     }
   }
 
@@ -1665,16 +1661,11 @@ function showLeaderboard() {
       var rank = i + 1;
       var medal = rank === 1 ? '\uD83E\uDD47' : rank === 2 ? '\uD83E\uDD48' : rank === 3 ? '\uD83E\uDD49' : '';
       var stats = sorted[i].stats;
-      var breakdown = [];
-      if (stats.submit) breakdown.push(stats.submit + ' add' + (stats.submit > 1 ? 's' : ''));
-      if (stats.edit) breakdown.push(stats.edit + ' edit' + (stats.edit > 1 ? 's' : ''));
-      if (stats.delete) breakdown.push(stats.delete + ' delete' + (stats.delete > 1 ? 's' : ''));
 
       row.innerHTML =
         '<span class="leaderboard-rank">' + (medal || '#' + rank) + '</span>' +
         '<span class="leaderboard-name">' + sorted[i].name + '</span>' +
-        '<span class="leaderboard-count">' + stats.total + ' contribution' + (stats.total > 1 ? 's' : '') +
-        (breakdown.length ? ' • ' + breakdown.join(', ') : '') + '</span>';
+        '<span class="leaderboard-count">' + stats.submit + ' add' + (stats.submit > 1 ? 's' : '') + '</span>';
       body.appendChild(row);
     }
   }

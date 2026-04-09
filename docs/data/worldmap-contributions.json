@@ -369,15 +369,6 @@
     "recordedAt": ""
   },
   {
-    "id": "legacy:edit:c_d06276e1:azurak-trg",
-    "authorName": "Azurak | TRG",
-    "action": "edit",
-    "markerId": "c_d06276e1",
-    "markerName": "Group hog Shiny",
-    "category": "reputation_shiny",
-    "recordedAt": "2026-04-07T17:16:53.591Z"
-  },
-  {
     "id": "legacy:submit:c_309366b1:azurak",
     "authorName": "Azurak",
     "action": "submit",

@@ -181,6 +181,8 @@ function recordContribution(log, outcome, marker, payload, issue, index) {
   if (!authorName) return false;
 
   const action = inferMode(marker, payload);
+  if (action !== 'submit') return false;
+
   const entry = {
     id: buildContributionId(issue?.number, outcome.id || marker.id || marker.name || 'marker', action, index),
     authorName,
