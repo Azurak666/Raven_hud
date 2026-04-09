@@ -6790,14 +6790,16 @@
     "id": "c_083eda96",
     "source": "base",
     "category": "reputation_shiny",
-    "name": "bigchest in cellar",
-    "description": "2x ruby",
+    "name": "Hadarrak chest in cellar",
+    "description": "2x ruby need some ankhs to get in",
     "x": 3765,
     "y": 2971,
     "floor": "surface",
     "label": "",
     "region": "",
     "trigger": "",
-    "contributedBy": "rike_arx7"
+    "contributedBy": "rike_arx7",
+    "lastEditedBy": "Azurak | TRG",
+    "lastEditedAt": "2026-04-09T06:39:02.031Z"
   }
 ]
