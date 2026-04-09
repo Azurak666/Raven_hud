@@ -6819,5 +6819,20 @@
     "contributedBy": "Hironet11",
     "screenshot": "community-screenshots/npc_reputation_86e7b18658.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_00eac440",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Rowan",
+    "description": "need some morningstar creature loot to get pass",
+    "x": 7754,
+    "y": 1737,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | TRG",
+    "icon": "npc_reputation.webp"
   }
 ]
