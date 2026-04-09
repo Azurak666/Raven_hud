@@ -6850,5 +6850,20 @@
     "contributedBy": "Azurak | TRG",
     "screenshot": "community-screenshots/npc_reputation_0a57fcd7ba.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_d3d71c32",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Alder",
+    "description": "",
+    "x": 7748,
+    "y": 1727,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | TRG",
+    "icon": "npc_reputation.webp"
   }
 ]
