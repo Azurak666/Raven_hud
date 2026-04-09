@@ -6834,5 +6834,21 @@
     "trigger": "",
     "contributedBy": "Azurak | TRG",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_24a9fe0c",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Mirelle",
+    "description": "",
+    "x": 7860,
+    "y": 1768,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | TRG",
+    "screenshot": "community-screenshots/npc_reputation_0a57fcd7ba.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
