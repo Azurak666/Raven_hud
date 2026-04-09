@@ -301,16 +301,21 @@ function openGitHubMarkerIssue(body, options) {
 function submitMarkerRequest(body, options) {
   options = options || {};
 
+  var payload = Object.assign({}, body);
+  if (discordUser) {
+    payload.authorName = getVerifiedSubmitAuthorName();
+    payload.authorDiscordId = discordUser.id;
+  }
+
   if (!hasSubmissionBackend()) {
     try {
-      openGitHubMarkerIssue(body, options);
+      openGitHubMarkerIssue(payload, options);
       return Promise.resolve({ ok: true, data: { success: true, via: 'github-issue' } });
     } catch (err) {
       return Promise.reject(err);
     }
   }
 
-  var payload = Object.assign({}, body);
   try {
     var accessToken = getDiscordAccessToken();
     if (accessToken) payload.discordAccessToken = accessToken;
@@ -855,10 +860,16 @@ function saveIdentity(characterName, guildTag, authorName) {
 }
 
 function getPreferredAuthorName() {
+  var discordName = discordUser ? (discordUser.globalName || discordUser.username || '') : '';
+  if (discordName) return discordName;
+
   var identity = getSavedIdentity() || {};
   var preferred = (identity.authorName || '').trim();
-  if (preferred) return preferred;
-  return discordUser ? (discordUser.globalName || discordUser.username || '') : '';
+  return preferred;
+}
+
+function getVerifiedSubmitAuthorName() {
+  return discordUser ? (discordUser.globalName || discordUser.username || '') : getPreferredAuthorName();
 }
 
 function rememberPreferredAuthorName(name) {
@@ -1583,13 +1594,10 @@ function addLeaderboardContribution(counts, labels, aliases, displayName, author
   var trimmed = String(author || '').trim();
   if (!trimmed || trimmed === 'Community') return;
 
-  var normalizedAuthor = normalizeContributorName(trimmed);
-  var key = normalizedAuthor;
-  if (aliases.indexOf(normalizedAuthor) >= 0) {
-    key = '__current_user__';
-    labels[key] = displayName || trimmed;
-  } else if (!labels[key]) {
-    labels[key] = trimmed;
+  var key = normalizeContributorName(trimmed);
+  var isCurrentDiscordIdentity = Array.isArray(aliases) && aliases.indexOf(key) >= 0;
+  if (!labels[key] || (isCurrentDiscordIdentity && displayName)) {
+    labels[key] = isCurrentDiscordIdentity && displayName ? displayName : trimmed;
   }
 
   if (!counts[key]) {
@@ -1944,10 +1952,6 @@ function initModal() {
     document.getElementById(id).addEventListener('change', validateForm);
   });
 
-  document.getElementById('submit-author-display').addEventListener('change', function () {
-    rememberPreferredAuthorName(this.value);
-  });
-
   document.getElementById('submit-category').addEventListener('change', function () {
     if (previewMarker) {
       updatePreviewMarker(previewMarker.getLatLng());
@@ -1993,7 +1997,9 @@ function openModalForSubmit(options) {
   document.getElementById('btn-create-issue').textContent = getSubmissionButtonText('submit');
 
   var authorEl = document.getElementById('submit-author-display');
-  authorEl.value = getPreferredAuthorName();
+  authorEl.value = getVerifiedSubmitAuthorName();
+  authorEl.readOnly = true;
+  authorEl.title = options.loginDisabled ? 'Login with Discord to submit.' : 'Locked to your verified Discord name.';
 
   updateCoordsDisplay();
   validateForm();
@@ -2036,7 +2042,9 @@ function openModalForEdit(m) {
   document.getElementById('btn-create-issue').textContent = getSubmissionButtonText('edit');
 
   var authorEl = document.getElementById('submit-author-display');
-  authorEl.value = getPreferredAuthorName();
+  authorEl.value = getVerifiedSubmitAuthorName();
+  authorEl.readOnly = true;
+  authorEl.title = 'Locked to your verified Discord name.';
 
   updateCoordsDisplay();
   validateForm();
@@ -2230,7 +2238,9 @@ function submitToGitHubIssue() {
 
   var category = document.getElementById('submit-category').value;
   var name = document.getElementById('submit-name').value.trim();
-  var authorName = document.getElementById('submit-author-display').value.trim() || getPreferredAuthorName();
+  var authorName = getVerifiedSubmitAuthorName();
+  var authorEl = document.getElementById('submit-author-display');
+  if (authorEl) authorEl.value = authorName;
   var description = document.getElementById('submit-description').value.trim();
   var region = document.getElementById('submit-region').value.trim();
 

@@ -102,10 +102,12 @@ export default {
         const mode = inferMode(marker, body);
 
         const verifiedUser = await getVerifiedDiscordUser(body.discordAccessToken);
-        if (verifiedUser) {
-          body.authorName = verifiedUser.displayName;
-          body.authorDiscordId = verifiedUser.id;
+        if (!verifiedUser) {
+          throw httpError(401, 'Discord login is required for marker submissions.');
         }
+
+        body.authorName = verifiedUser.displayName;
+        body.authorDiscordId = verifiedUser.id;
 
         const screenshotUrl = await maybeUploadScreenshot(body.screenshot, marker, env);
         const issue = await createGitHubIssue(body, marker, mode, screenshotUrl, env);
