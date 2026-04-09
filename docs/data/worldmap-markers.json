@@ -6801,5 +6801,21 @@
     "contributedBy": "rike_arx7",
     "lastEditedBy": "Azurak | TRG",
     "lastEditedAt": "2026-04-09T06:39:02.031Z"
+  },
+  {
+    "id": "c_0487d1b4",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Sylvan Hockley",
+    "description": "",
+    "x": 7821,
+    "y": 1767,
+    "floor": "surface",
+    "label": "",
+    "region": "Ostera",
+    "trigger": "",
+    "contributedBy": "Hironet11",
+    "screenshot": "community-screenshots/npc_reputation_86e7b18658.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
