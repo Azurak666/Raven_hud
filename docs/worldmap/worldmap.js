@@ -878,7 +878,11 @@ function rememberPreferredAuthorName(name) {
 }
 
 function normalizeContributorName(name) {
-  return String(name || '').trim().toLowerCase();
+  var trimmed = String(name || '').trim().toLowerCase();
+  if (!trimmed) return '';
+
+  var baseName = trimmed.split('|')[0].trim();
+  return baseName.replace(/\s+/g, ' ');
 }
 
 function getContributorAliases() {
@@ -1673,7 +1677,7 @@ function showLeaderboard() {
       row.innerHTML =
         '<span class="leaderboard-rank">' + (medal || '#' + rank) + '</span>' +
         '<span class="leaderboard-name">' + sorted[i].name + '</span>' +
-        '<span class="leaderboard-count">' + stats.submit + ' add' + (stats.submit > 1 ? 's' : '') + '</span>';
+        '<span class="leaderboard-count">' + stats.submit + ' contribution' + (stats.submit === 1 ? '' : 's') + '</span>';
       body.appendChild(row);
     }
   }
