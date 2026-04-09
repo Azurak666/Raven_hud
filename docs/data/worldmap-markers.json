@@ -6785,5 +6785,19 @@
     "region": "Darzuac",
     "trigger": "",
     "contributedBy": "Azurak"
+  },
+  {
+    "id": "c_083eda96",
+    "source": "base",
+    "category": "reputation_shiny",
+    "name": "bigchest in cellar",
+    "description": "2x ruby",
+    "x": 3765,
+    "y": 2971,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "rike_arx7"
   }
 ]
