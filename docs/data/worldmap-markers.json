@@ -6868,5 +6868,20 @@
     "trigger": "",
     "contributedBy": "Jybrael | SUS",
     "screenshot": "community-screenshots/reputation_shiny_040f2d116b.webp"
+  },
+  {
+    "id": "c_56df54ea",
+    "source": "base",
+    "category": "reputation_shiny",
+    "name": "Sajecho goblin cave shiny 4",
+    "description": "Key from shiny 3",
+    "x": 3424,
+    "y": 2614,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "rike_arx7",
+    "screenshot": "community-screenshots/reputation_shiny_f77b5b40fe.webp"
   }
 ]
