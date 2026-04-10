@@ -1252,6 +1252,10 @@ function setSelectedMarker(leafletMarker) {
   }
 }
 
+function shouldShowMarkerRegion(marker) {
+  return !!(marker && marker.region && marker.category !== 'reputation_shiny');
+}
+
 function showDetail(m) {
   currentDetailMarker = m;
   var panel = document.getElementById('detail-panel');
@@ -1267,7 +1271,7 @@ function showDetail(m) {
   }
 
   var regionEl = document.getElementById('detail-region');
-  if (m.region) {
+  if (shouldShowMarkerRegion(m)) {
     regionEl.textContent = m.region;
     regionEl.style.display = 'block';
   } else {
@@ -1770,7 +1774,7 @@ function buildSidebar() {
           nameSpan.className = 'marker-item-name';
           nameSpan.textContent = (shinyState[marker.id] ? '\u2713 ' : '') + marker.name;
           item.appendChild(nameSpan);
-          if (marker.region) {
+          if (shouldShowMarkerRegion(marker)) {
             var regionSpan = document.createElement('span');
             regionSpan.className = 'marker-item-region';
             regionSpan.textContent = marker.region;
