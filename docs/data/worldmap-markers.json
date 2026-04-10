@@ -3507,20 +3507,6 @@
     "screenshot": "community-screenshots/c_cd3c138f.webp"
   },
   {
-    "id": "c_44ae7c43",
-    "category": "reputation_shiny",
-    "name": "Jackal shiny",
-    "x": 5891,
-    "y": 3470,
-    "floor": "surface",
-    "region": "Dras Ashar",
-    "description": "",
-    "source": "base",
-    "icon": "",
-    "contributedBy": "Azurak",
-    "screenshot": "community-screenshots/c_44ae7c43.webp"
-  },
-  {
     "id": "c_9fd8e0cd",
     "source": "base",
     "category": "reputation_shiny",
