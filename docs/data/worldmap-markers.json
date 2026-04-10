@@ -6853,5 +6853,20 @@
     "trigger": "",
     "contributedBy": "Azurak | TRG",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_bc944b71",
+    "source": "base",
+    "category": "reputation_shiny",
+    "name": "Forsaken Vampire Shiny 4",
+    "description": "All the way in the basement. The coffin contains 1 ravencrest emblem",
+    "x": 4831,
+    "y": 1664,
+    "floor": "surface",
+    "label": "",
+    "region": "Forsaken Mountains",
+    "trigger": "",
+    "contributedBy": "Jybrael | SUS",
+    "screenshot": "community-screenshots/reputation_shiny_040f2d116b.webp"
   }
 ]
