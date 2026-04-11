@@ -453,9 +453,20 @@ function getCropCycleHours(crop) {
 
 function getSingleCycleTimeLabel(crops) {
   if (crops.length === 1) {
-    return getGrowthTime(crops[0]);
+    return formatGrowthTimeDisplay(getGrowthTime(crops[0]));
   }
   return '1 cycle each';
+}
+
+function formatGrowthTimeDisplay(timeStr) {
+  if (!timeStr || timeStr === '?') return timeStr;
+
+  const hours = parseTimeStringToHours(timeStr);
+  if (hours <= 0) return timeStr;
+
+  // Format: round to 1 decimal, drop trailing zeros, then add unit
+  let formatted = Math.round(hours * 10) / 10;
+  return `${formatted}H`;
 }
 
 function getFarmingSimulationWindowConfig(crops, windowMode = 'single') {
@@ -512,7 +523,7 @@ function renderCropList() {
       const isSelected = selectedCrops.has(crop.id);
       const materials = getVisibleCropYields(crop).map((y) => y.resource).join(', ');
       const xpInfo = getCropXP(crop);
-      const growthTime = getGrowthTime(crop);
+      const growthTime = formatGrowthTimeDisplay(getGrowthTime(crop));
       const size = crop.size || `${crop.width || 1}x${crop.height || 1}`;
 
       return `
