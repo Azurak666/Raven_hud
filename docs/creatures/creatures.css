@@ -19,7 +19,7 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   background: linear-gradient(180deg, #15110f 0%, #1d1814 100%);
   color: var(--text-primary);
 }
@@ -28,9 +28,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 44px;
-  padding: 0 14px;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 12px;
   border-bottom: 1px solid var(--border);
   background: #231f1b;
   position: sticky;
@@ -51,13 +51,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   min-height: auto;
-  padding: 5px 9px;
+  padding: 4px 8px;
   border-radius: 8px;
   color: var(--accent);
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
@@ -126,10 +126,10 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   background: var(--bg-soft);
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .discord-name {
@@ -152,15 +152,15 @@ body {
 }
 
 .page-shell {
-  padding: 14px;
+  padding: 12px;
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   align-items: end;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 
@@ -192,11 +192,11 @@ body {
 }
 
 .search-control {
-  min-width: 240px;
+  min-width: 220px;
 }
 
 .select-control {
-  min-width: 150px;
+  min-width: 140px;
 }
 
 .control input,
@@ -205,7 +205,7 @@ body {
   border-radius: 8px;
   background: var(--bg-card);
   color: var(--text-primary);
-  padding: 8px 10px;
+  padding: 7px 9px;
   outline: none;
 }
 
@@ -216,8 +216,8 @@ body {
 
 .layout {
   display: grid;
-  grid-template-columns: 330px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 12px;
   align-items: start;
 }
 
@@ -258,8 +258,8 @@ body {
 .creature-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: calc(100vh - 220px);
+  gap: 7px;
+  max-height: calc(100vh - 180px);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #7b5a34 #221b15;
@@ -290,8 +290,8 @@ body {
 
 .creature-item {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) auto;
-  gap: 8px;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 7px;
   align-items: center;
   width: 100%;
   border: 1px solid var(--border);
@@ -299,7 +299,7 @@ body {
   background: rgba(25, 21, 18, 0.75);
   color: inherit;
   text-align: left;
-  padding: 8px;
+  padding: 7px;
   cursor: pointer;
   transition: 0.16s ease;
 }
@@ -315,8 +315,8 @@ body {
 }
 
 .creature-thumb {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   background: #16120f;
   border: 1px solid var(--border);
@@ -358,8 +358,8 @@ body {
 }
 
 .detail-panel {
-  padding: 14px;
-  max-height: calc(100vh - 210px);
+  padding: 12px;
+  max-height: calc(100vh - 180px);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #7b5a34 #221b15;
@@ -380,15 +380,15 @@ body {
 
 .detail-hero {
   display: grid;
-  grid-template-columns: 82px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .detail-hero-image {
-  width: 82px;
-  height: 82px;
+  width: 74px;
+  height: 74px;
   border-radius: 12px;
   overflow: hidden;
   background: #16120f;
@@ -408,7 +408,7 @@ body {
 
 .detail-title h2 {
   margin: 0 0 4px;
-  font-size: 1.3rem;
+  font-size: 1.18rem;
 }
 
 .detail-subtitle {
@@ -452,14 +452,14 @@ body {
 
 .drops-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px;
 }
 
 .drop-card {
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 9px;
+  padding: 8px;
   background: rgba(25, 21, 18, 0.75);
 }
 
