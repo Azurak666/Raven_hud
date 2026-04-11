@@ -9192,6 +9192,40 @@ button:focus-visible {
   font-weight: 600;
 }
 
+.sim-hero-controls-mode {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.sim-time-mode-btn {
+  min-width: 62px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--game-bg-base);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-time-mode-btn:hover {
+  border-color: rgba(212, 175, 55, 0.35);
+  color: var(--text-primary);
+}
+
+.sim-time-mode-btn.active {
+  background: rgba(212, 175, 55, 0.14);
+  border-color: rgba(212, 175, 55, 0.38);
+  color: var(--game-gold);
+}
+
+.sim-time-window-note {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
 .farming-lands-grid .sim-land-header {
   display: flex;
   justify-content: space-between;

@@ -21,6 +21,7 @@ const currentCropWeights = {}; // User-specified weights per crop (percentage, d
 const currentCropMarketPrices = {}; // User-entered sell price per yielded material
 const HIDDEN_YIELD_RESOURCES = new Set(['three-leaf clover', 'fertilizer', 'dense log']);
 let lastFarmingSimulationResults = null; // Store for Start Session
+let farmingSimulationWindowMode = 'single'; // 'single' | '24h'
 
 /**
  * Initialize the farming tab
@@ -457,6 +458,37 @@ function getSingleCycleTimeLabel(crops) {
   return '1 cycle each';
 }
 
+function getFarmingSimulationWindowConfig(crops, windowMode = 'single') {
+  if (windowMode === '24h') {
+    return {
+      singleCycleMode: false,
+      timeWindowHours: 24,
+      displayTimeLabel: '24H'
+    };
+  }
+
+  const cycleTimeHours = crops.length === 1 ? getCropCycleHours(crops[0]) : 0;
+  return {
+    singleCycleMode: true,
+    timeWindowHours: cycleTimeHours,
+    displayTimeLabel: getSingleCycleTimeLabel(crops)
+  };
+}
+
+function getFarmingWindowCycleSummary(crops, timeWindowHours, singleCycleMode) {
+  if (singleCycleMode) return '';
+
+  if (crops.length === 1) {
+    const cycleHours = getCropCycleHours(crops[0]);
+    if (cycleHours > 0) {
+      const cycles = Math.max(1, Math.floor(timeWindowHours / cycleHours));
+      return `${cycles} harvest cycles in ${timeWindowHours}h`;
+    }
+  }
+
+  return `Harvests scaled to a ${timeWindowHours}h window`;
+}
+
 /**
  * Render the crop list
  */
@@ -728,8 +760,12 @@ function closeFarmingSimulationModal() {
 /**
  * Open the farming simulation modal
  */
-async function openFarmingSimulationModal() {
+async function openFarmingSimulationModal(windowMode = null) {
   if (!farmingSimulationModal) createFarmingSimulationModal();
+
+  if (windowMode === 'single' || windowMode === '24h') {
+    farmingSimulationWindowMode = windowMode;
+  }
 
   farmingSimulationModal.classList.remove('hidden');
   const modalBody = document.getElementById('farmingSimulationModalBody');
@@ -765,18 +801,18 @@ async function openFarmingSimulationModal() {
     });
 
     // Call simulation API with weights
-    const cycleTimeHours = crops.length === 1 ? getCropCycleHours(crops[0]) : 0;
+    const simulationWindow = getFarmingSimulationWindowConfig(crops, farmingSimulationWindowMode);
     const results = await window.electronAPI.simulateFarmingSelection({
       selectedCrops: cropIds,
       ownedLands: ownedLandsData.ownedLands,
-      timeWindowHours: cycleTimeHours,
+      timeWindowHours: simulationWindow.timeWindowHours,
       cropWeights: currentCropWeights,
-      singleCycleMode: true
+      singleCycleMode: simulationWindow.singleCycleMode
     });
 
-    results.singleCycleMode = true;
-    results.displayTimeLabel = getSingleCycleTimeLabel(crops);
-    results.displayTimeHours = cycleTimeHours;
+    results.singleCycleMode = simulationWindow.singleCycleMode;
+    results.displayTimeLabel = simulationWindow.displayTimeLabel;
+    results.displayTimeHours = simulationWindow.timeWindowHours;
 
     // Store for Start Session
     lastFarmingSimulationResults = results;
@@ -986,6 +1022,10 @@ function renderFarmingSimulationResults(results, selectedCrops) {
   const timeWindow = results?.displayTimeHours || 0;
   const timeLabel = results?.displayTimeLabel || getSingleCycleTimeLabel(selectedCrops);
   const singleCycleMode = results?.singleCycleMode !== false;
+  const windowCycleSummary = getFarmingWindowCycleSummary(selectedCrops, timeWindow, singleCycleMode);
+  const selectedLandSubtitle = singleCycleMode
+    ? 'Single-cycle yield and layout preview for the currently selected land.'
+    : '24-hour total yield and layout preview for the currently selected land.';
   const summary = results?.summary || {};
   const baseYields = filterVisibleYieldTotals(results?.yields || {});
   const yields = applyPlentifulBonusToYields(baseYields);
@@ -1185,6 +1225,11 @@ function renderFarmingSimulationResults(results, selectedCrops) {
               <span class="label">Grow Time</span>
               <span class="time-value-static">${timeLabel}</span>
             </div>
+            <div class="sim-hero-controls-mode" role="group" aria-label="Simulation window">
+              <button type="button" class="sim-time-mode-btn ${singleCycleMode ? 'active' : ''}" data-sim-window="single">1 cycle</button>
+              <button type="button" class="sim-time-mode-btn ${singleCycleMode ? '' : 'active'}" data-sim-window="24h">24h</button>
+            </div>
+            ${windowCycleSummary ? `<div class="sim-time-window-note">${windowCycleSummary}</div>` : ''}
           </div>
         </div>
         <div class="sim-hero-row">
@@ -1207,7 +1252,7 @@ function renderFarmingSimulationResults(results, selectedCrops) {
         <div class="sim-lands-header">
           <span class="sim-lands-title">Selected Land</span>
         </div>
-        <div class="sim-lands-subtitle">Single-cycle yield and layout preview for the currently selected land.</div>
+        <div class="sim-lands-subtitle">${selectedLandSubtitle}</div>
         <div class="sim-lands-grid">
           ${landCardsHtml || '<div class="no-lands">No lands configured</div>'}
         </div>
@@ -1240,6 +1285,16 @@ function renderFarmingSimulationResults(results, selectedCrops) {
   if (priceInputs.length) {
     updateFarmingProfitSummary(modalBody, yields, totalPlantingCost);
   }
+
+  const modeButtons = modalBody.querySelectorAll('.sim-time-mode-btn[data-sim-window]');
+  modeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.simWindow;
+      if (mode !== 'single' && mode !== '24h') return;
+      if ((mode === 'single' && singleCycleMode) || (mode === '24h' && !singleCycleMode)) return;
+      openFarmingSimulationModal(mode);
+    });
+  });
 
   // Add crop balance slider handlers
   const balanceSliders = document.querySelectorAll('.farming-balance .balance-slider');
