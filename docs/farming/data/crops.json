@@ -409,7 +409,7 @@
       "name": "Cotton Tree",
       "category": "farming",
       "level": 1,
-      "growthTime": "5H 30m",
+      "growthTime": "4H 30m",
       "gatheringMultiplier": 3,
       "size": "2x2",
       "width": 2,
@@ -433,13 +433,13 @@
       ],
       "icon": "☁️",
       "gathering": {
-        "time": "5.5H",
+        "time": "4.5H",
         "yields": [],
-        "timeMinutes": 330,
+        "timeMinutes": 270,
         "professionXP": 1378,
         "legacyXP": null
       },
-      "growthTimeMinutes": 330,
+      "growthTimeMinutes": 270,
       "plantingCost": 1320
     },
     {
