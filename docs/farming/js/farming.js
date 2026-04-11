@@ -10,7 +10,16 @@ const selectedCrops = new Set(); // Set of crop IDs
 let farmingUserProfile = null;
 let farmingSimulationModal = null;
 let farmingOwnedLandsData = null;
+let selectedFarmingLandType = 'SMALL_COMMUNITY';
+const FARMING_BUFFS_STORAGE_KEY = 'rhud_farming_plentiful_buffs';
+let farmingPlentifulBuffs = {
+  passive16: false,
+  house5: false,
+  house10: false
+};
 const currentCropWeights = {}; // User-specified weights per crop (percentage, default 100)
+const currentCropMarketPrices = {}; // User-entered sell price per yielded material
+const HIDDEN_YIELD_RESOURCES = new Set(['three-leaf clover', 'fertilizer', 'dense log']);
 let lastFarmingSimulationResults = null; // Store for Start Session
 
 /**
@@ -19,6 +28,8 @@ let lastFarmingSimulationResults = null; // Store for Start Session
 async function initFarming() {
   const container = document.getElementById('cropItems');
   try {
+    loadFarmingBuffState();
+
     // Initialize crop icons cache first (shared utility)
     if (window.CropIcons) {
       await window.CropIcons.init();
@@ -75,6 +86,178 @@ function setupFarmingFilters() {
   }
 }
 
+function isHiddenYieldResource(resourceName) {
+  return HIDDEN_YIELD_RESOURCES.has(String(resourceName || '').trim().toLowerCase());
+}
+
+function getVisibleCropYields(crop) {
+  return (crop?.yields || []).filter((yieldInfo) => !isHiddenYieldResource(yieldInfo.resource));
+}
+
+function filterVisibleYieldTotals(yields) {
+  return Object.fromEntries(
+    Object.entries(yields || {}).filter(([resource]) => !isHiddenYieldResource(resource))
+  );
+}
+
+const FARMING_LAND_LABELS = {
+  SMALL_COMMUNITY: 'Small Community',
+  MEDIUM_COMMUNITY: 'Medium Community',
+  LARGE_COMMUNITY: 'Large Community',
+  NFT_SMALL: 'NFT Small',
+  NFT_MEDIUM: 'NFT Medium',
+  NFT_LARGE: 'NFT Large',
+  NFT_STRONGHOLD: 'NFT Stronghold',
+  NFT_FORT: 'NFT Fort'
+};
+
+const FARMING_LAND_TILES = {
+  SMALL_COMMUNITY: 56,
+  MEDIUM_COMMUNITY: 91,
+  LARGE_COMMUNITY: 137,
+  NFT_SMALL: 100,
+  NFT_MEDIUM: 144,
+  NFT_LARGE: 225,
+  NFT_STRONGHOLD: 484,
+  NFT_FORT: 900
+};
+
+function buildFarmingOwnedLandEntries() {
+  const order = [
+    'SMALL_COMMUNITY',
+    'MEDIUM_COMMUNITY',
+    'LARGE_COMMUNITY',
+    'NFT_SMALL',
+    'NFT_MEDIUM',
+    'NFT_LARGE',
+    'NFT_STRONGHOLD',
+    'NFT_FORT'
+  ];
+
+  return order.map((landType) => ({
+    id: landType,
+    landType,
+    label: FARMING_LAND_LABELS[landType] || landType,
+    tiles: FARMING_LAND_TILES[landType] || 0,
+    hasHouse: landType.startsWith('NFT_')
+  }));
+}
+
+function getSelectedFarmingLandMeta() {
+  const landType = selectedFarmingLandType || 'SMALL_COMMUNITY';
+  return {
+    landType,
+    label: FARMING_LAND_LABELS[landType] || landType,
+    tiles: FARMING_LAND_TILES[landType] || 0,
+    hasHouse: landType.startsWith('NFT_')
+  };
+}
+
+function setSelectedFarmingLandType(landType) {
+  if (!landType || !FARMING_LAND_LABELS[landType]) return;
+
+  selectedFarmingLandType = landType;
+  renderFarmingLandsSummary();
+  renderSelectionPanel();
+}
+
+function loadFarmingBuffState() {
+  try {
+    const raw = localStorage.getItem(FARMING_BUFFS_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    farmingPlentifulBuffs = {
+      passive16: Boolean(parsed?.passive16),
+      house5: Boolean(parsed?.house5),
+      house10: Boolean(parsed?.house10)
+    };
+
+    if (farmingPlentifulBuffs.house5 && farmingPlentifulBuffs.house10) {
+      farmingPlentifulBuffs.house5 = false;
+    }
+  } catch (error) {
+    console.warn('Failed to load farming buffs state:', error);
+  }
+}
+
+function saveFarmingBuffState() {
+  try {
+    localStorage.setItem(FARMING_BUFFS_STORAGE_KEY, JSON.stringify(farmingPlentifulBuffs));
+  } catch (error) {
+    console.warn('Failed to save farming buffs state:', error);
+  }
+}
+
+function getPlentifulChancePercent() {
+  let chance = 0;
+  if (farmingPlentifulBuffs.passive16) chance += 16;
+  if (farmingPlentifulBuffs.house10) {
+    chance += 10;
+  } else if (farmingPlentifulBuffs.house5) {
+    chance += 5;
+  }
+  return chance;
+}
+
+function getPlentifulExpectedMultiplier() {
+  const chancePct = getPlentifulChancePercent();
+  return 1 + (chancePct / 100) * 0.5;
+}
+
+function getPrimaryVisibleYield(crop) {
+  const yields = getVisibleCropYields(crop);
+  if (!yields.length) return null;
+  return yields[0];
+}
+
+function getLandYieldRangeForCrop(landEntry, crop) {
+  if (!landEntry || !crop) return null;
+
+  const primaryYield = getPrimaryVisibleYield(crop);
+  if (!primaryYield) return null;
+
+  const tileFootprint = Math.max((crop.width || 1) * (crop.height || 1), 1);
+  const slots = Math.max(Math.floor((landEntry.tiles || 0) / tileFootprint), 0);
+  const baseMin = Number(primaryYield.min ?? primaryYield.avg ?? 0);
+  const baseMax = Number(primaryYield.max ?? primaryYield.avg ?? baseMin);
+  const plentifulMultiplier = getPlentifulExpectedMultiplier();
+
+  return {
+    resource: primaryYield.resource,
+    min: Math.round(baseMin * slots * plentifulMultiplier),
+    max: Math.round(baseMax * slots * plentifulMultiplier)
+  };
+}
+
+function applyPlentifulBonusToYields(yields) {
+  const multiplier = getPlentifulExpectedMultiplier();
+  const boosted = {};
+
+  Object.entries(yields || {}).forEach(([material, data]) => {
+    const baseTotal = Number(data?.totalYield || 0);
+    boosted[material] = {
+      ...data,
+      totalYield: Math.round(baseTotal * multiplier)
+    };
+  });
+
+  return boosted;
+}
+
+function openFarmingLandInspector(landType) {
+  if (!landType) return;
+
+  const landTypeSelect = document.getElementById('landTypeSelect');
+  const landTab = document.querySelector('[data-tab="land"]');
+
+  if (landTypeSelect) {
+    landTypeSelect.value = landType;
+    landTypeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  landTab?.click();
+}
+
 /**
  * Render the lands summary panel in farming tab
  */
@@ -83,47 +266,44 @@ async function renderFarmingLandsSummary() {
   if (!container) return;
 
   try {
-    const ownedLandsData = await window.electronAPI.getOwnedLands();
-
-    if (!ownedLandsData.totalTiles || ownedLandsData.totalTiles.total === 0) {
-      container.innerHTML = `
-        <div class="lands-empty-state">
-          <p>No lands configured yet</p>
-          <p class="empty-state-hint">Use the button below or visit the Land Simulator tab to configure your lands.</p>
-        </div>
-      `;
-      return;
+    const availableLandEntries = buildFarmingOwnedLandEntries();
+    if (!selectedFarmingLandType) {
+      selectedFarmingLandType = availableLandEntries[0]?.landType || 'SMALL_COMMUNITY';
     }
 
-    const landNames = {
-      SMALL_COMMUNITY: 'Small Community',
-      MEDIUM_COMMUNITY: 'Medium Community',
-      LARGE_COMMUNITY: 'Large Community',
-      NFT_SMALL: 'NFT Small',
-      NFT_MEDIUM: 'NFT Medium',
-      NFT_LARGE: 'NFT Large',
-      NFT_STRONGHOLD: 'NFT Stronghold',
-      NFT_FORT: 'NFT Fort'
-    };
+    const plentifulChance = getPlentifulChancePercent();
 
     let landsHtml = '<div class="lands-summary-section">';
-    landsHtml += '<div class="lands-summary-section-title">Owned Lands</div>';
+    landsHtml += '<div class="lands-summary-section-title">Pick a Land</div>';
+    landsHtml += '<div class="farming-land-select-hint">Choose one land type and all farming results will use only that land.</div>';
+    landsHtml += '<div class="farming-land-select-list">';
 
-    Object.entries(ownedLandsData.ownedLands || {}).forEach(([type, count]) => {
-      if (count > 0) {
-        landsHtml += `
-          <div class="land-summary-row">
-            <span>${landNames[type]}</span>
-            <span class="count">\u00d7${count}</span>
-          </div>
-        `;
-      }
+    availableLandEntries.forEach((entry) => {
+      landsHtml += `
+        <button type="button" class="farming-land-select-btn ${entry.landType === selectedFarmingLandType ? 'selected' : ''}" data-land-type="${entry.landType}" data-land-id="${entry.id}" title="Use ${entry.label} for farming simulation">
+          <span class="farming-land-select-name">${entry.label}</span>
+          <span class="farming-land-select-meta">${entry.tiles} tiles${entry.hasHouse ? ' • house' : ''}</span>
+        </button>
+      `;
     });
 
+    landsHtml += '</div>';
     landsHtml += `
-      <div class="land-summary-total">
-        <span>Total Tiles</span>
-        <span>${ownedLandsData.totalTiles.total}</span>
+      <div class="farming-buffs-box">
+        <div class="farming-buffs-title">Plentiful Buffs</div>
+        <label class="farming-buff-row">
+          <input type="checkbox" class="farming-buff-toggle" data-buff="passive16" ${farmingPlentifulBuffs.passive16 ? 'checked' : ''} />
+          <span>Plentiful passive 16%</span>
+        </label>
+        <label class="farming-buff-row">
+          <input type="checkbox" class="farming-buff-toggle" data-buff="house5" ${farmingPlentifulBuffs.house5 ? 'checked' : ''} />
+          <span>House plentiful 5%</span>
+        </label>
+        <label class="farming-buff-row">
+          <input type="checkbox" class="farming-buff-toggle" data-buff="house10" ${farmingPlentifulBuffs.house10 ? 'checked' : ''} />
+          <span>House plentiful 10%</span>
+        </label>
+        <div class="farming-buff-note">Expected plentiful chance: ${plentifulChance}% for +50% materials</div>
       </div>
     </div>`;
 
@@ -139,13 +319,36 @@ async function renderFarmingLandsSummary() {
  * Setup event handlers for the farming lands summary panel
  */
 function setupFarmingLandsSummaryHandlers() {
-  const configureBtn = document.getElementById('farmingConfigureLandsBtn');
-  if (configureBtn) {
-    configureBtn.addEventListener('click', () => {
-      // Switch to Land tab
-      const landTab = document.querySelector('[data-tab="land"]');
-      if (landTab) {
-        landTab.click();
+  const landsSummaryContent = document.getElementById('farmingLandsSummaryContent');
+  if (landsSummaryContent) {
+    landsSummaryContent.addEventListener('click', (event) => {
+      const landBtn = event.target.closest('.farming-land-select-btn');
+      if (landBtn) {
+        setSelectedFarmingLandType(landBtn.dataset.landType);
+      }
+    });
+
+    landsSummaryContent.addEventListener('change', (event) => {
+      const buffToggle = event.target.closest('.farming-buff-toggle');
+      if (!buffToggle) return;
+
+      const buffKey = buffToggle.dataset.buff;
+      if (!Object.prototype.hasOwnProperty.call(farmingPlentifulBuffs, buffKey)) return;
+
+      farmingPlentifulBuffs[buffKey] = Boolean(buffToggle.checked);
+
+      if (buffKey === 'house5' && farmingPlentifulBuffs.house5) {
+        farmingPlentifulBuffs.house10 = false;
+      }
+      if (buffKey === 'house10' && farmingPlentifulBuffs.house10) {
+        farmingPlentifulBuffs.house5 = false;
+      }
+
+      saveFarmingBuffState();
+      renderFarmingLandsSummary();
+
+      if (farmingSimulationModal && !farmingSimulationModal.classList.contains('hidden')) {
+        openFarmingSimulationModal();
       }
     });
   }
@@ -161,12 +364,12 @@ function getFilteredCrops() {
   const categoryFilter = document.getElementById('cropCategoryFilter');
 
   const searchTerm = (searchInput?.value || '').toLowerCase().trim();
-  const category = categoryFilter?.value || 'all';
+  const category = (categoryFilter?.value || 'all').toLowerCase();
 
   return cropData.items
     .filter((crop) => {
       // Filter by category
-      if (category !== 'all' && crop.category !== category) return false;
+      if (category !== 'all' && String(crop.category || '').toLowerCase() !== category) return false;
 
       // Filter by search term
       if (searchTerm) {
@@ -218,6 +421,42 @@ function getGrowthTime(crop) {
   return crop.gathering?.time || crop.growthTime || '?';
 }
 
+function parseTimeStringToHours(timeStr) {
+  if (!timeStr) return 0;
+
+  const normalized = String(timeStr).trim();
+  let hours = 0;
+
+  const dayMatch = normalized.match(/(\d+(?:\.\d+)?)\s*[dD]/);
+  if (dayMatch) hours += parseFloat(dayMatch[1]) * 24;
+
+  const hourMatch = normalized.match(/(\d+(?:\.\d+)?)\s*[hH]/);
+  if (hourMatch) hours += parseFloat(hourMatch[1]);
+
+  const minMatch = normalized.match(/(\d+(?:\.\d+)?)\s*[mM]/);
+  if (minMatch) hours += parseFloat(minMatch[1]) / 60;
+
+  return hours;
+}
+
+function getCropCycleHours(crop) {
+  const minutes =
+    crop.gathering?.timeMinutes || crop.butchering?.timeMinutes || crop.growthTimeMinutes || 0;
+
+  if (minutes > 0) {
+    return minutes / 60;
+  }
+
+  return parseTimeStringToHours(getGrowthTime(crop));
+}
+
+function getSingleCycleTimeLabel(crops) {
+  if (crops.length === 1) {
+    return getGrowthTime(crops[0]);
+  }
+  return '1 cycle each';
+}
+
 /**
  * Render the crop list
  */
@@ -239,20 +478,18 @@ function renderCropList() {
   container.innerHTML = crops
     .map((crop) => {
       const isSelected = selectedCrops.has(crop.id);
-      const materials = (crop.yields || []).map((y) => y.resource).join(', ');
+      const materials = getVisibleCropYields(crop).map((y) => y.resource).join(', ');
       const xpInfo = getCropXP(crop);
       const growthTime = getGrowthTime(crop);
       const size = crop.size || `${crop.width || 1}x${crop.height || 1}`;
 
       return `
-        <div class="crop-item ${isSelected ? 'selected' : ''}" data-id="${crop.id}">
-          <div class="crop-checkbox">
-            <input type="checkbox" ${isSelected ? 'checked' : ''} aria-label="Select ${crop.name}" />
-          </div>
+        <div class="crop-item ${isSelected ? 'selected' : ''}" data-id="${crop.id}" aria-pressed="${isSelected ? 'true' : 'false'}">
           <div class="crop-content">
             <div class="crop-header">
               <span class="crop-icon">${crop.icon || '🌱'}</span>
               <span class="crop-name">${crop.name}</span>
+              ${isSelected ? '<span class="crop-selected-badge">Selected</span>' : ''}
             </div>
             <div class="crop-materials">${materials || 'No yields'}</div>
             <div class="crop-stats">
@@ -279,15 +516,17 @@ function renderCropList() {
  * Toggle crop selection
  */
 function toggleCropSelection(cropId) {
-  if (selectedCrops.has(cropId)) {
-    selectedCrops.delete(cropId);
-  } else {
+  const isAlreadySelected = selectedCrops.has(cropId);
+
+  selectedCrops.clear();
+
+  if (!isAlreadySelected) {
     selectedCrops.add(cropId);
   }
 
-  // Update UI
   renderCropList();
   renderSelectionPanel();
+  renderFarmingLandsSummary();
 }
 
 /**
@@ -297,6 +536,7 @@ function removeCropFromSelection(cropId) {
   selectedCrops.delete(cropId);
   renderCropList();
   renderSelectionPanel();
+  renderFarmingLandsSummary();
 }
 
 /**
@@ -306,6 +546,7 @@ function clearAllSelections() {
   selectedCrops.clear();
   renderCropList();
   renderSelectionPanel();
+  renderFarmingLandsSummary();
 }
 
 /**
@@ -329,7 +570,7 @@ function calculateSelectionSummary() {
 
   crops.forEach((crop) => {
     // Materials
-    (crop.yields || []).forEach((y) => materials.add(y.resource));
+    getVisibleCropYields(crop).forEach((y) => materials.add(y.resource));
 
     // XP (take max of gathering/butchering)
     const xpInfo = getCropXP(crop);
@@ -361,13 +602,16 @@ function renderSelectionPanel() {
   if (crops.length === 0) {
     panel.innerHTML = `
       <div class="selection-empty">
-        <p class="placeholder-text">Select crops from the list to view farming simulation</p>
+        <p class="placeholder-text">Select one crop from the list to view farming simulation</p>
       </div>
     `;
     return;
   }
 
   const summary = calculateSelectionSummary();
+  const selectedLand = getSelectedFarmingLandMeta();
+  const selectedCrop = crops[0] || null;
+  const selectedLandYieldRange = getLandYieldRangeForCrop(selectedLand, selectedCrop);
 
   panel.innerHTML = `
     <div class="selection-list">
@@ -385,21 +629,34 @@ function renderSelectionPanel() {
     </div>
     <div class="selection-summary">
       <div class="summary-row">
+        <span class="summary-label">Land:</span>
+        <span class="summary-value">${selectedLand.label}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Land tiles:</span>
+        <span class="summary-value">${selectedLand.tiles}</span>
+      </div>
+      <div class="summary-row">
         <span class="summary-label">Materials:</span>
         <span class="summary-value">${summary.materials.slice(0, 5).join(', ')}${summary.materials.length > 5 ? ` +${summary.materials.length - 5} more` : ''}</span>
       </div>
+      ${selectedLandYieldRange ? `
+      <div class="summary-row">
+        <span class="summary-label">Expected yield:</span>
+        <span class="summary-value">${selectedLandYieldRange.min}-${selectedLandYieldRange.max} ${selectedLandYieldRange.resource}</span>
+      </div>` : ''}
       <div class="summary-row">
         <span class="summary-label">Total XP (base):</span>
         <span class="summary-value">${summary.totalXP.toLocaleString()}</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Total tiles:</span>
+        <span class="summary-label">Crop footprint:</span>
         <span class="summary-value">${summary.totalTiles}</span>
       </div>
     </div>
     <div class="selection-actions">
       <button class="btn-clear-selection" id="clearSelectionBtn">Clear All</button>
-      <button class="btn-simulate-farming" id="simulateFarmingBtn">Simulate Farming</button>
+      <button class="btn-simulate-farming" id="simulateFarmingBtn">Simulate ${selectedLand.label}</button>
     </div>
   `;
 
@@ -479,21 +736,22 @@ async function openFarmingSimulationModal() {
   modalBody.innerHTML = '<div class="loading-spinner">Calculating optimal layouts...</div>';
 
   try {
-    // Get owned lands data
-    const ownedLandsData = await window.electronAPI.getOwnedLands();
-    farmingOwnedLandsData = ownedLandsData;
-    const hasOwnedLands = Object.values(ownedLandsData.ownedLands || {}).some((count) => count > 0);
-
-    if (!hasOwnedLands) {
+    const selectedLand = getSelectedFarmingLandMeta();
+    if (!selectedLand?.landType) {
       modalBody.innerHTML = `
         <div class="no-lands-prompt">
-          <h3>No Lands Configured</h3>
-          <p>Configure your land ownership in the Land Simulator tab to see a personalized farming simulation.</p>
-          <p class="demo-note">In this demo, try selecting some lands in the Land Simulator tab first.</p>
+          <h3>No Land Selected</h3>
+          <p>Pick a land from the left sidebar to see farming results for that land only.</p>
         </div>
       `;
       return;
     }
+
+    const ownedLandsData = {
+      ownedLands: { [selectedLand.landType]: 1 },
+      totalTiles: { total: selectedLand.tiles }
+    };
+    farmingOwnedLandsData = ownedLandsData;
 
     // Get selected crops
     const crops = getSelectedCropObjects();
@@ -507,12 +765,18 @@ async function openFarmingSimulationModal() {
     });
 
     // Call simulation API with weights
+    const cycleTimeHours = crops.length === 1 ? getCropCycleHours(crops[0]) : 0;
     const results = await window.electronAPI.simulateFarmingSelection({
       selectedCrops: cropIds,
       ownedLands: ownedLandsData.ownedLands,
-      timeWindowHours: farmingUserProfile?.simulationTimeWindow || 48,
-      cropWeights: currentCropWeights
+      timeWindowHours: cycleTimeHours,
+      cropWeights: currentCropWeights,
+      singleCycleMode: true
     });
+
+    results.singleCycleMode = true;
+    results.displayTimeLabel = getSingleCycleTimeLabel(crops);
+    results.displayTimeHours = cycleTimeHours;
 
     // Store for Start Session
     lastFarmingSimulationResults = results;
@@ -557,6 +821,161 @@ function sortLandSimulations(landSimulations) {
   });
 }
 
+function renderFarmingLandMiniGrid(land, simulation) {
+  const validTiles = Array.isArray(land?.validTiles) ? land.validTiles : [];
+  const width = land?.width || 1;
+  const height = land?.height || 1;
+  const placements = simulation?.placements || [];
+
+  if (!validTiles.length || !width || !height) return '';
+
+  const validTileSet = new Set(validTiles.map((tile) => `${tile.x},${tile.y}`));
+  const houseSet = new Set();
+
+  if (Array.isArray(land?.houseTilesPreview) && land.houseTilesPreview.length) {
+    land.houseTilesPreview.forEach((tile) => houseSet.add(`${tile.x},${tile.y}`));
+  } else if (land?.hasHouse && land?.housePosition && window.LandLayoutUtils?.getHouseTilesAtPosition) {
+    const houseTiles = window.LandLayoutUtils.getHouseTilesAtPosition(
+      land,
+      land.housePosition,
+      land.houseRotation || 0
+    );
+    houseTiles.house.forEach((tile) => houseSet.add(`${tile.x},${tile.y}`));
+    houseTiles.door.forEach((tile) => houseSet.add(`${tile.x},${tile.y}`));
+    houseTiles.clearance.forEach((tile) => houseSet.add(`${tile.x},${tile.y}`));
+  }
+
+  const maxGridWidth = 240;
+  const cellSize = Math.max(16, Math.min(30, Math.floor(maxGridWidth / width)));
+  const gridWidth = width * cellSize;
+  const gridHeight = height * cellSize;
+
+  let cells = '';
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const key = `${x},${y}`;
+      let className = 'farming-layout-cell empty';
+      if (validTileSet.has(key)) className = 'farming-layout-cell soil';
+      if (houseSet.has(key)) className = 'farming-layout-cell house';
+      cells += `<div class="${className}"></div>`;
+    }
+  }
+
+  const overlays = placements
+    .map((placement) => {
+      const itemWidth = placement.crop?.width || 1;
+      const itemHeight = placement.crop?.height || 1;
+      const sizeClass = `size-${itemWidth}`;
+      const icon = placement.crop?.icon || window.CropIcons?.getIcon?.(placement.crop?.id) || '🌱';
+      return `
+        <div class="farming-layout-item ${sizeClass}" style="left:${placement.x * cellSize}px; top:${placement.y * cellSize}px; width:${itemWidth * cellSize}px; height:${itemHeight * cellSize}px;">
+          <span>${icon}</span>
+        </div>
+      `;
+    })
+    .join('');
+
+  return `
+    <div class="emoji-grid farming-layout-preview" style="width:${gridWidth}px; height:${gridHeight}px; grid-template-columns: repeat(${width}, ${cellSize}px); grid-template-rows: repeat(${height}, ${cellSize}px);">
+      ${cells}
+      ${overlays}
+    </div>
+  `;
+}
+
+function formatSilver(amount) {
+  return `${Math.round(Number(amount) || 0).toLocaleString()} silver`;
+}
+
+function getFarmingFallbackPrice(material, selectedCrops) {
+  let fallbackPrice = 0;
+
+  (selectedCrops || []).some((crop) =>
+    (crop.yields || []).some((yieldInfo) => {
+      if (yieldInfo.resource !== material || yieldInfo.unitCost == null) return false;
+      fallbackPrice = Number(yieldInfo.unitCost) || 0;
+      return true;
+    })
+  );
+
+  return fallbackPrice;
+}
+
+function getDefaultFarmingPriceMap(yields, selectedCrops) {
+  const prices = {};
+
+  Object.keys(yields || {}).forEach((material) => {
+    if (currentCropMarketPrices[material] !== undefined) {
+      prices[material] = Math.max(Number(currentCropMarketPrices[material]) || 0, 0);
+      return;
+    }
+
+    const fallbackPrice = getFarmingFallbackPrice(material, selectedCrops);
+    prices[material] = fallbackPrice;
+    currentCropMarketPrices[material] = fallbackPrice;
+  });
+
+  return prices;
+}
+
+function calculateFarmingProfitSummary(yields, priceMap, plantingCost = 0) {
+  const rowTotals = {};
+  let totalValue = 0;
+
+  Object.entries(yields || {}).forEach(([material, data]) => {
+    const quantity = Number(data?.totalYield || 0);
+    const price = Math.max(Number(priceMap?.[material] || 0), 0);
+    const total = quantity * price;
+    rowTotals[material] = total;
+    totalValue += total;
+  });
+
+  const safePlantingCost = Math.max(Number(plantingCost) || 0, 0);
+
+  return {
+    totalValue,
+    plantingCost: safePlantingCost,
+    profit: totalValue - safePlantingCost,
+    rowTotals
+  };
+}
+
+function updateFarmingProfitSummary(modalBody, yields, plantingCost = 0) {
+  if (!modalBody) return;
+
+  const priceMap = {};
+  const priceInputs = modalBody.querySelectorAll('.farming-price-input');
+
+  priceInputs.forEach((input) => {
+    const material = input.dataset.material;
+    const value = Math.max(Number(input.value || 0), 0);
+    priceMap[material] = value;
+    currentCropMarketPrices[material] = value;
+  });
+
+  const summary = calculateFarmingProfitSummary(yields, priceMap, plantingCost);
+
+  Object.entries(summary.rowTotals).forEach(([material, total]) => {
+    const rowTotal = modalBody.querySelector(`[data-price-total="${material}"]`);
+    if (rowTotal) {
+      rowTotal.textContent = formatSilver(total);
+    }
+  });
+
+  const totalValueEl = modalBody.querySelector('#farmingTotalValue');
+  if (totalValueEl) totalValueEl.textContent = formatSilver(summary.totalValue);
+
+  const plantingCostEl = modalBody.querySelector('#farmingPlantingCost');
+  if (plantingCostEl) plantingCostEl.textContent = formatSilver(summary.plantingCost);
+
+  const profitEl = modalBody.querySelector('#farmingNetProfit');
+  if (profitEl) {
+    profitEl.textContent = formatSilver(summary.profit);
+    profitEl.classList.remove('positive', 'negative');
+    profitEl.classList.add(summary.profit >= 0 ? 'positive' : 'negative');
+  }
+}
+
 /**
  * Render farming simulation results with land minigrids and crop balance sliders
  */
@@ -564,10 +983,14 @@ function renderFarmingSimulationResults(results, selectedCrops) {
   const modalBody = document.getElementById('farmingSimulationModalBody');
   if (!modalBody) return;
 
-  const timeWindow = farmingUserProfile?.simulationTimeWindow || 48;
+  const timeWindow = results?.displayTimeHours || 0;
+  const timeLabel = results?.displayTimeLabel || getSingleCycleTimeLabel(selectedCrops);
+  const singleCycleMode = results?.singleCycleMode !== false;
   const summary = results?.summary || {};
-  const yields = results?.yields || {};
+  const baseYields = filterVisibleYieldTotals(results?.yields || {});
+  const yields = applyPlentifulBonusToYields(baseYields);
   const totalXP = results?.totalXP || 0;
+  const totalPlantingCost = results?.totalPlantingCost || 0;
   const landSimulations = results?.landSimulations || [];
   const cropBreakdown = results?.cropBreakdown || [];
 
@@ -579,6 +1002,8 @@ function renderFarmingSimulationResults(results, selectedCrops) {
     (sum, data) => sum + (data.totalYield || 0),
     0
   );
+  const plentifulChance = getPlentifulChancePercent();
+  const plentifulMultiplier = getPlentifulExpectedMultiplier();
 
   // Build material pills with emojis
   const materialPillsHtml = Object.entries(yields)
@@ -590,6 +1015,75 @@ function renderFarmingSimulationResults(results, selectedCrops) {
       </span>`;
     })
     .join('');
+
+  const priceMap = getDefaultFarmingPriceMap(yields, selectedCrops);
+  const profitSummary = calculateFarmingProfitSummary(yields, priceMap, totalPlantingCost);
+  const profitCalculatorHtml = Object.keys(yields).length
+    ? `
+      <div class="farming-profit-panel">
+        <div class="farming-market-card">
+          <div class="farming-market-title">Expected Yields</div>
+          <div class="farming-yield-list">
+            ${Object.entries(yields)
+              .map(([material, data]) => {
+                const emoji =
+                  window.CropIcons?.getIcon?.(material.toLowerCase().replace(/\s+/g, '_')) || '📦';
+                return `
+                  <div class="farming-yield-row">
+                    <span class="farming-yield-name">${emoji} ${material}</span>
+                    <strong class="farming-yield-amount">${(data.totalYield || 0).toLocaleString()}</strong>
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+
+        <div class="farming-market-card">
+          <div class="farming-market-title-row">
+            <span class="farming-market-title">Sale Prices</span>
+            <button type="button" class="farming-market-reset" id="resetFarmingPricesBtn">Reset</button>
+          </div>
+          <div class="farming-price-grid simple">
+            ${Object.entries(yields)
+              .map(([material]) => {
+                const emoji =
+                  window.CropIcons?.getIcon?.(material.toLowerCase().replace(/\s+/g, '_')) || '📦';
+                const price = priceMap[material] || 0;
+                return `
+                  <div class="farming-price-row simple">
+                    <span class="farming-price-material">${emoji} ${material}</span>
+                    <div class="farming-price-input-inline">
+                      <input id="price-${material}" class="farming-price-input" type="number" min="0" step="1" value="${price}" data-material="${material}" />
+                      <span class="farming-price-unit">s</span>
+                    </div>
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+
+        <div class="farming-market-card">
+          <div class="farming-market-title">Profit Breakdown</div>
+          <div class="profit-breakdown">
+            <div class="profit-row">
+              <span class="profit-label">Planting Costs</span>
+              <span class="profit-value cost" id="farmingPlantingCost">${formatSilver(totalPlantingCost)}</span>
+            </div>
+            <div class="profit-row">
+              <span class="profit-label">Est. Revenue</span>
+              <span class="profit-value" id="farmingTotalValue">${formatSilver(profitSummary.totalValue)}</span>
+            </div>
+            <div class="profit-row profit-total">
+              <span class="profit-label">Net Profit (avg)</span>
+              <span class="profit-value ${profitSummary.profit >= 0 ? 'positive' : 'negative'}" id="farmingNetProfit">${formatSilver(profitSummary.profit)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+    : '';
 
   // Build crop balance sliders (only if multiple crops selected)
   let cropBalanceHtml = '';
@@ -653,7 +1147,7 @@ function renderFarmingSimulationResults(results, selectedCrops) {
       const cropEmoji = window.CropIcons?.getIcon?.(primaryCropId) || '🌱';
 
       return `
-      <div class="sim-land-card">
+      <div class="sim-land-card clickable" data-land-type="${land.landType || ''}" title="Open this land in Land Simulator">
         <div class="sim-land-header">
           <span class="sim-land-name">${land.name}</span>
           <span class="sim-land-util-badge ${getUtilizationClass(utilization)}">${utilization}%</span>
@@ -661,6 +1155,7 @@ function renderFarmingSimulationResults(results, selectedCrops) {
         <div class="sim-land-assignment">
           ${cropEmoji} ${primaryCropCount}x ${primaryCropName}
         </div>
+        ${renderFarmingLandMiniGrid(land, simulation)}
         <div class="sim-land-utilization">
           <div class="sim-land-util-bar">
             <div class="sim-land-util-fill ${getUtilizationClass(utilization)}" style="width: ${utilization}%"></div>
@@ -674,9 +1169,6 @@ function renderFarmingSimulationResults(results, selectedCrops) {
 
   modalBody.innerHTML = `
     <div class="farming-simulation-results owned-lands-section redesigned">
-      <div class="demo-banner">
-        <strong>Demo Mode:</strong> Full farming simulation with detailed placements is available in the desktop app.
-      </div>
       <div class="sim-hero">
         <div class="sim-hero-header">
           <div class="sim-hero-tradepack">
@@ -690,55 +1182,66 @@ function renderFarmingSimulationResults(results, selectedCrops) {
           </div>
           <div class="sim-hero-controls">
             <div class="sim-hero-controls-time">
-              <span class="label">Time</span>
-              <input type="number" id="farmingTimeWindowInput" class="time-input-compact" value="${timeWindow}" min="1" max="168" step="1" />
-              <span class="time-unit">h</span>
-              <button id="updateFarmingTimeBtn" class="btn-update btn-xs">Update</button>
+              <span class="label">Grow Time</span>
+              <span class="time-value-static">${timeLabel}</span>
             </div>
           </div>
         </div>
         <div class="sim-hero-row">
           <div class="sim-hero-badges">
             <span class="sim-hero-badge crops">${selectedCrops.length} crops</span>
-            <span class="sim-hero-badge lands">${summary.totalLands || 0} lands</span>
+            <span class="sim-hero-badge lands">${summary.totalLands || 0} land</span>
             <span class="sim-hero-badge tiles">${summary.totalTilesUsed || 0}/${summary.totalTilesAvailable || 0} tiles</span>
             <span class="sim-hero-badge xp" title="Total farming XP">${totalXP.toLocaleString()} XP</span>
+            <span class="sim-hero-badge cost" title="Total cost to plant this setup">Planting ${Math.round(totalPlantingCost).toLocaleString()}</span>
           </div>
         </div>
         <div class="sim-hero-materials">
           ${materialPillsHtml || '<span class="no-yields">No yields calculated</span>'}
         </div>
+        <div class="sim-lands-subtitle">Plentiful bonus applied: ${plentifulChance}% chance for +50% materials (expected x${plentifulMultiplier.toFixed(2)}).</div>
+        ${profitCalculatorHtml}
         ${cropBalanceHtml}
       </div>
 
       <div class="sim-lands-section">
         <div class="sim-lands-header">
-          <span class="sim-lands-title">Your Lands (${sortedLandSimulations.length})</span>
+          <span class="sim-lands-title">Selected Land</span>
         </div>
+        <div class="sim-lands-subtitle">Single-cycle yield and layout preview for the currently selected land.</div>
         <div class="sim-lands-grid">
           ${landCardsHtml || '<div class="no-lands">No lands configured</div>'}
         </div>
       </div>
 
-      ${renderFarmingPlanOverview(sortedLandSimulations, timeWindow)}
+      ${renderFarmingPlanOverview(sortedLandSimulations, timeWindow, singleCycleMode)}
     </div>
   `;
 
-  // Add time window update handler
-  const updateBtn = document.getElementById('updateFarmingTimeBtn');
-  const timeInput = document.getElementById('farmingTimeWindowInput');
-  if (updateBtn && timeInput) {
-    updateBtn.addEventListener('click', async () => {
-      const newTimeWindow = parseInt(timeInput.value, 10);
-      if (Number.isNaN(newTimeWindow) || newTimeWindow < 1 || newTimeWindow > 168) return;
-
-      farmingUserProfile.simulationTimeWindow = newTimeWindow;
-      await window.electronAPI.saveProfile({
-        ...farmingUserProfile,
-        simulationTimeWindow: newTimeWindow
-      });
-      openFarmingSimulationModal();
+  const priceInputs = modalBody.querySelectorAll('.farming-price-input');
+  priceInputs.forEach((input) => {
+    input.addEventListener('input', () => {
+      updateFarmingProfitSummary(modalBody, yields, totalPlantingCost);
     });
+  });
+
+  const resetPricesBtn = modalBody.querySelector('#resetFarmingPricesBtn');
+  if (resetPricesBtn) {
+    resetPricesBtn.addEventListener('click', () => {
+      Object.keys(yields || {}).forEach((material) => {
+        const fallbackPrice = getFarmingFallbackPrice(material, selectedCrops);
+        currentCropMarketPrices[material] = fallbackPrice;
+        const input = modalBody.querySelector(`.farming-price-input[data-material="${material}"]`);
+        if (input) {
+          input.value = fallbackPrice;
+        }
+      });
+      updateFarmingProfitSummary(modalBody, yields, totalPlantingCost);
+    });
+  }
+
+  if (priceInputs.length) {
+    updateFarmingProfitSummary(modalBody, yields, totalPlantingCost);
   }
 
   // Add crop balance slider handlers
@@ -771,6 +1274,17 @@ function renderFarmingSimulationResults(results, selectedCrops) {
       openFarmingSimulationModal();
     });
   }
+
+  const landCards = modalBody.querySelectorAll('.sim-land-card[data-land-type]');
+  landCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const landType = card.dataset.landType;
+      if (!landType) return;
+
+      closeFarmingSimulationModal();
+      openFarmingLandInspector(landType);
+    });
+  });
 }
 
 /**
@@ -785,7 +1299,7 @@ function getUtilizationClass(pct) {
 /**
  * Render farming plan overview showing what to plant and when
  */
-function renderFarmingPlanOverview(landSimulations, timeWindow) {
+function renderFarmingPlanOverview(landSimulations, timeWindow, singleCycleMode = false) {
   // Collect all unique crops from all land simulations
   const cropPlan = {};
   const safeLandSims = Array.isArray(landSimulations) ? landSimulations : [];
@@ -797,7 +1311,9 @@ function renderFarmingPlanOverview(landSimulations, timeWindow) {
 
       if (!cropPlan[cropName]) {
         const isButchering = p.crop?.isButchering || false;
-        const actualHarvestCount = isButchering ? 1 : Math.floor(timeWindow / growthHours);
+        const actualHarvestCount = singleCycleMode
+          ? 1
+          : (isButchering ? 1 : Math.max(1, Math.floor(timeWindow / growthHours)));
 
         cropPlan[cropName] = {
           cropName,
@@ -859,7 +1375,7 @@ function renderFarmingPlanOverview(landSimulations, timeWindow) {
               }
             </div>
             <div class="plan-crop-schedule">
-              ${renderCropHarvestBadges(crop.growthHours, timeWindow, crop.isButchering)}
+              ${renderCropHarvestBadges(crop.growthHours, timeWindow, crop.isButchering, singleCycleMode)}
             </div>
           </div>
         `
@@ -873,9 +1389,13 @@ function renderFarmingPlanOverview(landSimulations, timeWindow) {
 /**
  * Render small harvest time badges for a crop
  */
-function renderCropHarvestBadges(growthHours, timeWindow, isButchering = false) {
+function renderCropHarvestBadges(growthHours, timeWindow, isButchering = false, singleCycleMode = false) {
   if (isButchering || !growthHours || growthHours <= 0) {
     return '<span class="harvest-badge butcher">Once</span>';
+  }
+
+  if (singleCycleMode) {
+    return `<span class="harvest-badge">${formatHoursCompact(growthHours)}</span>`;
   }
 
   const badges = [];

@@ -7,6 +7,135 @@
 // Cache for loaded data
 const dataCache = {};
 
+const API_NFT_SMALL_FIXED_SINGLE_LAYOUTS = {
+  '1x1': {
+    housePosition: { x: 1, y: 3 },
+    houseRotation: 270,
+    doorTiles: [[2, 6]],
+    placements: [
+      [0, 0], [1, 0], [2, 0], [3, 0], [5, 0], [7, 0], [9, 0],
+      [5, 1], [7, 1], [9, 1],
+      [0, 2], [1, 2], [2, 2], [3, 2], [5, 2], [7, 2], [9, 2],
+      [5, 3], [7, 3], [9, 3],
+      [0, 4], [9, 4],
+      [0, 5], [9, 5],
+      [0, 6], [9, 6],
+      [0, 7], [9, 7],
+      [9, 8],
+      [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [9, 9]
+    ]
+  },
+  '2x2': {
+    housePosition: { x: 2, y: 2 },
+    houseRotation: 270,
+    placements: [
+      [0, 0], [2, 0], [4, 0], [6, 0], [8, 0],
+      [0, 3], [0, 5], [0, 8],
+      [2, 8], [4, 8], [6, 8], [8, 8]
+    ]
+  },
+  '3x3': {
+    housePosition: { x: 2, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [3, 0], [6, 0]]
+  },
+  '4x4': {
+    housePosition: { x: 0, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [4, 0]]
+  }
+};
+
+const API_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS = {
+  '1x1': {
+    housePosition: { x: 4, y: 3 },
+    houseRotation: 270,
+    doorTiles: [[5, 6]],
+    placements: [
+      [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [11, 0],
+      [11, 1],
+      [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [11, 2],
+      [11, 3],
+      [0, 4], [1, 4], [2, 4], [3, 4], [4, 4], [11, 4], [11, 5],
+      [0, 6], [2, 6], [4, 6], [11, 6],
+      [0, 7], [2, 7], [4, 7], [11, 7],
+      [0, 8], [2, 8], [4, 8], [11, 8],
+      [0, 9], [2, 9], [4, 9], [11, 9], [11, 10],
+      [0, 11], [1, 11], [2, 11], [3, 11], [4, 11], [5, 11], [6, 11], [7, 11], [8, 11], [9, 11], [11, 11]
+    ]
+  },
+  '2x2': {
+    housePosition: { x: 2, y: 3 },
+    houseRotation: 180,
+    placements: [
+      [0, 0], [0, 2], [0, 4], [0, 6], [0, 8], [0, 10],
+      [10, 0], [10, 2], [10, 4], [10, 6], [10, 8], [10, 10],
+      [3, 10], [5, 10], [7, 10],
+      [3, 1], [5, 1], [7, 1]
+    ]
+  },
+  '3x3': {
+    housePosition: { x: 2, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [0, 3], [0, 9], [9, 0], [9, 3], [9, 6], [9, 9], [4, 0]]
+  },
+  '4x4': {
+    housePosition: { x: 5, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [4, 0], [8, 0], [0, 5]]
+  }
+};
+
+const API_NFT_LARGE_FIXED_SINGLE_LAYOUTS = {
+  '1x1': {
+    housePosition: { x: 5, y: 4 },
+    houseRotation: 270,
+    placements: [
+      [0, 0], [2, 0], [4, 0], [6, 0], [8, 0], [10, 0], [12, 0], [14, 0],
+      [0, 1], [2, 1], [4, 1], [6, 1], [8, 1], [10, 1], [12, 1], [14, 1],
+      [0, 2], [2, 2], [4, 2], [6, 2], [8, 2], [10, 2], [12, 2], [14, 2],
+      [0, 3], [2, 3], [4, 3], [6, 3], [8, 3], [10, 3], [12, 3], [14, 3],
+      [0, 4], [2, 4], [4, 4], [12, 4], [14, 4],
+      [0, 5], [2, 5], [4, 5], [12, 5], [14, 5],
+      [0, 6], [2, 6], [4, 6], [12, 6], [14, 6],
+      [0, 7], [2, 7], [4, 7], [12, 7], [14, 7],
+      [0, 8], [2, 8], [4, 8], [12, 8], [14, 8],
+      [14, 9],
+      [0, 10], [1, 10], [2, 10], [3, 10], [4, 10], [5, 10], [14, 10],
+      [0, 12], [1, 12], [2, 12], [3, 12], [4, 12], [5, 12], [13, 12], [14, 12],
+      [0, 14], [1, 14], [2, 14], [3, 14], [4, 14], [5, 14], [6, 14], [7, 14],
+      [8, 14], [9, 14], [10, 14], [11, 14], [12, 14], [13, 14], [14, 14]
+    ]
+  },
+  '2x2': {
+    housePosition: { x: 2, y: 3 },
+    houseRotation: 270,
+    placements: [
+      [0, 0], [2, 0], [4, 0], [6, 0], [8, 0], [10, 0], [12, 0],
+      [0, 3], [9, 3], [11, 3], [13, 3],
+      [0, 5], [9, 6], [11, 6], [13, 6],
+      [0, 7], [0, 9], [11, 9], [13, 9],
+      [0, 11], [0, 13], [3, 13], [5, 13], [7, 13], [9, 13], [11, 13], [13, 13]
+    ]
+  },
+  '3x3': {
+    housePosition: { x: 3, y: 5 },
+    houseRotation: 270,
+    placements: [[0, 0], [0, 3], [0, 6], [0, 9], [0, 12], [4, 0], [8, 0], [12, 0], [12, 3], [12, 6], [12, 9], [12, 12]]
+  },
+  '4x4': {
+    housePosition: { x: 6, y: 5 },
+    houseRotation: 90,
+    placements: [[0, 0], [4, 0], [8, 0], [0, 5], [0, 10], [4, 10]]
+  }
+};
+
+const NFT_SINGLE_CROP_PRESETS = {
+  NFT_SMALL: API_NFT_SMALL_FIXED_SINGLE_LAYOUTS,
+  NFT_MEDIUM: API_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS,
+  NFT_LARGE: API_NFT_LARGE_FIXED_SINGLE_LAYOUTS
+};
+
 // Fetch and cache JSON data
 async function fetchData(filename) {
   if (dataCache[filename]) return dataCache[filename];
@@ -56,7 +185,7 @@ function calculateTotalTiles(ownedLands) {
   const tiles = {
     SMALL_COMMUNITY: 56,
     MEDIUM_COMMUNITY: 91,
-    LARGE_COMMUNITY: 130,
+    LARGE_COMMUNITY: 137,
     NFT_SMALL: 100,
     NFT_MEDIUM: 144,
     NFT_LARGE: 225,
@@ -87,6 +216,329 @@ function parseGrowthTimeDemo(timeStr) {
   if (minMatch) hours += parseFloat(minMatch[1]) / 60;
 
   return hours > 0 ? hours : 6;
+}
+
+function getCropTimingAndXP(crop) {
+  const gatheringMinutes = crop.gathering?.timeMinutes;
+  const butcheringMinutes = crop.butchering?.timeMinutes;
+  const fallbackMinutes = crop.growthTimeMinutes || Math.round(parseGrowthTimeDemo(crop.growthTime) * 60);
+
+  const isButchering = crop.category === 'husbandry' && Boolean(crop.butchering);
+  const timeMinutes = isButchering
+    ? (butcheringMinutes || gatheringMinutes || fallbackMinutes || 360)
+    : (gatheringMinutes || fallbackMinutes || butcheringMinutes || 360);
+
+  const gatheringXP =
+    crop.gathering?.professionXP ||
+    crop.gathering?.experience ||
+    crop.professionXP ||
+    crop.experience ||
+    crop.legacyXP ||
+    0;
+  const butcheringXP =
+    crop.butchering?.professionXP ||
+    crop.butchering?.experience ||
+    crop.professionXP ||
+    crop.experience ||
+    crop.legacyXP ||
+    0;
+
+  return {
+    isButchering,
+    growthHours: Math.max((timeMinutes || 360) / 60, 0.01),
+    experience: Math.max(gatheringXP, butcheringXP, 0)
+  };
+}
+
+function getCropSizeKey(crop) {
+  return `${crop.width || 1}x${crop.height || 1}`;
+}
+
+function getPlacementSizeKey(placement) {
+  if (placement?.size) return placement.size;
+
+  const width = placement?.w || placement?.width || 1;
+  const height = placement?.h || placement?.height || width;
+  return `${width}x${height}`;
+}
+
+function buildPlacementCropData(crop, timing) {
+  return {
+    id: crop.id,
+    name: crop.name,
+    icon: crop.icon,
+    width: crop.width || 1,
+    height: crop.height || 1,
+    size: crop.size || `${crop.width || 1}x${crop.height || 1}`,
+    growthTime: crop.growthTime,
+    growthHours: timing.growthHours,
+    isButchering: timing.isButchering,
+    experience: timing.experience
+  };
+}
+
+function buildSimulationPlacementsFromLayout(layout, crop, timing) {
+  const cropData = buildPlacementCropData(crop, timing);
+  const sizeKey = getCropSizeKey(crop);
+
+  return (layout?.placements || [])
+    .filter((placement) => getPlacementSizeKey(placement) === sizeKey)
+    .map((placement) => ({
+      crop: cropData,
+      x: placement.x,
+      y: placement.y
+    }));
+}
+
+function chooseBestLayoutForCrop(layouts, crop, options = {}) {
+  const sizeKey = getCropSizeKey(crop);
+  const { housePosition = null, houseRotation = null } = options;
+
+  return [...(Array.isArray(layouts) ? layouts : [])]
+    .filter((layout) => {
+      if (!housePosition || !layout.housePosition) return true;
+
+      const samePosition =
+        layout.housePosition.x === housePosition.x && layout.housePosition.y === housePosition.y;
+      const sameRotation = (layout.houseRotation || 0) === (houseRotation || 0);
+      return samePosition && sameRotation;
+    })
+    .map((layout) => {
+      const counts = layout.counts || {};
+      const targetCount = counts[sizeKey] || 0;
+      const otherCount = Object.entries(counts).reduce(
+        (sum, [key, value]) => sum + (key === sizeKey ? 0 : value || 0),
+        0
+      );
+
+      return { layout, targetCount, otherCount };
+    })
+    .filter((entry) => entry.targetCount > 0)
+    .sort((a, b) => {
+      if (b.targetCount !== a.targetCount) return b.targetCount - a.targetCount;
+      if (a.otherCount !== b.otherCount) return a.otherCount - b.otherCount;
+      return (b.layout.totalTiles || 0) - (a.layout.totalTiles || 0);
+    })[0]?.layout || null;
+}
+
+async function calculateLandCropSimulation(land, crop) {
+  const timing = getCropTimingAndXP(crop);
+  const cropData = buildPlacementCropData(crop, timing);
+  const tileSize = (crop.width || 1) * (crop.height || 1);
+  const validTiles = Array.isArray(land.validTiles) ? land.validTiles : [];
+  const sizeKey = getCropSizeKey(crop);
+  const layoutUtils = window.LandLayoutUtils || {};
+  const nftPreset = land?.landType ? NFT_SINGLE_CROP_PRESETS[land.landType]?.[sizeKey] : null;
+  const presetPlacementCoords = nftPreset?.placements || null;
+
+  let selectedLayout = null;
+  let housePosition = land.housePosition || null;
+  let houseRotation = land.houseRotation || 0;
+  let availableTileCount = validTiles.length || land.tiles || 0;
+  let previewHouseTiles = null;
+  let previewDoorTiles = null;
+
+  if (land.hasHouse) {
+    let nftLayouts = null;
+    try {
+      nftLayouts = await window.electronAPI.getNFTLayouts(land.landType);
+    } catch (err) {
+      console.warn(`[API Mock] Failed to load NFT layouts for ${land.landType}:`, err.message);
+    }
+
+    const bestKey = {
+      '1x1': 'best1x1',
+      '2x2': 'best2x2',
+      '3x3': 'best3x3',
+      '4x4': 'best4x4'
+    }[sizeKey];
+    const bestPosition = bestKey ? nftLayouts?.bestPositions?.[bestKey] : null;
+
+    if (nftPreset?.housePosition) {
+      housePosition = { ...nftPreset.housePosition };
+      houseRotation = nftPreset.houseRotation || 0;
+      if (layoutUtils.getHouseTilesAtPosition) {
+        const presetHouseTiles = layoutUtils.getHouseTilesAtPosition(land, housePosition, houseRotation);
+        previewDoorTiles = (nftPreset.doorTiles || []).map(([x, y]) => ({ x, y }));
+        if (!previewDoorTiles.length) {
+          previewDoorTiles = presetHouseTiles.door || [];
+        }
+        previewHouseTiles = [...(presetHouseTiles.house || []), ...(presetHouseTiles.clearance || [])];
+      }
+    } else if (bestPosition) {
+      housePosition = { x: bestPosition.x, y: bestPosition.y };
+      houseRotation = bestPosition.rotation || 0;
+      previewHouseTiles = Array.isArray(bestPosition.houseTiles) ? bestPosition.houseTiles : null;
+    } else if (!housePosition && layoutUtils.findOptimalHousePosition) {
+      const fallback = layoutUtils.findOptimalHousePosition(land, validTiles, crop.width || 1);
+      housePosition = fallback.position;
+      houseRotation = fallback.rotation || 0;
+    }
+
+    let blockedTiles = new Set();
+    if (housePosition && layoutUtils.calculateBlockedTiles) {
+      blockedTiles = layoutUtils.calculateBlockedTiles(land, housePosition, houseRotation);
+      availableTileCount = validTiles.reduce(
+        (sum, tile) => sum + (blockedTiles.has(`${tile.x},${tile.y}`) ? 0 : 1),
+        0
+      );
+    }
+
+    if (nftLayouts?.layouts?.length) {
+      selectedLayout =
+        chooseBestLayoutForCrop(nftLayouts.layouts, crop, { housePosition, houseRotation }) ||
+        chooseBestLayoutForCrop(nftLayouts.layouts, crop);
+    }
+
+    if (selectedLayout?.housePosition) {
+      housePosition = selectedLayout.housePosition;
+    }
+    if (selectedLayout?.houseRotation !== undefined) {
+      houseRotation = selectedLayout.houseRotation || 0;
+    }
+    if (selectedLayout?.availableTiles) {
+      availableTileCount = selectedLayout.availableTiles;
+    }
+
+    if (bestPosition) {
+      const matchesBestPosition =
+        housePosition?.x === bestPosition.x &&
+        housePosition?.y === bestPosition.y &&
+        (houseRotation || 0) === (bestPosition.rotation || 0);
+      previewHouseTiles = matchesBestPosition && Array.isArray(bestPosition.houseTiles)
+        ? bestPosition.houseTiles
+        : null;
+    }
+
+    if (!selectedLayout && layoutUtils.calculateOptimalPlacement) {
+      const remainingTileSet = new Set(
+        validTiles
+          .filter((tile) => !blockedTiles.has(`${tile.x},${tile.y}`))
+          .map((tile) => `${tile.x},${tile.y}`)
+      );
+      const fallbackLayout = layoutUtils.calculateOptimalPlacement(
+        crop.width || 1,
+        crop.height || 1,
+        remainingTileSet
+      );
+      const placements = fallbackLayout.placements.map((placement) => ({
+        crop: cropData,
+        x: placement.x,
+        y: placement.y
+      }));
+      const totalTilesUsed = placements.length * tileSize;
+
+      return {
+        crop,
+        timing,
+        land: { ...land, housePosition, houseRotation },
+        simulation: {
+          placements,
+          totalTilesUsed,
+          totalTilesAvailable: availableTileCount,
+          utilization:
+            availableTileCount > 0 ? Math.round((totalTilesUsed / availableTileCount) * 100) : 0
+        }
+      };
+    }
+  } else {
+    let communityLayouts = null;
+    try {
+      communityLayouts = await window.electronAPI.getCommunityLayouts(land.landType);
+    } catch (err) {
+      console.warn(
+        `[API Mock] Failed to load community layouts for ${land.landType}:`,
+        err.message
+      );
+    }
+
+    if (communityLayouts?.layouts?.length) {
+      selectedLayout = chooseBestLayoutForCrop(communityLayouts.layouts, crop);
+    }
+
+    if (!selectedLayout && layoutUtils.calculateOptimalPlacement) {
+      const tileSet = new Set(validTiles.map((tile) => `${tile.x},${tile.y}`));
+      const fallbackLayout = layoutUtils.calculateOptimalPlacement(
+        crop.width || 1,
+        crop.height || 1,
+        tileSet
+      );
+      const placements = fallbackLayout.placements.map((placement) => ({
+        crop: cropData,
+        x: placement.x,
+        y: placement.y
+      }));
+      const totalTilesUsed = placements.length * tileSize;
+
+      return {
+        crop,
+        timing,
+        land,
+        simulation: {
+          placements,
+          totalTilesUsed,
+          totalTilesAvailable: availableTileCount,
+          utilization:
+            availableTileCount > 0 ? Math.round((totalTilesUsed / availableTileCount) * 100) : 0
+        }
+      };
+    }
+  }
+
+  let placements = [];
+
+  if (presetPlacementCoords?.length) {
+    placements = presetPlacementCoords.map(([x, y]) => ({ crop: cropData, x, y }));
+  }
+
+  if (!placements.length && layoutUtils.calculateOptimalPlacement) {
+    const blockedTiles = land.hasHouse && housePosition && layoutUtils.calculateBlockedTiles
+      ? layoutUtils.calculateBlockedTiles(land, housePosition, houseRotation)
+      : new Set();
+
+    const remainingTileSet = new Set(
+      validTiles
+        .filter((tile) => !blockedTiles.has(`${tile.x},${tile.y}`))
+        .map((tile) => `${tile.x},${tile.y}`)
+    );
+
+    const computedLayout = layoutUtils.calculateOptimalPlacement(
+      crop.width || 1,
+      crop.height || 1,
+      remainingTileSet
+    );
+
+    placements = (computedLayout?.placements || []).map((placement) => ({
+      crop: cropData,
+      x: placement.x,
+      y: placement.y
+    }));
+  }
+
+  if (!placements.length) {
+    placements = buildSimulationPlacementsFromLayout(selectedLayout, crop, timing);
+  }
+
+  const totalTilesUsed = placements.length * tileSize;
+
+  return {
+    crop,
+    timing,
+    land: {
+      ...land,
+      housePosition,
+      houseRotation,
+      houseTilesPreview: previewHouseTiles,
+      doorTilesPreview: previewDoorTiles
+    },
+    simulation: {
+      placements,
+      totalTilesUsed,
+      totalTilesAvailable: availableTileCount,
+      utilization:
+        availableTileCount > 0 ? Math.round((totalTilesUsed / availableTileCount) * 100) : 0
+    }
+  };
 }
 
 // Create the electronAPI mock
@@ -257,12 +709,12 @@ window.electronAPI = {
   },
 
   // === Tradepack Calculations ===
-  calculateTradepackProfit: async ({ tradepack, landType, laborCost, sellMultiplier }) => {
+  calculateTradepackProfit: async ({ tradepack, landType, laborCost, sellMultiplier, demandMultiplier }) => {
     const crops = await fetchData('crops.json');
     const tp = tradepack || {};
     const baseValue = tp.total_cost || tp.basePrice || 0;
-    const labor = laborCost || mockProfile.defaultLaborCost || 5;
-    const multiplier = sellMultiplier || mockProfile.defaultSellMultiplier || 1.0;
+    const labor = laborCost ?? mockProfile.defaultLaborCost ?? 5;
+    const multiplier = sellMultiplier ?? demandMultiplier ?? mockProfile.defaultSellMultiplier ?? 1.0;
 
     // Calculate material costs from crop yields
     let totalMaterialCost = 0;
@@ -353,7 +805,7 @@ window.electronAPI = {
   },
 
   // === Farming Simulation ===
-  simulateFarmingSelection: async ({ selectedCrops = [], ownedLands = {}, timeWindowHours = 48, cropWeights = {} }) => {
+  simulateFarmingSelection: async ({ selectedCrops = [], ownedLands = {}, timeWindowHours = 48, cropWeights = {}, singleCycleMode = false }) => {
     if (!selectedCrops.length) {
       return {
         summary: { totalLands: 0, totalTilesUsed: 0, totalTilesAvailable: 0 },
@@ -364,13 +816,8 @@ window.electronAPI = {
       };
     }
 
-    // Get crops data
-    let cropsData = null;
-    try {
-      const response = await fetch('data/crops.json');
-      cropsData = await response.json();
-    } catch (err) {
-      console.error('[API Mock] Failed to load crops data:', err);
+    const cropsData = await fetchData('crops.json');
+    if (!cropsData?.items) {
       return {
         summary: { totalLands: 0, totalTilesUsed: 0, totalTilesAvailable: 0 },
         yields: {},
@@ -380,43 +827,47 @@ window.electronAPI = {
       };
     }
 
-    // Get land types data
     const landTypes = await window.electronAPI.getLandTypes();
-
-    // Get selected crop objects
     const selectedCropObjects = cropsData.items
-      .filter((c) => selectedCrops.includes(c.id))
+      .filter((crop) => selectedCrops.includes(crop.id))
       .map((crop) => ({
         ...crop,
         width: crop.width || 1,
-        height: crop.height || 1,
-        growthHours: parseGrowthTimeDemo(crop.growthTime)
+        height: crop.height || 1
       }));
 
-    // Build list of all owned lands
-    const landsList = [];
-    const LAND_TILES = {
-      SMALL_COMMUNITY: 56, MEDIUM_COMMUNITY: 91, LARGE_COMMUNITY: 130,
-      NFT_SMALL: 100, NFT_MEDIUM: 144, NFT_LARGE: 225,
-      NFT_STRONGHOLD: 484, NFT_FORT: 900
-    };
+    if (selectedCropObjects.length === 0) {
+      return {
+        summary: { totalLands: 0, totalTilesUsed: 0, totalTilesAvailable: 0 },
+        yields: {},
+        totalXP: 0,
+        landSimulations: [],
+        cropBreakdown: []
+      };
+    }
 
+    const landsList = [];
     Object.entries(ownedLands).forEach(([landType, count]) => {
-      if (count > 0) {
-        const landInfo = landTypes.find((l) => l.id === landType);
-        if (landInfo) {
-          for (let i = 0; i < count; i++) {
-            landsList.push({
-              id: `${landType}_${i + 1}`,
-              landType,
-              name: `${landInfo.name} #${i + 1}`,
-              tiles: LAND_TILES[landType] || landInfo.tiles?.length || 0,
-              width: landInfo.width || 8,
-              height: landInfo.height || 8,
-              hasHouse: landInfo.hasHouse || false
-            });
-          }
-        }
+      if (!count) return;
+
+      const landInfo = landTypes.find((land) => land.id === landType);
+      if (!landInfo) return;
+
+      for (let i = 0; i < count; i++) {
+        landsList.push({
+          id: `${landType}_${i + 1}`,
+          landType,
+          name: `${landInfo.name} #${i + 1}`,
+          tiles: landInfo.tiles?.length || landInfo.tileCount || 0,
+          width: landInfo.width || 8,
+          height: landInfo.height || 8,
+          hasHouse: landInfo.hasHouse || false,
+          farmMultiplier: Math.max(Number(landInfo.farmMultiplier || 1), 1),
+          validTiles: Array.isArray(landInfo.tiles) ? landInfo.tiles : [],
+          houseTiles: landInfo.houseTiles || [],
+          houseDoorTiles: landInfo.houseDoorTiles || [],
+          doorClearanceTiles: landInfo.doorClearanceTiles || []
+        });
       }
     });
 
@@ -430,101 +881,121 @@ window.electronAPI = {
       };
     }
 
-    // Allocate lands to crops (simple round-robin based on weights)
+    const yields = {};
+    let totalXP = 0;
+    let totalPlantingCost = 0;
+    const landSimulations = [];
+
     const cropAllocations = {};
     selectedCropObjects.forEach((crop) => {
       cropAllocations[crop.id] = { crop, lands: [], totalSlots: 0 };
     });
 
-    // Distribute lands to crops
-    landsList.forEach((land, idx) => {
-      const cropIdx = idx % selectedCropObjects.length;
-      const crop = selectedCropObjects[cropIdx];
-      cropAllocations[crop.id].lands.push(land);
-    });
+    const totalWeight = selectedCropObjects.reduce(
+      (sum, crop) => sum + Math.max(Number(cropWeights[crop.id] ?? 100), 1),
+      0
+    ) || selectedCropObjects.length;
+    const normalizedWeights = Object.fromEntries(
+      selectedCropObjects.map((crop) => [
+        crop.id,
+        Math.max(Number(cropWeights[crop.id] ?? 100), 1) / totalWeight
+      ])
+    );
+    const targetLandsByCrop = Object.fromEntries(
+      selectedCropObjects.map((crop) => [crop.id, normalizedWeights[crop.id] * landsList.length])
+    );
+    const currentLandsByCrop = {};
 
-    // Calculate yields and build results
-    const yields = {};
-    let totalXP = 0;
-    const landSimulations = [];
-    const cropBreakdown = [];
+    const sortedLands = [...landsList].sort(
+      (a, b) => (b.validTiles?.length || b.tiles || 0) - (a.validTiles?.length || a.tiles || 0)
+    );
 
-    selectedCropObjects.forEach((crop) => {
-      const allocation = cropAllocations[crop.id];
-      const landsUsed = allocation.lands.length;
-      const tileSize = crop.width * crop.height;
+    for (const land of sortedLands) {
+      const options = await Promise.all(
+        selectedCropObjects.map((crop) => calculateLandCropSimulation(land, crop))
+      );
 
-      allocation.lands.forEach((land) => {
-        // Calculate slots that fit (accounting for house tiles if NFT)
-        const availableTiles = land.hasHouse ? Math.floor(land.tiles * 0.85) : land.tiles;
-        const slots = Math.floor(availableTiles / tileSize);
-        allocation.totalSlots += slots;
+      const bestOption = options.sort((a, b) => {
+        const remainingNeedA = Math.max(
+          (targetLandsByCrop[a.crop.id] || 0) - (currentLandsByCrop[a.crop.id] || 0),
+          0
+        );
+        const remainingNeedB = Math.max(
+          (targetLandsByCrop[b.crop.id] || 0) - (currentLandsByCrop[b.crop.id] || 0),
+          0
+        );
+        const scoreA =
+          (remainingNeedA + (normalizedWeights[a.crop.id] || 0)) * 1000 +
+          (a.simulation?.totalTilesUsed || 0);
+        const scoreB =
+          (remainingNeedB + (normalizedWeights[b.crop.id] || 0)) * 1000 +
+          (b.simulation?.totalTilesUsed || 0);
+        return scoreB - scoreA;
+      })[0];
 
-        // Calculate harvests in time window
-        const growthHours = crop.growthHours || 6;
-        const harvestsInWindow = Math.floor(timeWindowHours / growthHours);
+      const chosenCrop = bestOption.crop;
+      const placementsCount = bestOption.simulation?.placements?.length || 0;
+      const landMultiplier = Math.max(Number(bestOption.land?.farmMultiplier || 1), 1);
+      const plantingCostPerPlacement = Math.max(Number(chosenCrop.plantingCost || 0), 0);
+      const harvestsInWindow = singleCycleMode
+        ? 1
+        : (bestOption.timing.isButchering
+          ? 1
+          : Math.max(1, Math.floor(timeWindowHours / bestOption.timing.growthHours)));
 
-        // Calculate yield per slot per harvest
-        const cropYields = crop.yields || [];
-        const placements = [];
+      cropAllocations[chosenCrop.id].lands.push(bestOption.land);
+      cropAllocations[chosenCrop.id].totalSlots += placementsCount;
+      currentLandsByCrop[chosenCrop.id] = (currentLandsByCrop[chosenCrop.id] || 0) + 1;
 
-        // Generate simple placements
-        for (let s = 0; s < slots; s++) {
-          placements.push({
-            crop: {
-              id: crop.id,
-              name: crop.name,
-              icon: crop.icon,
-              growthTime: crop.growthTime,
-              growthHours,
-              isButchering: crop.category === 'husbandry',
-              experience: crop.gathering?.professionXP || crop.gathering?.experience || crop.professionXP || crop.experience || crop.legacyXP || 0
-            },
-            x: (s % land.width) * crop.width,
-            y: Math.floor(s / land.width) * crop.height
-          });
-        }
+      const landPlantingCost = Math.round(placementsCount * plantingCostPerPlacement * landMultiplier);
+      totalPlantingCost += landPlantingCost;
 
-        // Add to land simulations
-        landSimulations.push({
-          land,
-          simulation: {
-            placements,
-            totalTilesUsed: slots * tileSize,
-            totalTilesAvailable: land.tiles,
-            utilization: Math.round((slots * tileSize / land.tiles) * 100)
-          }
-        });
-
-        // Accumulate yields
-        cropYields.forEach((y) => {
-          if (!yields[y.resource]) {
-            yields[y.resource] = { totalYield: 0, harvestCount: 0 };
-          }
-          const yieldPerHarvest = slots * (y.avg || (y.min + y.max) / 2);
-          yields[y.resource].totalYield += Math.round(yieldPerHarvest * harvestsInWindow);
-          yields[y.resource].harvestCount += harvestsInWindow;
-        });
-
-        // Accumulate XP
-        const xpPerHarvest = crop.gathering?.professionXP || crop.gathering?.experience || crop.professionXP || crop.experience || crop.legacyXP || 0;
-        totalXP += slots * xpPerHarvest * harvestsInWindow;
+      landSimulations.push({
+        land: bestOption.land,
+        simulation: bestOption.simulation,
+        farmMultiplier: landMultiplier,
+        plantingCost: landPlantingCost
       });
 
-      // Add to crop breakdown
-      if (landsUsed > 0) {
-        cropBreakdown.push({
+      (chosenCrop.yields || []).forEach((yieldInfo) => {
+        if (!yields[yieldInfo.resource]) {
+          yields[yieldInfo.resource] = { totalYield: 0, harvestCount: 0 };
+        }
+
+        const averageYield = yieldInfo.avg || ((yieldInfo.min || 0) + (yieldInfo.max || 0)) / 2;
+        yields[yieldInfo.resource].totalYield += Math.round(
+          placementsCount * averageYield * harvestsInWindow * landMultiplier
+        );
+        yields[yieldInfo.resource].harvestCount += harvestsInWindow;
+      });
+
+      totalXP += placementsCount * (bestOption.timing.experience || 0) * harvestsInWindow;
+    }
+
+    const cropBreakdown = selectedCropObjects
+      .map((crop) => {
+        const allocation = cropAllocations[crop.id];
+        const landsUsed = allocation.lands.length;
+
+        if (!landsUsed) return null;
+
+        return {
           cropId: crop.id,
           cropName: crop.name,
           landsUsed,
           slotsTotal: allocation.totalSlots
-        });
-      }
-    });
+        };
+      })
+      .filter(Boolean);
 
-    // Calculate summary
-    const totalTilesAvailable = landsList.reduce((sum, l) => sum + l.tiles, 0);
-    const totalTilesUsed = landSimulations.reduce((sum, ls) => sum + (ls.simulation?.totalTilesUsed || 0), 0);
+    const totalTilesAvailable = landSimulations.reduce(
+      (sum, landSim) => sum + (landSim.simulation?.totalTilesAvailable || 0),
+      0
+    );
+    const totalTilesUsed = landSimulations.reduce(
+      (sum, landSim) => sum + (landSim.simulation?.totalTilesUsed || 0),
+      0
+    );
 
     return {
       summary: {
@@ -534,8 +1005,10 @@ window.electronAPI = {
       },
       yields,
       totalXP: Math.round(totalXP),
+      totalPlantingCost: Math.round(totalPlantingCost),
       landSimulations,
-      cropBreakdown
+      cropBreakdown,
+      singleCycleMode
     };
   },
 

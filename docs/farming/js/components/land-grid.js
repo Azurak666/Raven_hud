@@ -495,10 +495,10 @@ class LandGrid {
           tile.dataset.valid = 'false';
           tile.dataset.house = 'true';
         } else if (houseType === 'door') {
-          tile.style.background = '#B45309'; // Dark amber - distinct from farmland
-          tile.style.boxShadow = 'inset 0 0 6px rgba(255,200,100,0.5)';
+          tile.style.background = '#6B7280';
+          tile.style.boxShadow = 'inset 0 0 3px rgba(255,255,255,0.15)';
           tile.dataset.valid = 'false';
-          tile.dataset.house = 'door';
+          tile.dataset.house = 'true';
         } else if (houseType === 'clearance') {
           tile.style.background = '#4B5563'; // Darker gray for clearance
           tile.style.boxShadow = 'inset 0 0 2px rgba(255,255,255,0.1)';
@@ -513,43 +513,10 @@ class LandGrid {
       }
     }
 
-    // Render house icon and door icon if placed
+    // Render house icon if placed
     if (this.housePosition) {
       this.renderHouseIcon();
-      this.renderDoorIcon();
     }
-  }
-
-  /**
-   * Render door icon at the door tile position
-   */
-  renderDoorIcon() {
-    if (!this.housePosition || !this.gridWrapper) return;
-
-    const tiles = this.getHouseTilesAtPosition(this.housePosition.x, this.housePosition.y);
-    if (tiles.door.length === 0) return;
-
-    // Get door tile position
-    const doorTile = tiles.door[0];
-
-    const doorIcon = document.createElement('div');
-    doorIcon.className = 'door-icon';
-    doorIcon.style.position = 'absolute';
-    doorIcon.style.left = `${doorTile.x * this.tileSize}px`;
-    doorIcon.style.top = `${doorTile.y * this.tileSize}px`;
-    doorIcon.style.width = `${this.tileSize}px`;
-    doorIcon.style.height = `${this.tileSize}px`;
-    doorIcon.style.fontSize = `${this.tileSize * 0.7}px`;
-    doorIcon.style.display = 'flex';
-    doorIcon.style.alignItems = 'center';
-    doorIcon.style.justifyContent = 'center';
-    doorIcon.style.pointerEvents = 'none';
-    doorIcon.style.zIndex = '20';
-    // Rotate door emoji to face the right direction based on house rotation
-    doorIcon.style.transform = `rotate(${this.houseRotation}deg)`;
-    doorIcon.textContent = '🚪';
-
-    this.gridWrapper.appendChild(doorIcon);
   }
 
   /**
@@ -870,7 +837,6 @@ class LandGrid {
     }
 
     // Create sets for different tile types for coloring
-    const doorSet = new Set(tiles.door.map((t) => `${t.x},${t.y}`));
     const clearanceSet = new Set(tiles.clearance.map((t) => `${t.x},${t.y}`));
 
     // Render blocked zone with different colors for house/door/clearance
@@ -890,16 +856,12 @@ class LandGrid {
       preview.style.boxSizing = 'border-box';
 
       if (isValid) {
-        // Valid placement colors - matching new accessible color scheme
-        if (doorSet.has(key)) {
-          preview.style.background = 'rgba(180, 83, 9, 0.7)'; // Dark amber #B45309
-        } else if (clearanceSet.has(key)) {
-          preview.style.background = 'rgba(75, 85, 99, 0.5)'; // Darker gray #4B5563
+        if (clearanceSet.has(key)) {
+          preview.style.background = 'rgba(75, 85, 99, 0.5)';
         } else {
-          preview.style.background = 'rgba(107, 114, 128, 0.7)'; // Cool gray #6B7280
+          preview.style.background = 'rgba(107, 114, 128, 0.7)';
         }
       } else {
-        // Invalid placement - show red with blinking
         preview.style.background = 'rgba(239, 68, 68, 0.4)';
         preview.style.border = '2px solid #EF4444';
         preview.style.animation = 'invalid-blink 0.5s ease-in-out infinite';
@@ -908,7 +870,6 @@ class LandGrid {
       this.gridWrapper.appendChild(preview);
     });
 
-    // Calculate center of house tiles for icon placement
     const minX = Math.min(...tiles.house.map((t) => t.x));
     const maxX = Math.max(...tiles.house.map((t) => t.x));
     const minY = Math.min(...tiles.house.map((t) => t.y));
@@ -916,7 +877,6 @@ class LandGrid {
     const centerX = (minX + maxX + 1) / 2;
     const centerY = (minY + maxY + 1) / 2;
 
-    // Render house icon preview at center
     const housePreview = document.createElement('div');
     housePreview.className = 'house-preview';
     housePreview.style.position = 'absolute';
@@ -940,31 +900,6 @@ class LandGrid {
     }
 
     this.gridWrapper.appendChild(housePreview);
-
-    // Render door icon preview
-    if (tiles.door.length > 0) {
-      const doorTile = tiles.door[0];
-      const doorPreview = document.createElement('div');
-      doorPreview.className = 'house-preview';
-      doorPreview.style.position = 'absolute';
-      doorPreview.style.left = `${doorTile.x * this.tileSize}px`;
-      doorPreview.style.top = `${doorTile.y * this.tileSize}px`;
-      doorPreview.style.width = `${this.tileSize}px`;
-      doorPreview.style.height = `${this.tileSize}px`;
-      doorPreview.style.fontSize = `${this.tileSize * 0.7}px`;
-      doorPreview.style.display = 'flex';
-      doorPreview.style.alignItems = 'center';
-      doorPreview.style.justifyContent = 'center';
-      doorPreview.style.pointerEvents = 'none';
-      doorPreview.style.zIndex = '27';
-      doorPreview.style.transform = `rotate(${this.houseRotation}deg)`;
-      if (!isValid) {
-        doorPreview.style.animation = 'invalid-house-blink 0.5s ease-in-out infinite';
-      }
-      doorPreview.textContent = '🚪';
-
-      this.gridWrapper.appendChild(doorPreview);
-    }
   }
 
   /**

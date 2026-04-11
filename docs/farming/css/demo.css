@@ -3392,6 +3392,65 @@ button:focus-visible {
   font-weight: 600;
 }
 
+.owned-lands-quick-select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.owned-land-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.owned-land-btn,
+.owned-land-configure-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.owned-land-btn:hover,
+.owned-land-configure-btn:hover {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-1px);
+}
+
+.owned-land-btn.selected {
+  background: rgba(212, 175, 55, 0.14);
+  border-color: rgba(212, 175, 55, 0.65);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2) inset;
+}
+
+.owned-land-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.owned-land-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.owned-land-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
 /* ============ Categorized Layout Cards (matches in-app) ============ */
 .layouts-list {
   display: flex;
@@ -4898,6 +4957,57 @@ button:focus-visible {
   color: var(--game-gold);
 }
 
+.farming-land-select-hint {
+  font-size: var(--font-xs);
+  color: var(--game-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.farming-land-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.farming-land-select-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--game-text-cream);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.farming-land-select-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.5);
+  transform: translateY(-1px);
+}
+
+.farming-land-select-btn.selected {
+  background: rgba(212, 175, 55, 0.16);
+  border-color: rgba(212, 175, 55, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.18);
+}
+
+.farming-land-select-name {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--game-text-cream);
+}
+
+.farming-land-select-meta {
+  font-size: var(--font-xs);
+  color: var(--game-text-muted);
+}
+
 .lands-summary-settings {
   display: flex;
   flex-direction: column;
@@ -6014,6 +6124,12 @@ button:focus-visible {
   font-size: var(--font-md);
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.sim-lands-subtitle {
+  margin: -4px 0 var(--space-3);
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
 }
 
 /* Collapsible Sections */
@@ -8637,17 +8753,17 @@ button:focus-visible {
   box-shadow: 0 0 0 1px var(--game-gold), var(--shadow-glow);
 }
 
-.crop-checkbox {
-  display: flex;
-  align-items: flex-start;
-  padding-top: var(--space-1);
-}
-
-.crop-checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--game-gold);
-  cursor: pointer;
+.crop-selected-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--game-gold-bright);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .crop-content {
@@ -8926,6 +9042,106 @@ button:focus-visible {
   gap: var(--space-4);
 }
 
+.sim-hero-badge.cost {
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.farming-profit-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.farming-market-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(8, 12, 20, 0.92);
+}
+
+.farming-market-title,
+.farming-market-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--game-gold-bright);
+  font-weight: 700;
+}
+
+.farming-market-reset {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.farming-market-reset:hover {
+  border-color: var(--game-gold);
+  color: var(--game-gold);
+}
+
+.farming-yield-list,
+.farming-price-grid.simple {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.farming-yield-row,
+.farming-price-row.simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.farming-yield-row:last-child,
+.farming-price-row.simple:last-child {
+  border-bottom: 0;
+}
+
+.farming-yield-name,
+.farming-price-material {
+  color: var(--text-primary);
+}
+
+.farming-yield-amount {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.farming-price-input-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.farming-price-input {
+  width: 110px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.farming-price-unit {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 /* Badge for crops count */
 .sim-hero-badge.crops {
   color: var(--game-text-green);
@@ -8956,6 +9172,24 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+}
+
+.sim-lands-grid .sim-land-card.clickable {
+  cursor: pointer;
+}
+
+.time-value-static {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: var(--game-gold);
+  font-size: var(--font-sm);
+  font-weight: 600;
 }
 
 .farming-lands-grid .sim-land-header {
@@ -9036,8 +9270,65 @@ button:focus-visible {
   white-space: nowrap;
 }
 
-.farming-lands-grid .emoji-grid {
+.farming-lands-grid .emoji-grid,
+.sim-lands-grid .emoji-grid {
   margin: var(--space-2) auto;
+}
+
+.farming-layout-preview {
+  position: relative;
+  display: grid;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #05070d;
+}
+
+.farming-layout-cell {
+  box-sizing: border-box;
+  border: 1px solid rgba(17, 24, 39, 0.55);
+}
+
+.farming-layout-cell.empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+.farming-layout-cell.soil {
+  background: #0b1020;
+}
+
+.farming-layout-cell.house {
+  background: #9a5b20;
+}
+
+.farming-layout-item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  border: 1px solid #2563eb;
+  background: #6ec56e;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.farming-layout-item.size-1 {
+  background: #8fd16f;
+}
+
+.farming-layout-item.size-2 {
+  background: #67c76b;
+}
+
+.farming-layout-item.size-3 {
+  background: #73cda1;
+}
+
+.farming-layout-item.size-4 {
+  background: #64c2c2;
 }
 
 /* Farming Balance Sliders */

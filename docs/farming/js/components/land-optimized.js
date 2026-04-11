@@ -4,6 +4,308 @@
  * Demo version - adapted for web
  */
 
+const OPTIMIZED_NFT_SMALL_FIXED_SINGLE_LAYOUTS = {
+  '1x1': {
+    housePosition: { x: 1, y: 3 },
+    houseRotation: 270,
+    doorTiles: [[2, 6]],
+    placements: [
+      [0, 0], [1, 0], [2, 0], [3, 0], [5, 0], [7, 0], [9, 0],
+      [5, 1], [7, 1], [9, 1],
+      [0, 2], [1, 2], [2, 2], [3, 2], [5, 2], [7, 2], [9, 2],
+      [5, 3], [7, 3], [9, 3],
+      [0, 4], [9, 4],
+      [0, 5], [9, 5],
+      [0, 6], [9, 6],
+      [0, 7], [9, 7],
+      [9, 8],
+      [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [9, 9]
+    ]
+  },
+  '2x2': {
+    housePosition: { x: 2, y: 2 },
+    houseRotation: 270,
+    placements: [
+      [0, 0], [2, 0], [4, 0], [6, 0], [8, 0],
+      [0, 3], [0, 5], [0, 8],
+      [2, 8], [4, 8], [6, 8], [8, 8]
+    ]
+  },
+  '3x3': {
+    housePosition: { x: 2, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [3, 0], [6, 0]]
+  },
+  '4x4': {
+    housePosition: { x: 0, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [4, 0]]
+  }
+};
+
+const OPTIMIZED_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS = {
+  '1x1': {
+    housePosition: { x: 4, y: 3 },
+    houseRotation: 270,
+    doorTiles: [[5, 6]],
+    placements: [
+      [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [11, 0],
+      [11, 1],
+      [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [11, 2],
+      [11, 3],
+      [0, 4], [1, 4], [2, 4], [3, 4], [4, 4], [11, 4], [11, 5],
+      [0, 6], [2, 6], [4, 6], [11, 6],
+      [0, 7], [2, 7], [4, 7], [11, 7],
+      [0, 8], [2, 8], [4, 8], [11, 8],
+      [0, 9], [2, 9], [4, 9], [11, 9], [11, 10],
+      [0, 11], [1, 11], [2, 11], [3, 11], [4, 11], [5, 11], [6, 11], [7, 11], [8, 11], [9, 11], [11, 11]
+    ]
+  },
+  '2x2': {
+    housePosition: { x: 2, y: 3 },
+    houseRotation: 180,
+    placements: [
+      [0, 0], [0, 2], [0, 4], [0, 6], [0, 8], [0, 10],
+      [10, 0], [10, 2], [10, 4], [10, 6], [10, 8], [10, 10],
+      [3, 10], [5, 10], [7, 10],
+      [3, 1], [5, 1], [7, 1]
+    ]
+  },
+  '3x3': {
+    housePosition: { x: 2, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [0, 3], [0, 9], [9, 0], [9, 3], [9, 6], [9, 9], [4, 0]]
+  },
+  '4x4': {
+    housePosition: { x: 5, y: 4 },
+    houseRotation: 270,
+    placements: [[0, 0], [4, 0], [8, 0], [0, 5]]
+  }
+};
+
+const OPTIMIZED_NFT_LARGE_FIXED_SINGLE_LAYOUTS = {
+  '1x1': {
+    housePosition: { x: 5, y: 4 },
+    houseRotation: 270,
+    placements: [
+      [0, 0], [2, 0], [4, 0], [6, 0], [8, 0], [10, 0], [12, 0], [14, 0],
+      [0, 1], [2, 1], [4, 1], [6, 1], [8, 1], [10, 1], [12, 1], [14, 1],
+      [0, 2], [2, 2], [4, 2], [6, 2], [8, 2], [10, 2], [12, 2], [14, 2],
+      [0, 3], [2, 3], [4, 3], [6, 3], [8, 3], [10, 3], [12, 3], [14, 3],
+      [0, 4], [2, 4], [4, 4], [12, 4], [14, 4],
+      [0, 5], [2, 5], [4, 5], [12, 5], [14, 5],
+      [0, 6], [2, 6], [4, 6], [12, 6], [14, 6],
+      [0, 7], [2, 7], [4, 7], [12, 7], [14, 7],
+      [0, 8], [2, 8], [4, 8], [12, 8], [14, 8],
+      [14, 9],
+      [0, 10], [1, 10], [2, 10], [3, 10], [4, 10], [5, 10], [14, 10],
+      [0, 12], [1, 12], [2, 12], [3, 12], [4, 12], [5, 12], [13, 12], [14, 12],
+      [0, 14], [1, 14], [2, 14], [3, 14], [4, 14], [5, 14], [6, 14], [7, 14],
+      [8, 14], [9, 14], [10, 14], [11, 14], [12, 14], [13, 14], [14, 14]
+    ]
+  },
+  '2x2': {
+    housePosition: { x: 2, y: 3 },
+    houseRotation: 270,
+    placements: [
+      [0, 0], [2, 0], [4, 0], [6, 0], [8, 0], [10, 0], [12, 0],
+      [0, 3], [9, 3], [11, 3], [13, 3],
+      [0, 5], [9, 6], [11, 6], [13, 6],
+      [0, 7], [0, 9], [11, 9], [13, 9],
+      [0, 11], [0, 13], [3, 13], [5, 13], [7, 13], [9, 13], [11, 13], [13, 13]
+    ]
+  },
+  '3x3': {
+    housePosition: { x: 3, y: 5 },
+    houseRotation: 270,
+    placements: [[0, 0], [0, 3], [0, 6], [0, 9], [0, 12], [4, 0], [8, 0], [12, 0], [12, 3], [12, 6], [12, 9], [12, 12]]
+  },
+  '4x4': {
+    housePosition: { x: 6, y: 5 },
+    houseRotation: 90,
+    placements: [[0, 0], [4, 0], [8, 0], [0, 5], [0, 10], [4, 10]]
+  }
+};
+
+function buildFixedNFTPlacements(sizeKey, coords) {
+  const [w, h] = sizeKey.split('x').map((value) => parseInt(value, 10));
+  return (coords || []).map(([x, y]) => ({ x, y, size: sizeKey, w, h }));
+}
+
+const NFT_SINGLE_SIZE_LAYOUT_PRESETS = {
+  NFT_SMALL: {
+    singleCropPlacements: OPTIMIZED_NFT_SMALL_FIXED_SINGLE_LAYOUTS,
+    cards: [
+      {
+        label: 'All 1x1',
+        sizeClass: 'size-1',
+        layout: {
+          counts: { '1x1': 38, '2x2': 0, '3x3': 0, '4x4': 0 },
+          totalTiles: 38,
+          housePosition: { x: 1, y: 3 },
+          houseRotation: 270,
+          doorTiles: OPTIMIZED_NFT_SMALL_FIXED_SINGLE_LAYOUTS['1x1'].doorTiles,
+          placements: buildFixedNFTPlacements('1x1', OPTIMIZED_NFT_SMALL_FIXED_SINGLE_LAYOUTS['1x1'].placements)
+        }
+      },
+      {
+        label: 'All 2x2',
+        sizeClass: 'size-2',
+        layout: {
+          counts: { '1x1': 0, '2x2': 12, '3x3': 0, '4x4': 0 },
+          totalTiles: 48,
+          housePosition: { x: 2, y: 2 },
+          houseRotation: 270,
+          placements: buildFixedNFTPlacements('2x2', OPTIMIZED_NFT_SMALL_FIXED_SINGLE_LAYOUTS['2x2'].placements)
+        }
+      },
+      {
+        label: 'Max 3x3',
+        sizeClass: 'size-3',
+        layout: {
+          counts: { '1x1': 4, '2x2': 3, '3x3': 3, '4x4': 0 },
+          totalTiles: 43,
+          housePosition: { x: 2, y: 4 },
+          houseRotation: 270,
+          placements: [
+            ...buildFixedNFTPlacements('3x3', [[0, 0], [3, 0], [6, 0]]),
+            ...buildFixedNFTPlacements('2x2', [[0, 4], [0, 6], [0, 8]]),
+            ...buildFixedNFTPlacements('1x1', [[6, 4], [7, 4], [8, 4], [9, 4]])
+          ]
+        }
+      },
+      {
+        label: 'Max 4x4',
+        sizeClass: 'size-4',
+        layout: {
+          counts: { '1x1': 6, '2x2': 2, '3x3': 0, '4x4': 2 },
+          totalTiles: 46,
+          housePosition: { x: 0, y: 4 },
+          houseRotation: 270,
+          placements: [
+            ...buildFixedNFTPlacements('4x4', [[0, 0], [4, 0]]),
+            ...buildFixedNFTPlacements('2x2', [[8, 6], [8, 8]]),
+            ...buildFixedNFTPlacements('1x1', [[9, 0], [9, 1], [9, 2], [9, 3], [9, 4], [0, 9]])
+          ]
+        }
+      }
+    ]
+  },
+  NFT_MEDIUM: {
+    singleCropPlacements: OPTIMIZED_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS,
+    cards: [
+      {
+        label: 'All 1x1',
+        sizeClass: 'size-1',
+        layout: {
+          counts: { '1x1': 59, '2x2': 0, '3x3': 0, '4x4': 0 },
+          totalTiles: 59,
+          housePosition: { x: 4, y: 3 },
+          houseRotation: 270,
+          doorTiles: OPTIMIZED_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS['1x1'].doorTiles,
+          placements: buildFixedNFTPlacements('1x1', OPTIMIZED_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS['1x1'].placements)
+        }
+      },
+      {
+        label: 'All 2x2',
+        sizeClass: 'size-2',
+        layout: {
+          counts: { '1x1': 0, '2x2': 18, '3x3': 0, '4x4': 0 },
+          totalTiles: 72,
+          housePosition: { x: 2, y: 3 },
+          houseRotation: 180,
+          placements: buildFixedNFTPlacements('2x2', OPTIMIZED_NFT_MEDIUM_FIXED_SINGLE_LAYOUTS['2x2'].placements)
+        }
+      },
+      {
+        label: 'Max 3x3',
+        sizeClass: 'size-3',
+        layout: {
+          counts: { '1x1': 3, '2x2': 0, '3x3': 8, '4x4': 0 },
+          totalTiles: 75,
+          housePosition: { x: 2, y: 4 },
+          houseRotation: 270,
+          placements: [
+            ...buildFixedNFTPlacements('3x3', [[0, 0], [0, 3], [0, 9], [9, 0], [9, 3], [9, 6], [9, 9], [4, 0]]),
+            ...buildFixedNFTPlacements('1x1', [[0, 7], [1, 7], [2, 7]])
+          ]
+        }
+      },
+      {
+        label: 'Max 4x4',
+        sizeClass: 'size-4',
+        layout: {
+          counts: { '1x1': 3, '2x2': 3, '3x3': 0, '4x4': 4 },
+          totalTiles: 79,
+          housePosition: { x: 5, y: 4 },
+          houseRotation: 270,
+          placements: [
+            ...buildFixedNFTPlacements('4x4', [[0, 0], [4, 0], [8, 0], [0, 5]]),
+            ...buildFixedNFTPlacements('2x2', [[0, 10], [2, 10], [4, 10]]),
+            ...buildFixedNFTPlacements('1x1', [[5, 5], [5, 7], [5, 8]])
+          ]
+        }
+      }
+    ]
+  },
+  NFT_LARGE: {
+    singleCropPlacements: OPTIMIZED_NFT_LARGE_FIXED_SINGLE_LAYOUTS,
+    cards: [
+      {
+        label: 'All 1x1',
+        sizeClass: 'size-1',
+        layout: {
+          counts: { '1x1': 88, '2x2': 0, '3x3': 0, '4x4': 0 },
+          totalTiles: 88,
+          housePosition: { x: 5, y: 4 },
+          houseRotation: 270,
+          placements: buildFixedNFTPlacements('1x1', OPTIMIZED_NFT_LARGE_FIXED_SINGLE_LAYOUTS['1x1'].placements)
+        }
+      },
+      {
+        label: 'All 2x2',
+        sizeClass: 'size-2',
+        layout: {
+          counts: { '1x1': 0, '2x2': 27, '3x3': 0, '4x4': 0 },
+          totalTiles: 108,
+          housePosition: { x: 2, y: 3 },
+          houseRotation: 270,
+          placements: buildFixedNFTPlacements('2x2', OPTIMIZED_NFT_LARGE_FIXED_SINGLE_LAYOUTS['2x2'].placements)
+        }
+      },
+      {
+        label: 'Max 3x3',
+        sizeClass: 'size-3',
+        layout: {
+          counts: { '1x1': 11, '2x2': 0, '3x3': 12, '4x4': 0 },
+          totalTiles: 119,
+          housePosition: { x: 3, y: 5 },
+          houseRotation: 270,
+          placements: [
+            ...buildFixedNFTPlacements('3x3', [[0, 0], [0, 3], [0, 6], [0, 9], [0, 12], [4, 0], [8, 0], [12, 0], [12, 3], [12, 6], [12, 9], [12, 12]]),
+            ...buildFixedNFTPlacements('1x1', [[4, 4], [5, 4], [6, 4], [7, 4], [8, 4], [9, 4], [10, 4], [10, 6], [10, 7], [10, 8], [10, 9]])
+          ]
+        }
+      },
+      {
+        label: 'Max 4x4',
+        sizeClass: 'size-4',
+        layout: {
+          counts: { '1x1': 5, '2x2': 3, '3x3': 0, '4x4': 6 },
+          totalTiles: 113,
+          housePosition: { x: 6, y: 5 },
+          houseRotation: 90,
+          placements: [
+            ...buildFixedNFTPlacements('4x4', [[0, 0], [4, 0], [8, 0], [0, 5], [0, 10], [4, 10]]),
+            ...buildFixedNFTPlacements('2x2', [[13, 0], [13, 2], [5, 5]]),
+            ...buildFixedNFTPlacements('1x1', [[14, 5], [14, 6], [14, 7], [5, 8], [14, 8]])
+          ]
+        }
+      }
+    ]
+  }
+};
+
 class LandOptimized {
   constructor(container, options = {}) {
     this.container = container;
@@ -362,6 +664,31 @@ class LandOptimized {
    * Build the list of categorized layout cards for display
    */
   buildCategoryCards(categorized, availableTiles) {
+    if (this.isNFTLand) {
+      const nftPreset = this.currentLandType ? NFT_SINGLE_SIZE_LAYOUT_PRESETS[this.currentLandType] : null;
+      if (Array.isArray(nftPreset?.cards) && nftPreset.cards.length) {
+        return nftPreset.cards.map((card) => ({
+          ...card,
+          availableTiles,
+          singleSizeOnly: false
+        }));
+      }
+
+      const nftCardDefs = [
+        { keys: ['all1x1'], label: 'All 1x1', sizeClass: 'size-1' },
+        { keys: ['all2x2', 'max2x2'], label: 'All 2x2', sizeClass: 'size-2' },
+        { keys: ['all3x3', 'max3x3'], label: 'All 3x3', sizeClass: 'size-3' },
+        { keys: ['all4x4', 'max4x4'], label: 'All 4x4', sizeClass: 'size-4' }
+      ];
+
+      return nftCardDefs
+        .map((def) => {
+          const layout = def.keys.map((key) => categorized[key]).find(Boolean) || null;
+          return layout ? { ...def, layout, availableTiles, singleSizeOnly: true } : null;
+        })
+        .filter(Boolean);
+    }
+
     const cardDefs = [
       { key: 'all1x1', label: 'All 1x1', sizeClass: 'size-1' },
       { key: 'all2x2', label: 'All 2x2', sizeClass: 'size-2' },
@@ -381,10 +708,11 @@ class LandOptimized {
    * Render a categorized layout card matching the in-app UI
    */
   renderCategorizedCard(card) {
-    const { layout, label, sizeClass, availableTiles } = card;
-    const counts = layout.counts || {};
+    const { layout, label, sizeClass, availableTiles, singleSizeOnly = false } = card;
+    const displayLayout = this.convertLayoutForMiniGrid(layout, sizeClass, singleSizeOnly);
+    const counts = displayLayout.counts || {};
     const color = this.getCategoryColor(sizeClass);
-    const totalTiles = layout.totalTiles || 0;
+    const totalTiles = displayLayout.totalTiles || 0;
     const efficiency = availableTiles > 0 ? Math.round((totalTiles / availableTiles) * 100) : 0;
     const itemCount = (counts['4x4'] || 0) + (counts['3x3'] || 0) + (counts['2x2'] || 0) + (counts['1x1'] || 0);
 
@@ -394,8 +722,6 @@ class LandOptimized {
     if ((counts['2x2'] || 0) > 0) countBadges.push(`<span class="count-badge size-2">${counts['2x2']}x2x2</span>`);
     if ((counts['1x1'] || 0) > 0) countBadges.push(`<span class="count-badge size-1">${counts['1x1']}x1x1</span>`);
 
-    // Render mini grid — reuse existing method with converted data
-    const displayLayout = this.convertLayoutForMiniGrid(layout);
     const miniGrid = this.isCommunityLand ? this.renderMiniGrid(displayLayout) : this.renderNFTMiniGrid(displayLayout);
 
     return `
@@ -417,21 +743,67 @@ class LandOptimized {
   /**
    * Convert a raw layout to the format expected by mini-grid renderers
    */
-  convertLayoutForMiniGrid(layout) {
+  convertLayoutForMiniGrid(layout, sizeClass = null, singleSizeOnly = false) {
     const rawPlacements = layout.placements || [];
-    const placements = rawPlacements.map(p => ({
+    const targetSize = parseInt(String(sizeClass).split('-')[1] || '1', 10);
+    const nftPreset = this.currentLandType ? NFT_SINGLE_SIZE_LAYOUT_PRESETS[this.currentLandType] : null;
+    const presetCoords = singleSizeOnly && targetSize > 0 ? nftPreset?.singleCropPlacements?.[`${targetSize}x${targetSize}`]?.placements : null;
+    const housePosition = nftPreset?.housePosition || layout.housePosition || this.houseState.housePosition;
+    const houseRotation = nftPreset?.houseRotation ?? (layout.houseRotation != null ? layout.houseRotation : this.houseState.houseRotation);
+
+    let placements = rawPlacements.map(p => ({
       x: p.x,
       y: p.y,
       width: p.w || parseInt(p.size?.split('x')[0] || '1', 10),
       height: p.h || parseInt(p.size?.split('x')[1] || '1', 10),
       size: p.size
     }));
+    let counts = { ...(layout.counts || {}) };
+    let totalTiles = layout.totalTiles || 0;
+
+    if (singleSizeOnly && sizeClass && this.isNFTLand) {
+      const placementUtil = window.LandLayoutUtils?.calculateOptimalPlacement;
+
+      if (presetCoords?.length) {
+        placements = presetCoords.map(([x, y]) => ({
+          x,
+          y,
+          width: targetSize,
+          height: targetSize,
+          size: `${targetSize}x${targetSize}`
+        }));
+      } else if (targetSize > 0 && housePosition && placementUtil && Array.isArray(this.landData?.tiles)) {
+        const blockedTiles = this.calculateBlockedTiles(housePosition, houseRotation);
+        const remainingTileSet = new Set(
+          this.landData.tiles
+            .filter((tile) => !blockedTiles.has(`${tile.x},${tile.y}`))
+            .map((tile) => `${tile.x},${tile.y}`)
+        );
+
+        const computedLayout = placementUtil(targetSize, targetSize, remainingTileSet);
+        placements = (computedLayout?.placements || []).map((placement) => ({
+          x: placement.x,
+          y: placement.y,
+          width: targetSize,
+          height: targetSize,
+          size: `${targetSize}x${targetSize}`
+        }));
+      } else {
+        placements = placements.filter((placement) => (placement.width || 1) === targetSize);
+      }
+
+      counts = { '1x1': 0, '2x2': 0, '3x3': 0, '4x4': 0 };
+      counts[`${targetSize}x${targetSize}`] = placements.length;
+      totalTiles = placements.reduce((sum, placement) => sum + ((placement.width || 1) * (placement.height || 1)), 0);
+    }
 
     return {
       ...layout,
+      counts,
+      totalTiles,
       placements,
-      housePosition: layout.housePosition || this.houseState.housePosition,
-      houseRotation: layout.houseRotation != null ? layout.houseRotation : this.houseState.houseRotation
+      housePosition,
+      houseRotation
     };
   }
 
@@ -926,13 +1298,20 @@ class LandOptimized {
 
     // Use pre-computed houseTiles from index if available (already positioned+rotated)
     const houseTilesSet = new Set();
-    const doorTilesSet = new Set();
     if (layout.houseTiles && layout.houseTiles.length > 0) {
       layout.houseTiles.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
     } else {
       const houseTiles = this.getHouseTilesAtPosition(layout.housePosition, layout.houseRotation);
       houseTiles.house.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
-      houseTiles.door.forEach((t) => doorTilesSet.add(`${t.x},${t.y}`));
+      if (Array.isArray(layout.doorTiles) && layout.doorTiles.length) {
+        layout.doorTiles.forEach((tile) => {
+          const x = Array.isArray(tile) ? tile[0] : tile.x;
+          const y = Array.isArray(tile) ? tile[1] : tile.y;
+          houseTilesSet.add(`${x},${y}`);
+        });
+      } else {
+        houseTiles.door.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
+      }
       houseTiles.clearance.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
     }
 
@@ -946,13 +1325,10 @@ class LandOptimized {
         const key = `${x},${y}`;
         const isValid = tileSet.has(key);
         const isHouse = houseTilesSet.has(key);
-        const isDoor = doorTilesSet.has(key);
 
         let cellStyle = 'border: 1px solid rgba(255, 255, 255, 0.08);';
         if (!isValid) {
           cellStyle += ' background: transparent;';
-        } else if (isDoor) {
-          cellStyle += ' background: #B45309;'; // Door - amber
         } else if (isHouse) {
           cellStyle += ' background: #6B7280;'; // House - gray
         } else {
@@ -1155,10 +1531,17 @@ class LandOptimized {
 
     // Get house tiles at the layout's house position
     const houseTilesSet = new Set();
-    const doorTilesSet = new Set();
     const houseTiles = this.getHouseTilesAtPosition(layout.housePosition, layout.houseRotation);
     houseTiles.house.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
-    houseTiles.door.forEach((t) => doorTilesSet.add(`${t.x},${t.y}`));
+    if (Array.isArray(layout.doorTiles) && layout.doorTiles.length) {
+      layout.doorTiles.forEach((tile) => {
+        const x = Array.isArray(tile) ? tile[0] : tile.x;
+        const y = Array.isArray(tile) ? tile[1] : tile.y;
+        houseTilesSet.add(`${x},${y}`);
+      });
+    } else {
+      houseTiles.door.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
+    }
     houseTiles.clearance.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
 
     const gridWidth = width * cellSize;
@@ -1171,13 +1554,10 @@ class LandOptimized {
         const key = `${x},${y}`;
         const isValid = tileSet.has(key);
         const isHouse = houseTilesSet.has(key);
-        const isDoor = doorTilesSet.has(key);
 
         let bgColor = 'transparent';
         if (isValid) {
-          if (isDoor) {
-            bgColor = '#B45309';
-          } else if (isHouse) {
+          if (isHouse) {
             bgColor = '#6B7280';
           } else {
             bgColor = '#5C4A3D';
@@ -1330,14 +1710,13 @@ class LandOptimized {
 
     // Get house tiles for display
     const houseTilesSet = new Set();
-    const doorTilesSet = new Set();
     if (this.landData.hasHouse && this.houseState.housePosition) {
       const houseTiles = this.getHouseTilesAtPosition(
         this.houseState.housePosition,
         this.houseState.houseRotation
       );
       houseTiles.house.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
-      houseTiles.door.forEach((t) => doorTilesSet.add(`${t.x},${t.y}`));
+      houseTiles.door.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
       houseTiles.clearance.forEach((t) => houseTilesSet.add(`${t.x},${t.y}`));
     }
 
@@ -1353,13 +1732,10 @@ class LandOptimized {
         const key = `${x},${y}`;
         const isValid = tileSet.has(key);
         const isHouse = houseTilesSet.has(key);
-        const isDoor = doorTilesSet.has(key);
 
         let bgColor = 'transparent';
         if (isValid) {
-          if (isDoor) {
-            bgColor = '#B45309'; // Dark amber - distinct from farmland
-          } else if (isHouse) {
+          if (isHouse) {
             bgColor = '#6B7280'; // Cool gray - better distinction
           } else {
             bgColor = '#5C4A3D'; // Warm taupe - better visibility

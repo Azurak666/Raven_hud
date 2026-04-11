@@ -29,7 +29,8 @@ async function initLandSimulator() {
   // Create sidebar
   landSidebar = new LandSidebar(sidebarContainer, {
     onItemSelect: handleItemSelect,
-    onLayoutLoad: handleLayoutLoad
+    onLayoutLoad: handleLayoutLoad,
+    onLandSelect: handleOwnedLandSelect
   });
 
   // Create grid (no land type selected yet)
@@ -56,6 +57,10 @@ async function initLandSimulator() {
 
   // Initialize owned lands configuration
   initOwnedLandsConfig();
+
+  if (landSidebar?.refreshOwnedLands) {
+    await landSidebar.refreshOwnedLands();
+  }
 
   // Check if dropdown already has a value selected (browser autocomplete, etc.)
   const landTypeSelect = document.getElementById('landTypeSelect');
@@ -152,6 +157,21 @@ function handleItemSelect(item) {
       landGrid.selectedItem = null;
     }
   }
+}
+
+/**
+ * Handle selecting a configured owned land from the sidebar list
+ */
+function handleOwnedLandSelect(landEntry) {
+  if (!landEntry?.landType) return;
+
+  const landTypeSelect = document.getElementById('landTypeSelect');
+  if (!landTypeSelect) return;
+
+  landTypeSelect.value = landEntry.landType;
+  handleLandTypeChange({ target: landTypeSelect }).catch((err) => {
+    console.error('[Land] Failed to select owned land:', err);
+  });
 }
 
 /**
@@ -619,6 +639,9 @@ async function saveOwnedLands() {
   try {
     await window.electronAPI.updateOwnedLands(ownedLands);
     updateTotalOwnedTiles();
+    if (landSidebar?.refreshOwnedLands) {
+      await landSidebar.refreshOwnedLands();
+    }
   } catch (error) {
     console.error('Error saving owned lands:', error);
   }
