@@ -483,7 +483,8 @@ button:focus-visible {
    ============================================ */
 .container {
   display: flex;
-  height: calc(100vh - 58px);
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -8651,7 +8652,8 @@ button:focus-visible {
 .farming-container {
   display: flex;
   gap: var(--space-3);
-  height: calc(100vh - 110px);
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
