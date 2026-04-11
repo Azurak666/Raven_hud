@@ -2453,9 +2453,11 @@
     "y": 2693,
     "floor": "surface",
     "region": "",
-    "description": "Gives 10 rep",
+    "description": "Gives 10 rep. \nCrafts \"Golden Protector\" - 2 Emeralds, 200 Thunderous Conches & 100 Gadget Fragments. \nCrafts \"Winged Protector\" - 850 Goblin Ears & 500 Hexing Vestiges.",
     "source": "base",
-    "icon": "npc_reputation.webp"
+    "icon": "npc_reputation.webp",
+    "lastEditedBy": "Netfsheppard",
+    "lastEditedAt": "2026-04-11T22:11:50.061Z"
   },
   {
     "id": "npc_reputation_4197_2679",
