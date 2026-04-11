@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RavenHUD - Farming Tools</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="stylesheet" href="css/demo.css?v=20260412e">
+  <style>
+    /* Demo-specific overrides */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* ---- Page Header (matches creatures/trophies/worldmap) ---- */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      padding: 0 12px;
+      border-bottom: 1px solid #4b3d2f;
+      background: #231f1b;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 100%;
+      flex-wrap: wrap;
+    }
+
+    .header-brand,
+    .header-nav-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: #c9a959;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .header-brand:hover,
+    .header-nav-link:hover {
+      color: #e1c574;
+      background: rgba(201, 169, 89, 0.1);
+    }
+
+    .header-brand.active,
+    .header-nav-link.active {
+      color: #e1c574;
+      background: rgba(201, 169, 89, 0.16);
+      box-shadow: inset 0 0 0 1px rgba(201, 169, 89, 0.18);
+    }
+
+    .header-logo { display: none; }
+
+    .header-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .header-testing-badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #c9a959;
+      background: rgba(201, 169, 89, 0.1);
+      border: 1px solid rgba(201, 169, 89, 0.25);
+      border-radius: 20px;
+      padding: 2px 10px;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-info,
+    .btn-donate {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 12px;
+      border: 1px solid #4b3d2f;
+      border-radius: 4px;
+      background: #2b241e;
+      color: #efe5d0;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .btn-info:hover {
+      border-color: #c9a959;
+      background: #2c2622;
+    }
+
+    .btn-donate {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      color: #fff;
+    }
+
+    .btn-donate:hover { background: #388e3c; border-color: #388e3c; }
+
+    .discord-user {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      background: #332b24;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .discord-name { color: #efe5d0; font-weight: 500; }
+
+    .btn-logout {
+      background: none;
+      border: none;
+      color: #b8ae9b;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+    }
+
+    .btn-logout:hover { color: #dd6b6b; }
+
+    /* Info / Donate modals */
+    .info-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9000;
+    }
+
+    .info-modal-overlay[hidden] { display: none !important; }
+
+    .info-modal {
+      width: min(520px, calc(100vw - 24px));
+      background: linear-gradient(180deg, rgba(39,32,27,0.98) 0%, rgba(30,24,20,0.98) 100%);
+      border: 1px solid #4b3d2f;
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+    }
+
+    .info-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .info-modal-header h3 {
+      margin: 0;
+      color: #c9a959;
+    }
+
+    .info-modal-body { padding: 16px; }
+
+    .info-modal .modal-close {
+      background: none;
+      border: none;
+      color: #b8ae9b;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .info-modal .modal-close:hover { color: #efe5d0; }
+
+    .info-modal .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .donate-text {
+      margin: 0 0 10px;
+      color: #b8ae9b;
+      line-height: 1.5;
+    }
+
+    .wallet-box {
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      background: rgba(0,0,0,0.18);
+    }
+
+    .wallet-label {
+      margin-bottom: 6px;
+      color: #b8ae9b;
+      font-size: 0.82rem;
+    }
+
+    .wallet-address {
+      display: block;
+      overflow-wrap: anywhere;
+      color: #efe5d0;
+    }
+
+    .farming-buffs-box {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid rgba(201, 169, 89, 0.25);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .farming-buffs-title {
+      color: #e1c574;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    .farming-buff-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #efe5d0;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .farming-buff-row input[type='checkbox'] {
+      width: 14px;
+      height: 14px;
+      accent-color: #c9a959;
+      cursor: pointer;
+    }
+
+    .farming-buff-note {
+      color: #b8ae9b;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    .info-modal .btn-primary {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #c9a959;
+      color: #19150f;
+    }
+
+    .info-modal .btn-secondary {
+      padding: 8px 12px;
+      border: 1px solid #4b3d2f;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #2b241e;
+      color: #efe5d0;
+    }
+
+    /* Adjust app to account for header */
+    .app {
+      height: calc(100vh - 42px);
+    }
+
+    /* Hide drag region in web */
+    .drag-region {
+      -webkit-app-region: none;
+    }
+
+    /* Hide desktop-only elements */
+    .no-drag,
+    .opacity-control,
+    .reset-countdown,
+    .settings-btn,
+    .nav-logo {
+      display: none !important;
+    }
+
+    /* Demo tab styling */
+    .tab-button.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .tab-button.disabled::after {
+      content: ' (Desktop)';
+      font-size: 0.7em;
+      opacity: 0.7;
+    }
+
+    /* Hide dashboard header in demo */
+    .dashboard-header {
+      display: none;
+    }
+
+    /* Toast container */
+    #toastContainer {
+      position: fixed;
+      top: 52px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #c9a959;
+      color: #1a1614;
+      padding: 8px 16px;
+      z-index: 10000;
+      text-decoration: none;
+      font-weight: 600;
+      transition: top 0.15s ease;
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      top: 0;
+    }
+
+    /* Visually hidden - for screen readers only */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body class="background-gradient">
+  <!-- Skip Link for Accessibility -->
+  <a href="#tab-farming" class="skip-link">Skip to main content</a>
+
+  <!-- Site Banner -->
+  <header class="page-header">
+    <div class="header-brand-wrap">
+      <a href="../" class="header-brand"><span class="header-title">World Map</span></a>
+      <a href="../trophies/" class="header-nav-link">Trophies</a>
+      <a href="../creatures/" class="header-nav-link">Creatures</a>
+      <a href="./" class="header-nav-link active" aria-current="page">Farming</a>
+    </div>
+    <div class="header-center">
+      <span class="header-testing-badge">Still in testing phase</span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-info" class="btn-info" title="About RavenHUD">Info</button>
+      <button id="btn-donate" class="btn-donate" title="Support RavenHUD">Donate</button>
+      <div id="discord-user-display" class="discord-user" style="display:none">
+        <span id="discord-username" class="discord-name"></span>
+        <button id="btn-discord-logout" class="btn-logout" title="Logout" aria-label="Logout">&times;</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <main class="app">
+    <!-- Tab Navigation -->
+    <!-- Land Simulator (hidden, keeps modal DOM for land.js) -->
+    <section
+      id="tab-land"
+      class="tab-section"
+      role="tabpanel"
+      aria-labelledby="land-tab"
+      tabindex="0"
+    >
+      <div class="land-simulator">
+        <!-- Owned Lands Config Modal (shown on first visit) -->
+        <div id="ownedLandsModal" class="modal-backdrop" style="display: none;">
+          <div class="owned-lands-modal">
+            <div class="modal-header">
+              <h3>Configure Your Lands</h3>
+              <button class="modal-close" id="closeOwnedLandsBtn">&#x2715;</button>
+            </div>
+
+            <div class="demo-disclaimer">
+              This is a <strong>demo preview</strong> and may be out of date compared to the desktop app.
+              Found a bug? Report it via <a href="https://discord.gg/ravenhud" target="_blank" rel="noopener">Discord</a> to <strong>Pixelated</strong>.
+            </div>
+
+            <div class="owned-lands-config">
+              <div class="config-grid">
+                <!-- Community Lands (checkboxes, max 1 each) -->
+                <div class="land-config-section">
+                  <h4>Community Lands <span class="hint">(1 each max)</span></h4>
+                  <label class="land-checkbox">
+                    <input type="checkbox" id="ownSmallCommunity">
+                    <span class="land-info">
+                      <span class="name">Small Community</span>
+                      <span class="details">56 tiles • 1,120 Silver/day tax</span>
+                    </span>
+                  </label>
+                  <label class="land-checkbox">
+                    <input type="checkbox" id="ownMediumCommunity">
+                    <span class="land-info">
+                      <span class="name">Medium Community</span>
+                      <span class="details">91 tiles • 31,200 Silver/day tax</span>
+                    </span>
+                  </label>
+                  <label class="land-checkbox">
+                    <input type="checkbox" id="ownLargeCommunity">
+                    <span class="land-info">
+                      <span class="name">Large Community</span>
+                      <span class="details">130 tiles • 46,240 Silver/day tax</span>
+                    </span>
+                  </label>
+                </div>
+
+                <!-- NFT Lands (number inputs, max 7 total combined) -->
+                <div class="land-config-section">
+                  <h4>NFT Lands <span class="hint">(<span id="nftLandCount">0</span>/7 owned, no tax)</span></h4>
+                  <div class="land-input-row">
+                    <label for="ownNftSmall">Small (10x10)</label>
+                    <div class="input-with-tiles">
+                      <input type="number" id="ownNftSmall" min="0" max="7" value="0" step="1" aria-describedby="nftSmallTiles">
+                      <span class="tile-count" id="nftSmallTiles">100 tiles each</span>
+                    </div>
+                  </div>
+                  <div class="land-input-row">
+                    <label for="ownNftMedium">Medium (12x12)</label>
+                    <div class="input-with-tiles">
+                      <input type="number" id="ownNftMedium" min="0" max="7" value="0" step="1" aria-describedby="nftMediumTiles">
+                      <span class="tile-count" id="nftMediumTiles">144 tiles each</span>
+                    </div>
+                  </div>
+                  <div class="land-input-row">
+                    <label for="ownNftLarge">Large (15x15)</label>
+                    <div class="input-with-tiles">
+                      <input type="number" id="ownNftLarge" min="0" max="7" value="0" step="1" aria-describedby="nftLargeTiles">
+                      <span class="tile-count" id="nftLargeTiles">225 tiles each</span>
+                    </div>
+                  </div>
+                  <div class="land-input-row">
+                    <label for="ownNftStronghold">Stronghold (22x22)</label>
+                    <div class="input-with-tiles">
+                      <input type="number" id="ownNftStronghold" min="0" max="7" value="0" step="1" aria-describedby="nftStrongholdTiles">
+                      <span class="tile-count" id="nftStrongholdTiles">484 tiles each</span>
+                    </div>
+                  </div>
+                  <div class="land-input-row">
+                    <label for="ownNftFort">Fort (30x30)</label>
+                    <div class="input-with-tiles">
+                      <input type="number" id="ownNftFort" min="0" max="7" value="0" step="1" aria-describedby="nftFortTiles">
+                      <span class="tile-count" id="nftFortTiles">900 tiles each</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="config-footer">
+                <span class="total-tiles" id="totalOwnedTiles">0 tiles</span>
+                <button type="button" class="btn-save-lands" id="saveOwnedLandsBtn">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="land-controls">
+        <!-- Hidden elements required by land.js to init the owned-lands modal -->
+        <div id="landSidebar" hidden></div>
+        <div id="landOptimized" hidden></div>
+        <div id="landGrid" hidden></div>
+      </div>
+    </section>
+
+    <!-- Tradepack Calculator Tab -->
+    <!-- Farming Calculator Tab -->
+    <section
+      id="tab-farming"
+      class="tab-section active"
+    >
+      <div class="container farming-container">
+        <!-- Land Selection Panel -->
+        <div class="lands-summary-panel">
+          <h3>Choose Land</h3>
+          <div class="lands-summary-content" id="farmingLandsSummaryContent">
+            <div class="lands-summary-loading">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Crop List -->
+        <div class="farming-list">
+          <h1>Farming Calculator</h1>
+
+          <div class="farming-filters">
+            <div class="farming-search">
+              <label for="cropSearch" class="visually-hidden">Search crops</label>
+              <input
+                type="text"
+                id="cropSearch"
+                placeholder="Search crops..."
+              />
+            </div>
+            <div class="farming-category">
+              <label for="cropCategoryFilter" class="visually-hidden">Filter by category</label>
+              <select id="cropCategoryFilter">
+                <option value="all">All Categories</option>
+                <option value="farming">Farming</option>
+                <option value="husbandry">Husbandry</option>
+                <option value="herbalism">Herbalism</option>
+                <option value="woodcutting">Woodcutting</option>
+              </select>
+            </div>
+          </div>
+          <div id="cropItems">
+            <div class="loading-state">Loading crops...</div>
+          </div>
+        </div>
+
+        <!-- Selection Panel -->
+        <div class="farming-panel" id="farmingPanel">
+          <h2>Selected Crops</h2>
+          <div id="farmingSelectionPanel">
+            <p class="placeholder-text">Select crops to view farming simulation</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Donate Modal -->
+  <div class="info-modal-overlay" id="donate-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Support RavenHUD</h3>
+        <button class="modal-close" id="donate-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">Appreciate donations so i can buy t8 gems..eh i mean i can keep this site updated :)</p>
+        <div class="wallet-box">
+          <div class="wallet-label">Immutable wallet address</div>
+          <code id="donate-wallet-address" class="wallet-address">0xe69165e7781468bf0979419d0def401b13a3ac50</code>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="btn-copy-wallet" type="button">Copy Address</button>
+          <button class="btn-secondary" id="btn-close-donate" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
+  <div class="info-modal-overlay" id="about-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Info</h3>
+        <button class="modal-close" id="about-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">These are the RavenHUD farming tools — land simulator, tradepack calculator, and farming calculator.</p>
+        <p class="donate-text">If you're logged in via Discord on another RavenHUD page, your username will appear here automatically.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-close-about" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts - Load in correct order with defer -->
+  <!-- Utilities first -->
+  <script src="js/utils/debounce.js?v=20260412d" defer></script>
+  <script src="js/utils/ui-helpers.js?v=20260412d" defer></script>
+  <script src="js/utils/crop-icons.js?v=20260412d" defer></script>
+  <script src="js/utils/constants.js?v=20260412d" defer></script>
+  <script src="js/utils/land-layout-utils.js?v=20260412d" defer></script>
+
+  <!-- Components -->
+  <script src="js/components/material-tooltip.js?v=20260411b" defer></script>
+  <script src="js/components/land-grid.js?v=20260412d" defer></script>
+  <script src="js/components/land-sidebar.js?v=20260412d" defer></script>
+  <script src="js/components/land-optimized.js?v=20260412d" defer></script>
+
+  <!-- Handlers (browser-compatible ports) -->
+  <script src="js/handlers/land-handlers.js?v=20260412d" defer></script>
+
+  <!-- API Mock (must load after handlers) -->
+  <script src="js/api-mock.js?v=20260412d" defer></script>
+
+  <!-- Main modules -->
+  <script src="js/tabs.js?v=20260411b" defer></script>
+  <script src="js/land.js?v=20260412d" defer></script>
+  <script src="js/tradepacks.js?v=20260412d" defer></script>
+  <script src="js/farming.js?v=20260412h" defer></script>
+
+  <script>
+    (function () {
+      var DONATE_WALLET_ADDRESS = '0xe69165e7781468bf0979419d0def401b13a3ac50';
+      var discordUser = null;
+
+      function loadSavedDiscordUser() {
+        try {
+          var raw = localStorage.getItem('discord_user');
+          if (!raw) return;
+          var user = JSON.parse(raw);
+          if (user && user.id) discordUser = user;
+        } catch (e) {}
+      }
+
+      function logoutDiscord() {
+        discordUser = null;
+        try {
+          localStorage.removeItem('discord_user');
+          localStorage.removeItem('discord_access_token');
+          localStorage.removeItem('discord_access_token_expires_at');
+          sessionStorage.removeItem('discord_access_token');
+          sessionStorage.removeItem('discord_access_token_expires_at');
+        } catch (e) {}
+        updateAuthUI();
+      }
+
+      function updateAuthUI() {
+        var userDisplay = document.getElementById('discord-user-display');
+        var userName = document.getElementById('discord-username');
+        if (!userDisplay || !userName) return;
+        if (discordUser) {
+          userDisplay.style.display = 'flex';
+          userName.textContent = discordUser.globalName || discordUser.username || discordUser.id;
+        } else {
+          userDisplay.style.display = 'none';
+          userName.textContent = '';
+        }
+      }
+
+      function bindHeaderControls() {
+        var logoutBtn = document.getElementById('btn-discord-logout');
+        var infoBtn = document.getElementById('btn-info');
+        var donateBtn = document.getElementById('btn-donate');
+        var aboutModal = document.getElementById('about-modal');
+        var donateModal = document.getElementById('donate-modal');
+        var closeAbout = document.getElementById('about-close');
+        var closeAboutAlt = document.getElementById('btn-close-about');
+        var closeDonate = document.getElementById('donate-close');
+        var closeDonateAlt = document.getElementById('btn-close-donate');
+        var copyWalletBtn = document.getElementById('btn-copy-wallet');
+
+        if (logoutBtn) logoutBtn.addEventListener('click', logoutDiscord);
+        if (infoBtn && aboutModal) infoBtn.addEventListener('click', function () { aboutModal.hidden = false; });
+        if (donateBtn && donateModal) donateBtn.addEventListener('click', function () { donateModal.hidden = false; });
+
+        [closeAbout, closeAboutAlt].forEach(function (btn) {
+          if (btn && aboutModal) btn.addEventListener('click', function () { aboutModal.hidden = true; });
+        });
+        [closeDonate, closeDonateAlt].forEach(function (btn) {
+          if (btn && donateModal) btn.addEventListener('click', function () { donateModal.hidden = true; });
+        });
+        [aboutModal, donateModal].forEach(function (modal) {
+          if (!modal) return;
+          modal.addEventListener('click', function (e) { if (e.target === modal) modal.hidden = true; });
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== 'Escape') return;
+          if (aboutModal) aboutModal.hidden = true;
+          if (donateModal) donateModal.hidden = true;
+        });
+        if (copyWalletBtn) {
+          copyWalletBtn.addEventListener('click', function () {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(DONATE_WALLET_ADDRESS).then(function () {
+                copyWalletBtn.textContent = 'Copied!';
+                setTimeout(function () { copyWalletBtn.textContent = 'Copy Address'; }, 1200);
+              });
+            }
+          });
+        }
+      }
+
+      loadSavedDiscordUser();
+      updateAuthUI();
+      bindHeaderControls();
+    })();
+  </script>
+</body>
+</html>
