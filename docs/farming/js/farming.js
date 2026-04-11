@@ -1180,6 +1180,12 @@ function renderFarmingSimulationResults(results, selectedCrops) {
               </div>
             </div>
           </div>
+          <div class="sim-hero-controls">
+            <div class="sim-hero-controls-time">
+              <span class="label">Grow Time</span>
+              <span class="time-value-static">${timeLabel}</span>
+            </div>
+          </div>
         </div>
         <div class="sim-hero-row">
           <div class="sim-hero-badges">
@@ -1206,8 +1212,6 @@ function renderFarmingSimulationResults(results, selectedCrops) {
           ${landCardsHtml || '<div class="no-lands">No lands configured</div>'}
         </div>
       </div>
-
-      ${renderFarmingPlanOverview(sortedLandSimulations, timeWindow, singleCycleMode)}
     </div>
   `;
 
