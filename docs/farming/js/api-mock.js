@@ -947,7 +947,9 @@ window.electronAPI = {
       cropAllocations[chosenCrop.id].totalSlots += placementsCount;
       currentLandsByCrop[chosenCrop.id] = (currentLandsByCrop[chosenCrop.id] || 0) + 1;
 
-      const landPlantingCost = Math.round(placementsCount * plantingCostPerPlacement * landMultiplier);
+      const landPlantingCost = Math.round(
+        placementsCount * plantingCostPerPlacement * harvestsInWindow * landMultiplier
+      );
       totalPlantingCost += landPlantingCost;
 
       landSimulations.push({
