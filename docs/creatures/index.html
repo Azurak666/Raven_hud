@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RavenHUD - Creature Loot Browser</title>
+  <meta name="description" content="Browse RavenQuest creatures and their loot drops without logging in." />
+  <link rel="icon" href="../assets/favicon.png" />
+  <link rel="stylesheet" href="creatures.css" />
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-brand-wrap">
+      <a href="../" class="header-brand">
+        <img src="../assets/logo.png" alt="RavenHUD" class="header-logo" />
+        <span class="header-title">World Map</span>
+      </a>
+      <a href="../trophies/" class="header-nav-link">Trophies</a>
+      <a href="./" class="header-nav-link active" aria-current="page">Creatures</a>
+    </div>
+    <div class="header-actions">
+      <button id="btn-info" class="btn-info" title="About RavenHUD">Info</button>
+      <button id="btn-donate" class="btn-donate" title="Support RavenHUD">Donate</button>
+      <div id="discord-user-display" class="discord-user" style="display:none">
+        <span id="discord-username" class="discord-name"></span>
+        <button id="btn-discord-logout" class="btn-logout" title="Logout" aria-label="Logout">&times;</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="toolbar">
+      <div class="toolbar-copy">
+        <p>Browse monsters and their loot tables</p>
+      </div>
+
+      <div class="filters">
+        <label class="control search-control" for="search-input">
+          <span>Search</span>
+          <input id="search-input" type="search" placeholder="Creature or loot name…" />
+        </label>
+
+        <label class="control select-control" for="type-filter">
+          <span>Type</span>
+          <select id="type-filter">
+            <option value="">All types</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="list-panel">
+        <div class="panel-header">
+          <h2>Creatures</h2>
+          <span id="result-count" class="count-pill">Loading…</span>
+        </div>
+        <div id="creature-list" class="creature-list" aria-live="polite">
+          <div class="empty-state">Loading creatures…</div>
+        </div>
+      </aside>
+
+      <section id="creature-detail" class="detail-panel" aria-live="polite">
+        <div class="detail-empty">
+          <div class="detail-empty-icon">🐺</div>
+          <p>Select a creature to view its loot table.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="info-modal-overlay" id="donate-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Support RavenHUD</h3>
+        <button class="modal-close" id="donate-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">Appeciate donations so i can buy t8 gems..eh i mean i can keep this site updated :)</p>
+        <div class="wallet-box">
+          <div class="wallet-label">Immutable wallet address</div>
+          <code id="donate-wallet-address" class="wallet-address">0xe69165e7781468bf0979419d0def401b13a3ac50</code>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="btn-copy-wallet" type="button">Copy Address</button>
+          <button class="btn-secondary" id="btn-close-donate" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-modal-overlay" id="about-modal" hidden>
+    <div class="info-modal">
+      <div class="info-modal-header">
+        <h3>Info</h3>
+        <button class="modal-close" id="about-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p class="donate-text">This creature page is a restored read-only browser from the old RavenHUD data set.</p>
+        <p class="donate-text">It does not require Discord sign-in, but if you're already logged in elsewhere your profile will appear in the header.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-close-about" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="creatures.js"></script>
+</body>
+</html>
