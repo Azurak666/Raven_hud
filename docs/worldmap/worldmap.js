@@ -1256,6 +1256,23 @@ function shouldShowMarkerRegion(marker) {
   return !!(marker && marker.region && marker.category !== 'reputation_shiny');
 }
 
+
+// Helper to get author name for a marker from contributionLog or marker itself
+function getMarkerAuthorName(marker) {
+  // Try contributionLog first
+  if (Array.isArray(contributionLog)) {
+    var entry = contributionLog.find(function (c) {
+      return c.markerId === marker.id && c.action === 'submit';
+    });
+    if (entry && entry.authorName) return entry.authorName;
+  }
+  // Fallback to contributedBy field on marker
+  if (marker.contributedBy && typeof marker.contributedBy === 'string' && marker.contributedBy.trim()) {
+    return marker.contributedBy.trim();
+  }
+  return null;
+}
+
 function showDetail(m) {
   currentDetailMarker = m;
   var panel = document.getElementById('detail-panel');
@@ -1306,7 +1323,12 @@ function showDetail(m) {
   }
 
   var source = document.getElementById('detail-source');
-  source.textContent = m.source === 'base' ? 'Community verified' : 'Source: ' + m.source;
+  if (m.source === 'base') {
+    var author = getMarkerAuthorName(m);
+    source.textContent = author ? ('Added by: ' + author) : 'Community verified';
+  } else {
+    source.textContent = 'Source: ' + m.source;
+  }
 
   // Shiny collection toggle
   var shinySection = document.getElementById('detail-shiny');
