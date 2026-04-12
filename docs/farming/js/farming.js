@@ -546,6 +546,56 @@ function getGrowthTime(crop) {
     }
     return crop.gathering?.time || crop.butchering?.time || crop.growthTime || '?';
   }
+  // Patch: For herbalism 2x2 crops, use the 1x1's growthTime if available
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_glade')) {
+    // Brightday Glade special case
+    return '8H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_colony')) {
+    // Mushroom colonies (Juicy, Earthy, etc.)
+    return '8H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_bush')) {
+    // Chest Warmer Bush, Rohna Mint Bush, etc.
+    return '20H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_bed')) {
+    // Dry Mushroom Bed, Crystal Mushroom Bed
+    return '20H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_sprawl')) {
+    // Bloodthorn Sprawl, Withered Mushroom Sprawl
+    return '16H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_thicket')) {
+    // Dread Bloom Thicket, Mindbender Thicket
+    return '24H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_cluster')) {
+    // Green Mushroom Cluster, Twisted Flower Cluster, etc.
+    return '9H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_shrub')) {
+    // Pirate's Bliss Shrub
+    return '12H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_bloom')) {
+    // Cerulean Mushroom Bloom
+    return '6H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_delight_cluster')) {
+    // Lizard's Delight Cluster
+    return '9H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_fungi_sprawl')) {
+    // Pirate's Fungi Sprawl
+    return '12H';
+  }
+  if (crop.category === 'herbalism' && crop.size === '2x2' && crop.id.endsWith('_mushroom_colony')) {
+    // Shadow Mushroom Colony, Earthy Mushroom Colony
+    return '6H';
+  }
+  // Default
   return crop.gathering?.time || crop.growthTime || '?';
 }
 
@@ -665,7 +715,7 @@ function getFarmingHarvestsPer24hSummary(results, selectedCrops) {
   if (cropStats.size === 1) {
     const only = Array.from(cropStats.values())[0];
     const totalHarvests = only.harvestsPerTile24h * only.placements;
-    return `${only.harvestsPerTile24h} harvests per tile / 24h (${totalHarvests.toLocaleString()} total)`;
+    return `${totalHarvests.toLocaleString()} total harvests per 24h`;
   }
 
   let totalHarvestActions = 0;
@@ -1771,7 +1821,7 @@ function renderFarmingPlanOverview(landSimulations, timeWindow, singleCycleMode 
               </div>
               <div class="plan-detail">
                 <span class="detail-label">Harvests:</span>
-                <span class="detail-value">${crop.harvestCount}x per tile</span>
+                <span class="detail-value">${crop.harvestCount}</span>
               </div>
               <div class="plan-detail">
                 <span class="detail-label">Planted:</span>
