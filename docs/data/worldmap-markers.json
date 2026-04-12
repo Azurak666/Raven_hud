@@ -6930,5 +6930,21 @@
     "trigger": "",
     "contributedBy": "Azurak | GXE",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_1f4f0b16",
+    "source": "base",
+    "category": "dynamic_event",
+    "name": "Killer bees",
+    "description": "",
+    "x": 3787,
+    "y": 2254,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "screenshot": "community-screenshots/dynamic_event_47ae50d747.webp",
+    "icon": "dynamic_event.webp"
   }
 ]
