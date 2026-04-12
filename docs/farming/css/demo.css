@@ -305,7 +305,6 @@ body {
 .opacity-control input[type='range'] {
   width: 100px;
   height: 4px;
-  -webkit-appearance: none;
   background: var(--game-bg-darkest);
   border: 1px solid var(--game-border-bronze);
   border-radius: var(--radius-sm);
@@ -1968,7 +1967,6 @@ button:focus-visible {
 .settings-slider input[type="range"] {
   flex: 1;
   height: 6px;
-  -webkit-appearance: none;
   background: var(--game-bg-darkest);
   border: 1px solid var(--game-border-dark);
   border-radius: var(--radius-sm);
@@ -7559,9 +7557,7 @@ button:focus-visible {
   background: var(--game-bg-light);
 }
 
-.grid-cell.planted {
-  /* Color set inline via style attribute */
-}
+
 
 /* Harvest Badges */
 .harvest-badges {
