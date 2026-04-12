@@ -2864,7 +2864,7 @@
       ],
       "icon": "🔵",
       "gathering": {
-        "timeMinutes": 240,
+        "timeMinutes": 360,
         "professionXP": 762,
         "legacyXP": null
       },
@@ -2896,7 +2896,7 @@
       ],
       "icon": "🏴‍☠️",
       "gathering": {
-        "timeMinutes": 480,
+        "timeMinutes": 720,
         "professionXP": 1523,
         "legacyXP": null
       },
@@ -2928,7 +2928,7 @@
       ],
       "icon": "🟢",
       "gathering": {
-        "timeMinutes": 240,
+        "timeMinutes": 360,
         "professionXP": 762,
         "legacyXP": null
       },
@@ -2960,7 +2960,7 @@
       ],
       "icon": "🌻",
       "gathering": {
-        "timeMinutes": 300,
+        "timeMinutes": 480,
         "professionXP": 1011,
         "legacyXP": null
       },
@@ -2992,7 +2992,7 @@
       ],
       "icon": "💧",
       "gathering": {
-        "timeMinutes": 300,
+        "timeMinutes": 480,
         "professionXP": 1011,
         "legacyXP": null
       },
@@ -3024,7 +3024,7 @@
       ],
       "icon": "🩸",
       "gathering": {
-        "timeMinutes": 600,
+        "timeMinutes": 960,
         "professionXP": 2029,
         "legacyXP": null
       },
@@ -3056,7 +3056,7 @@
       ],
       "icon": "🍄",
       "gathering": {
-        "timeMinutes": 480,
+        "timeMinutes": 720,
         "professionXP": 1523,
         "legacyXP": null
       },
@@ -3088,7 +3088,7 @@
       ],
       "icon": "💀",
       "gathering": {
-        "timeMinutes": 720,
+        "timeMinutes": 1440,
         "professionXP": 3040,
         "legacyXP": null
       },
@@ -3120,7 +3120,7 @@
       ],
       "icon": "🏜️",
       "gathering": {
-        "timeMinutes": 600,
+        "timeMinutes": 960,
         "professionXP": 2029,
         "legacyXP": null
       },
@@ -3152,7 +3152,7 @@
       ],
       "icon": "❤️",
       "gathering": {
-        "timeMinutes": 660,
+        "timeMinutes": 1200,
         "professionXP": 2534,
         "legacyXP": null
       },
@@ -3184,7 +3184,7 @@
       ],
       "icon": "☠️",
       "gathering": {
-        "timeMinutes": 820,
+        "timeMinutes": 1800,
         "professionXP": 3802,
         "legacyXP": null
       },
@@ -3216,7 +3216,7 @@
       ],
       "icon": "🦎",
       "gathering": {
-        "timeMinutes": 360,
+        "timeMinutes": 540,
         "professionXP": 1139,
         "legacyXP": null
       },
@@ -3248,7 +3248,7 @@
       ],
       "icon": "✨",
       "gathering": {
-        "timeMinutes": 660,
+        "timeMinutes": 1200,
         "professionXP": 2534,
         "legacyXP": null
       },
@@ -3280,7 +3280,7 @@
       ],
       "icon": "🍃",
       "gathering": {
-        "timeMinutes": 780,
+        "timeMinutes": 1560,
         "professionXP": 3296,
         "legacyXP": null
       },
@@ -3312,7 +3312,7 @@
       ],
       "icon": "🌑",
       "gathering": {
-        "timeMinutes": 780,
+        "timeMinutes": 1560,
         "professionXP": 3296,
         "legacyXP": null
       },
@@ -3344,7 +3344,7 @@
       ],
       "icon": "🧠",
       "gathering": {
-        "timeMinutes": 240,
+        "timeMinutes": 360,
         "professionXP": 762,
         "legacyXP": null
       },
@@ -3376,7 +3376,7 @@
       ],
       "icon": "🥀",
       "gathering": {
-        "timeMinutes": 360,
+        "timeMinutes": 540,
         "professionXP": 1139,
         "legacyXP": null
       },
