@@ -1117,9 +1117,21 @@ window.electronAPI = {
       cropAllocations[chosenCrop.id].totalSlots += placementsCount;
       currentLandsByCrop[chosenCrop.id] = (currentLandsByCrop[chosenCrop.id] || 0) + 1;
 
-      const landPlantingCost = Math.round(
-        placementsCount * plantingCostPerPlacement * harvestsInWindow * landMultiplier
-      );
+
+      // Special planting cost logic for trees in 24h mode
+      const treeIds = ['apple_tree', 'banana_tree', 'cotton_tree', 'orange_tree'];
+      let landPlantingCost;
+      if (!singleCycleMode && treeIds.includes(chosenCrop.id)) {
+        // Only charge planting cost once per 3 harvests (rounded up)
+        const plantingsNeeded = Math.ceil(harvestsInWindow / 3);
+        landPlantingCost = Math.round(
+          placementsCount * plantingCostPerPlacement * plantingsNeeded * landMultiplier
+        );
+      } else {
+        landPlantingCost = Math.round(
+          placementsCount * plantingCostPerPlacement * harvestsInWindow * landMultiplier
+        );
+      }
       totalPlantingCost += landPlantingCost;
 
       landSimulations.push({
