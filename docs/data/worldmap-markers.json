@@ -6946,5 +6946,21 @@
     "contributedBy": "Azurak | GXE",
     "screenshot": "community-screenshots/dynamic_event_47ae50d747.webp",
     "icon": "dynamic_event.webp"
+  },
+  {
+    "id": "c_301ad852",
+    "source": "base",
+    "category": "dynamic_event",
+    "name": "Hidden Grounds",
+    "description": "6am game time door opens u can enter",
+    "x": 3720,
+    "y": 2223,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "screenshot": "community-screenshots/dynamic_event_807d881d2b.webp",
+    "icon": "dynamic_event.webp"
   }
 ]
