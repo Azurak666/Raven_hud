@@ -447,7 +447,7 @@
       "name": "Garlic",
       "category": "farming",
       "level": 45,
-      "growthTime": "18H 40m",
+      "growthTime": "16H 30m",
       "gatheringMultiplier": 1,
       "size": "1x1",
       "width": 1,
@@ -471,13 +471,13 @@
       ],
       "icon": "🧄",
       "gathering": {
-        "time": "18H 40m",
+        "time": "16H 30m",
         "yields": [],
-        "timeMinutes": 1120,
+        "timeMinutes": 990,
         "professionXP": 1120,
         "legacyXP": null
       },
-      "growthTimeMinutes": 1120,
+      "growthTimeMinutes": 990,
       "plantingCost": 600
     },
     {
