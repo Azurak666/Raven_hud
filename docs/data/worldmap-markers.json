@@ -6962,5 +6962,20 @@
     "contributedBy": "Azurak | GXE",
     "screenshot": "community-screenshots/dynamic_event_807d881d2b.webp",
     "icon": "dynamic_event.webp"
+  },
+  {
+    "id": "c_0a85d677",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Vulas",
+    "description": "",
+    "x": 4322,
+    "y": 2039,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "icon": "npc_reputation.webp"
   }
 ]
