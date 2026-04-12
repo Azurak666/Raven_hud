@@ -6885,5 +6885,20 @@
     "trigger": "",
     "contributedBy": "rike_arx7",
     "screenshot": "community-screenshots/reputation_shiny_f77b5b40fe.webp"
+  },
+  {
+    "id": "c_b841b2ce",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Verica",
+    "description": "",
+    "x": 4181,
+    "y": 2472,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "icon": "npc_reputation.webp"
   }
 ]
