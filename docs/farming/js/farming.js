@@ -1036,18 +1036,9 @@ function renderSelectionPanel() {
         <span class="summary-value">${selectedLandMixLabel}</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Total land tiles:</span>
-        <span class="summary-value">${selectedLandTotals.totalTiles.toLocaleString()}</span>
-      </div>
-      <div class="summary-row">
         <span class="summary-label">Materials:</span>
         <span class="summary-value">${summary.materials.slice(0, 5).join(', ')}${summary.materials.length > 5 ? ` +${summary.materials.length - 5} more` : ''}</span>
       </div>
-      ${selectedLandYieldRange && selectedLandYieldRange.resource ? `
-      <div class="summary-row">
-        <span class="summary-label">Expected yield:</span>
-        <span class="summary-value">${selectedLandYieldRange.min}-${selectedLandYieldRange.max} ${selectedLandYieldRange.resource}</span>
-      </div>` : ''}
       <div class="summary-row">
         <span class="summary-label">Total XP (base):</span>
         <span class="summary-value">${summary.totalXP.toLocaleString()}</span>
@@ -1439,7 +1430,7 @@ function renderFarmingSimulationResults(results, selectedCrops) {
     ? `
       <div class="farming-profit-panel">
         <div class="farming-market-card">
-          <div class="farming-market-title">Expected Yields</div>
+          <div class="farming-market-title">Expected Yields (average)</div>
           <div class="farming-yield-list">
             ${Object.entries(yields)
               .map(([material, data]) => {
@@ -1606,11 +1597,10 @@ function renderFarmingSimulationResults(results, selectedCrops) {
               <button type="button" class="sim-time-mode-btn ${singleCycleMode ? 'active' : ''}" data-sim-window="single">1 cycle</button>
               <button type="button" class="sim-time-mode-btn ${singleCycleMode ? '' : 'active'}" data-sim-window="24h">24h</button>
             </div>
-            ${husbandryTimersSummary ? `<div class="sim-time-window-note">${husbandryTimersSummary}</div>` : ''}
-            ${husbandrySplitSummary
-    ? `<div class="sim-time-window-note">${husbandrySplitSummary}</div>`
-    : `${windowCycleSummary ? `<div class="sim-time-window-note">${windowCycleSummary}</div>` : ''}
-            ${harvestsPer24hSummary ? `<div class="sim-time-window-note">${harvestsPer24hSummary}</div>` : ''}`}
+                ${husbandryTimersSummary ? `<div class="sim-time-window-note">${husbandryTimersSummary}</div>` : ''}
+                ${husbandrySplitSummary
+              ? `<div class="sim-time-window-note">${husbandrySplitSummary}</div>`
+              : `${windowCycleSummary ? `<div class="sim-time-window-note">${windowCycleSummary}</div>` : ''}`}
           </div>
         </div>
         <div class="sim-hero-row">
