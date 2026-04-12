@@ -397,7 +397,7 @@ async function renderFarmingLandsSummary() {
         <div class="farming-land-select-btn ${count > 0 ? 'selected' : ''}" data-land-type="${entry.landType}" data-land-id="${entry.id}">
           <div class="farming-land-select-main">
             <span class="farming-land-select-name">${entry.label}</span>
-            <span class="farming-land-select-meta">${entry.tiles} tiles${entry.hasHouse ? ' • house' : ''}</span>
+            <span class="farming-land-select-meta">${entry.hasHouse ? 'house' : ''}</span>
           </div>
           <div class="farming-land-counter" role="group" aria-label="Adjust ${entry.label} count">
             <button type="button" class="farming-land-counter-btn" data-land-action="decrement" data-land-type="${entry.landType}" ${disableDec ? 'disabled' : ''}>−</button>
@@ -979,12 +979,21 @@ function renderSelectionPanel() {
   const summary = calculateSelectionSummary();
   const selectedLandTotals = getSelectedFarmingLandTotals();
   const selectedCrop = crops[0] || null;
-  // Try to use actual planted/used tiles if available (e.g., entry.tilesUsed), else fall back to max tiles
+  // Try to use actual planted/used tiles from last simulation if available
+  let tilesUsedByLandType = {};
+  if (lastFarmingSimulationResults && Array.isArray(lastFarmingSimulationResults.landSimulations)) {
+    lastFarmingSimulationResults.landSimulations.forEach((landSim) => {
+      if (landSim && landSim.landType && landSim.simulation && typeof landSim.simulation.totalTilesUsed === 'number') {
+        tilesUsedByLandType[landSim.landType] = landSim.simulation.totalTilesUsed;
+      }
+    });
+  }
+
   const selectedLandYieldRange = selectedCrop
     ? selectedLandTotals.selectedEntries.reduce(
         (acc, entry) => {
-          // Prefer entry.tilesUsed if present, else use entry.tiles
-          const tilesUsed = typeof entry.tilesUsed === 'number' ? entry.tilesUsed : null;
+          // Use tilesUsed from simulation if available, else fallback
+          const tilesUsed = typeof tilesUsedByLandType[entry.landType] === 'number' ? tilesUsedByLandType[entry.landType] : (typeof entry.tilesUsed === 'number' ? entry.tilesUsed : null);
           const range = getLandYieldRangeForCrop(entry, selectedCrop, tilesUsed);
           if (!range) return acc;
 
