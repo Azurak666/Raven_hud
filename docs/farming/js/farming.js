@@ -313,14 +313,16 @@ function getPrimaryVisibleYield(crop) {
   return yields[0];
 }
 
-function getLandYieldRangeForCrop(landEntry, crop) {
+function getLandYieldRangeForCrop(landEntry, crop, tilesUsedOverride = null) {
   if (!landEntry || !crop) return null;
 
   const primaryYield = getPrimaryVisibleYield(crop);
   if (!primaryYield) return null;
 
   const tileFootprint = Math.max((crop.width || 1) * (crop.height || 1), 1);
-  const slots = Math.max(Math.floor((landEntry.tiles || 0) / tileFootprint), 0);
+  // Use tilesUsedOverride if provided, else fall back to landEntry.tiles
+  const tilesToUse = tilesUsedOverride != null ? tilesUsedOverride : (landEntry.tiles || 0);
+  const slots = Math.max(Math.floor(tilesToUse / tileFootprint), 0);
   const baseMin = Number(primaryYield.min ?? primaryYield.avg ?? 0);
   const baseMax = Number(primaryYield.max ?? primaryYield.avg ?? baseMin);
   const plentifulMultiplier = getPlentifulExpectedMultiplier();
@@ -977,19 +979,22 @@ function renderSelectionPanel() {
   const summary = calculateSelectionSummary();
   const selectedLandTotals = getSelectedFarmingLandTotals();
   const selectedCrop = crops[0] || null;
+  // Try to use actual planted/used tiles if available (e.g., entry.tilesUsed), else fall back to max tiles
   const selectedLandYieldRange = selectedCrop
     ? selectedLandTotals.selectedEntries.reduce(
-      (acc, entry) => {
-        const range = getLandYieldRangeForCrop(entry, selectedCrop);
-        if (!range) return acc;
+        (acc, entry) => {
+          // Prefer entry.tilesUsed if present, else use entry.tiles
+          const tilesUsed = typeof entry.tilesUsed === 'number' ? entry.tilesUsed : null;
+          const range = getLandYieldRangeForCrop(entry, selectedCrop, tilesUsed);
+          if (!range) return acc;
 
-        acc.resource = range.resource;
-        acc.min += range.min * entry.count;
-        acc.max += range.max * entry.count;
-        return acc;
-      },
-      { resource: '', min: 0, max: 0 }
-    )
+          acc.resource = range.resource;
+          acc.min += range.min * entry.count;
+          acc.max += range.max * entry.count;
+          return acc;
+        },
+        { resource: '', min: 0, max: 0 }
+      )
     : null;
   const selectedLandMixLabel = selectedLandTotals.selectedEntries.length
     ? selectedLandTotals.selectedEntries
