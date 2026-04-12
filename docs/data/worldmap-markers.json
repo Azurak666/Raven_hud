@@ -6915,5 +6915,20 @@
     "trigger": "",
     "contributedBy": "Azurak | GXE",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_ef32dc45",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Fayla Loom",
+    "description": "",
+    "x": 4200,
+    "y": 2608,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "icon": "npc_reputation.webp"
   }
 ]
