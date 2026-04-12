@@ -10,7 +10,17 @@ const selectedCrops = new Set(); // Set of crop IDs
 let farmingUserProfile = null;
 let farmingSimulationModal = null;
 let farmingOwnedLandsData = null;
-let selectedFarmingLandType = 'SMALL_COMMUNITY';
+const FARMING_MAX_SELECTED_LANDS = 10;
+let selectedFarmingLandCounts = {
+  SMALL_COMMUNITY: 1,
+  MEDIUM_COMMUNITY: 0,
+  LARGE_COMMUNITY: 0,
+  NFT_SMALL: 0,
+  NFT_MEDIUM: 0,
+  NFT_LARGE: 0,
+  NFT_STRONGHOLD: 0,
+  NFT_FORT: 0
+};
 const FARMING_BUFFS_STORAGE_KEY = 'rhud_farming_plentiful_buffs';
 let farmingPlentifulBuffs = {
   passive16: false,
@@ -22,6 +32,49 @@ const currentCropMarketPrices = {}; // User-entered sell price per yielded mater
 const HIDDEN_YIELD_RESOURCES = new Set(['three-leaf clover', 'fertilizer', 'dense log']);
 let lastFarmingSimulationResults = null; // Store for Start Session
 let farmingSimulationWindowMode = 'single'; // 'single' | '24h'
+
+const HUSBANDRY_BUTCHER_HOURS_OVERRIDES = {
+  small_hare_pen: 6,
+  medium_hare_pen: 6,
+  small_chicken_pen: 6,
+  medium_chicken_pen: 6,
+  small_pig_pen: 8,
+  medium_pig_pen: 8,
+  small_turkey_pen: 12,
+  medium_turkey_pen: 12
+  ,
+  small_sheep_pen: 12,
+  medium_sheep_pen: 12
+  ,
+  small_goat_pen: 8,
+  medium_goat_pen: 8
+  ,
+  small_cow_pen: 20,
+  medium_cow_pen: 20
+};
+
+const HUSBANDRY_BUTCHER_ONLY_IDS = new Set([
+  'small_pig_pen',
+  'medium_pig_pen',
+  'small_turkey_pen',
+  'medium_turkey_pen'
+]);
+
+const HUSBANDRY_GATHER_TIMING_OVERRIDES = {
+  small_hare_pen: { firstGatherHours: 3, repeatGatherHours: 1.5 },
+  medium_hare_pen: { firstGatherHours: 3, repeatGatherHours: 1.5 },
+  small_chicken_pen: { firstGatherHours: 3, repeatGatherHours: 1.5 },
+  medium_chicken_pen: { firstGatherHours: 3, repeatGatherHours: 1.5 }
+  ,
+  small_sheep_pen: { firstGatherHours: 6, repeatGatherHours: 3 },
+  medium_sheep_pen: { firstGatherHours: 6, repeatGatherHours: 3 }
+  ,
+  small_goat_pen: { firstGatherHours: 4, repeatGatherHours: 2 },
+  medium_goat_pen: { firstGatherHours: 4, repeatGatherHours: 2 }
+  ,
+  small_cow_pen: { firstGatherHours: 10, repeatGatherHours: 5 },
+  medium_cow_pen: { firstGatherHours: 10, repeatGatherHours: 5 }
+};
 
 /**
  * Initialize the farming tab
@@ -144,22 +197,71 @@ function buildFarmingOwnedLandEntries() {
   }));
 }
 
-function getSelectedFarmingLandMeta() {
-  const landType = selectedFarmingLandType || 'SMALL_COMMUNITY';
+function getSelectedFarmingLandTotalCount() {
+  return Object.values(selectedFarmingLandCounts).reduce(
+    (sum, count) => sum + Math.max(Number(count) || 0, 0),
+    0
+  );
+}
+
+function getSelectedFarmingOwnedLands() {
+  return Object.fromEntries(
+    Object.entries(selectedFarmingLandCounts).filter(([, count]) => Number(count) > 0)
+  );
+}
+
+function getSelectedFarmingLandEntries() {
+  return buildFarmingOwnedLandEntries()
+    .map((entry) => ({ ...entry, count: Number(selectedFarmingLandCounts[entry.landType] || 0) }))
+    .filter((entry) => entry.count > 0);
+}
+
+function getSelectedFarmingLandTotals() {
+  const selectedEntries = getSelectedFarmingLandEntries();
+  const totalLands = selectedEntries.reduce((sum, entry) => sum + entry.count, 0);
+  const totalTiles = selectedEntries.reduce((sum, entry) => sum + (entry.tiles * entry.count), 0);
+
   return {
-    landType,
-    label: FARMING_LAND_LABELS[landType] || landType,
-    tiles: FARMING_LAND_TILES[landType] || 0,
-    hasHouse: landType.startsWith('NFT_')
+    totalLands,
+    totalTiles,
+    selectedEntries
   };
 }
 
-function setSelectedFarmingLandType(landType) {
-  if (!landType || !FARMING_LAND_LABELS[landType]) return;
+function isCommunityLandType(landType) {
+  return String(landType || '').endsWith('_COMMUNITY');
+}
 
-  selectedFarmingLandType = landType;
+function getLandTypeMaxCount(landType) {
+  return isCommunityLandType(landType) ? 1 : FARMING_MAX_SELECTED_LANDS;
+}
+
+function setSelectedFarmingLandCount(landType, nextCount) {
+  if (!landType || !Object.prototype.hasOwnProperty.call(FARMING_LAND_LABELS, landType)) {
+    return false;
+  }
+
+  const currentCount = Math.max(Number(selectedFarmingLandCounts[landType]) || 0, 0);
+  const requestedCount = Math.max(Number(nextCount) || 0, 0);
+  const boundedCount = Math.min(requestedCount, getLandTypeMaxCount(landType));
+
+  if (boundedCount === currentCount) return false;
+
+  const totalWithoutCurrent = getSelectedFarmingLandTotalCount() - currentCount;
+  const allowedForType = Math.max(FARMING_MAX_SELECTED_LANDS - totalWithoutCurrent, 0);
+  const finalCount = Math.min(boundedCount, allowedForType);
+
+  if (finalCount === currentCount) return false;
+
+  selectedFarmingLandCounts[landType] = finalCount;
   renderFarmingLandsSummary();
   renderSelectionPanel();
+
+  if (farmingSimulationModal && !farmingSimulationModal.classList.contains('hidden')) {
+    openFarmingSimulationModal();
+  }
+
+  return true;
 }
 
 function loadFarmingBuffState() {
@@ -268,23 +370,39 @@ async function renderFarmingLandsSummary() {
 
   try {
     const availableLandEntries = buildFarmingOwnedLandEntries();
-    if (!selectedFarmingLandType) {
-      selectedFarmingLandType = availableLandEntries[0]?.landType || 'SMALL_COMMUNITY';
-    }
+    const selectedTotal = getSelectedFarmingLandTotalCount();
+    const selectedTotals = getSelectedFarmingLandTotals();
+    const canIncrement = selectedTotal < FARMING_MAX_SELECTED_LANDS;
 
     const plentifulChance = getPlentifulChancePercent();
 
     let landsHtml = '<div class="lands-summary-section">';
-    landsHtml += '<div class="lands-summary-section-title">Pick a Land</div>';
-    landsHtml += '<div class="farming-land-select-hint">Choose one land type and all farming results will use only that land.</div>';
+    landsHtml += '<div class="lands-summary-section-title">Choose Lands</div>';
+    landsHtml += `<div class="farming-land-select-hint">Pick up to ${FARMING_MAX_SELECTED_LANDS} lands total. Farming results combine all selected lands.</div>`;
+    landsHtml += `
+      <div class="farming-land-selection-summary">
+        <span class="farming-land-selection-count">${selectedTotals.totalLands}/${FARMING_MAX_SELECTED_LANDS} lands</span>
+        <span class="farming-land-selection-tiles">${selectedTotals.totalTiles.toLocaleString()} tiles</span>
+      </div>
+    `;
     landsHtml += '<div class="farming-land-select-list">';
 
     availableLandEntries.forEach((entry) => {
+      const count = Number(selectedFarmingLandCounts[entry.landType] || 0);
+      const disableInc = !canIncrement || count >= getLandTypeMaxCount(entry.landType);
+      const disableDec = count <= 0;
       landsHtml += `
-        <button type="button" class="farming-land-select-btn ${entry.landType === selectedFarmingLandType ? 'selected' : ''}" data-land-type="${entry.landType}" data-land-id="${entry.id}" title="Use ${entry.label} for farming simulation">
-          <span class="farming-land-select-name">${entry.label}</span>
-          <span class="farming-land-select-meta">${entry.tiles} tiles${entry.hasHouse ? ' • house' : ''}</span>
-        </button>
+        <div class="farming-land-select-btn ${count > 0 ? 'selected' : ''}" data-land-type="${entry.landType}" data-land-id="${entry.id}">
+          <div class="farming-land-select-main">
+            <span class="farming-land-select-name">${entry.label}</span>
+            <span class="farming-land-select-meta">${entry.tiles} tiles${entry.hasHouse ? ' • house' : ''}</span>
+          </div>
+          <div class="farming-land-counter" role="group" aria-label="Adjust ${entry.label} count">
+            <button type="button" class="farming-land-counter-btn" data-land-action="decrement" data-land-type="${entry.landType}" ${disableDec ? 'disabled' : ''}>−</button>
+            <span class="farming-land-counter-value">${count}</span>
+            <button type="button" class="farming-land-counter-btn" data-land-action="increment" data-land-type="${entry.landType}" ${disableInc ? 'disabled' : ''}>+</button>
+          </div>
+        </div>
       `;
     });
 
@@ -323,10 +441,15 @@ function setupFarmingLandsSummaryHandlers() {
   const landsSummaryContent = document.getElementById('farmingLandsSummaryContent');
   if (landsSummaryContent) {
     landsSummaryContent.addEventListener('click', (event) => {
-      const landBtn = event.target.closest('.farming-land-select-btn');
-      if (landBtn) {
-        setSelectedFarmingLandType(landBtn.dataset.landType);
-      }
+      const actionBtn = event.target.closest('[data-land-action][data-land-type]');
+      if (!actionBtn) return;
+
+      const landType = actionBtn.dataset.landType;
+      const action = actionBtn.dataset.landAction;
+      const currentCount = Number(selectedFarmingLandCounts[landType] || 0);
+      const nextCount = action === 'increment' ? currentCount + 1 : currentCount - 1;
+
+      setSelectedFarmingLandCount(landType, nextCount);
     });
 
     landsSummaryContent.addEventListener('change', (event) => {
@@ -417,6 +540,10 @@ function getCropXP(crop) {
 function getGrowthTime(crop) {
   // For husbandry, use gathering time if available, else butchering time
   if (crop.category === 'husbandry') {
+    const overriddenButcherHours = HUSBANDRY_BUTCHER_HOURS_OVERRIDES[crop.id];
+    if (HUSBANDRY_BUTCHER_ONLY_IDS.has(crop.id) && overriddenButcherHours) {
+      return `${overriddenButcherHours}H`;
+    }
     return crop.gathering?.time || crop.butchering?.time || crop.growthTime || '?';
   }
   return crop.gathering?.time || crop.growthTime || '?';
@@ -441,6 +568,10 @@ function parseTimeStringToHours(timeStr) {
 }
 
 function getCropCycleHours(crop) {
+  if (crop?.category === 'husbandry' && HUSBANDRY_BUTCHER_HOURS_OVERRIDES[crop.id]) {
+    return HUSBANDRY_BUTCHER_HOURS_OVERRIDES[crop.id];
+  }
+
   const minutes =
     crop.gathering?.timeMinutes || crop.butchering?.timeMinutes || crop.growthTimeMinutes || 0;
 
@@ -498,6 +629,148 @@ function getFarmingWindowCycleSummary(crops, timeWindowHours, singleCycleMode) {
   }
 
   return `Harvests scaled to a ${timeWindowHours}h window`;
+}
+
+function getFarmingHarvestsPer24hSummary(results, selectedCrops) {
+  const landSimulations = Array.isArray(results?.landSimulations) ? results.landSimulations : [];
+  const cropStats = new Map();
+
+  landSimulations.forEach((landSim) => {
+    (landSim?.simulation?.placements || []).forEach((placement) => {
+      const crop = placement?.crop;
+      if (!crop?.id) return;
+
+      if (!cropStats.has(crop.id)) {
+        cropStats.set(crop.id, {
+          name: crop.name || crop.id,
+          placements: 0,
+          harvestsPerTile24h: calculatePlacementHarvestCount(crop, 24, false)
+        });
+      }
+
+      cropStats.get(crop.id).placements += 1;
+    });
+  });
+
+  if (!cropStats.size) {
+    if (selectedCrops.length === 1) {
+      const cycleHours = getCropCycleHours(selectedCrops[0]);
+      if (cycleHours > 0) {
+        return `${Math.max(1, Math.floor(24 / cycleHours))} harvests per 24h`;
+      }
+    }
+    return '';
+  }
+
+  if (cropStats.size === 1) {
+    const only = Array.from(cropStats.values())[0];
+    const totalHarvests = only.harvestsPerTile24h * only.placements;
+    return `${only.harvestsPerTile24h} harvests per tile / 24h (${totalHarvests.toLocaleString()} total)`;
+  }
+
+  let totalHarvestActions = 0;
+  cropStats.forEach((stats) => {
+    totalHarvestActions += stats.harvestsPerTile24h * stats.placements;
+  });
+
+  return `${totalHarvestActions.toLocaleString()} total harvests per 24h`;
+}
+
+function getHusbandryHarvestAndButcherSummary(results, selectedCrops) {
+  if (!Array.isArray(selectedCrops) || selectedCrops.length !== 1) return '';
+
+  const selectedCrop = selectedCrops[0];
+  if (selectedCrop?.category !== 'husbandry' || !selectedCrop?.butchering) {
+    return '';
+  }
+
+  const landSimulations = Array.isArray(results?.landSimulations) ? results.landSimulations : [];
+  let firstPlacementCrop = null;
+
+  landSimulations.some((landSim) => {
+    return (landSim?.simulation?.placements || []).some((placement) => {
+      const crop = placement?.crop;
+      if (!crop || crop.id !== selectedCrop.id) return false;
+      firstPlacementCrop = crop;
+      return true;
+    });
+  });
+
+  if (!firstPlacementCrop) return '';
+
+  const harvestCycles24h = calculatePlacementHarvestCount(firstPlacementCrop, 24, false);
+
+  const butcherHours = HUSBANDRY_BUTCHER_HOURS_OVERRIDES[selectedCrop.id]
+    || (selectedCrop?.butchering?.timeMinutes
+      ? (Number(selectedCrop.butchering.timeMinutes) / 60)
+      : parseTimeStringToHours(selectedCrop?.butchering?.time || ''));
+  if (!butcherHours || butcherHours <= 0) {
+    return `${harvestCycles24h} harvest cycles in 24h`;
+  }
+
+  const butcherCycles24h = Math.floor(24 / butcherHours);
+
+  if (HUSBANDRY_BUTCHER_ONLY_IDS.has(selectedCrop.id) || !selectedCrop?.gathering) {
+    return `${butcherCycles24h} butcher cycles in 24h`;
+  }
+
+  return `${harvestCycles24h} harvest cycles in 24h and ${butcherCycles24h} butcher cycles in 24h`;
+}
+
+function formatHoursForSummary(hours) {
+  const value = Number(hours || 0);
+  if (!value || value <= 0) return '?';
+  const rounded = Math.round(value * 10) / 10;
+  return `${rounded}H`;
+}
+
+function getHusbandryInteractionTimersSummary(results, selectedCrops) {
+  if (!Array.isArray(selectedCrops) || selectedCrops.length !== 1) return '';
+
+  const selectedCrop = selectedCrops[0];
+  if (
+    selectedCrop?.category !== 'husbandry'
+    || !selectedCrop?.gathering
+    || !selectedCrop?.butchering
+    || HUSBANDRY_BUTCHER_ONLY_IDS.has(selectedCrop.id)
+  ) {
+    return '';
+  }
+
+  const landSimulations = Array.isArray(results?.landSimulations) ? results.landSimulations : [];
+  let firstPlacementCrop = null;
+
+  landSimulations.some((landSim) => {
+    return (landSim?.simulation?.placements || []).some((placement) => {
+      const crop = placement?.crop;
+      if (!crop || crop.id !== selectedCrop.id) return false;
+      firstPlacementCrop = crop;
+      return true;
+    });
+  });
+
+  const timingOverride = HUSBANDRY_GATHER_TIMING_OVERRIDES[selectedCrop.id] || {};
+  const repeatGatherHours =
+    timingOverride.repeatGatherHours
+    || Number(firstPlacementCrop?.repeatGatherHours || 0)
+    || (selectedCrop?.gathering?.timeMinutes
+      ? (Number(selectedCrop.gathering.timeMinutes) / 60)
+      : parseTimeStringToHours(selectedCrop?.gathering?.time || ''));
+
+  const firstGatherHours =
+    timingOverride.firstGatherHours
+    || Number(firstPlacementCrop?.firstGatherHours || 0)
+    || Math.max(
+      selectedCrop?.growthTimeMinutes ? (Number(selectedCrop.growthTimeMinutes) / 60) : 0,
+      repeatGatherHours || 0
+    );
+
+  const butcherHours = HUSBANDRY_BUTCHER_HOURS_OVERRIDES[selectedCrop.id]
+    || (selectedCrop?.butchering?.timeMinutes
+      ? (Number(selectedCrop.butchering.timeMinutes) / 60)
+      : parseTimeStringToHours(selectedCrop?.butchering?.time || ''));
+
+  return `First: ${formatHoursForSummary(firstGatherHours)} • Nexts: ${formatHoursForSummary(repeatGatherHours)} • Butcher: ${formatHoursForSummary(butcherHours)}`;
 }
 
 /**
@@ -652,9 +925,28 @@ function renderSelectionPanel() {
   }
 
   const summary = calculateSelectionSummary();
-  const selectedLand = getSelectedFarmingLandMeta();
+  const selectedLandTotals = getSelectedFarmingLandTotals();
   const selectedCrop = crops[0] || null;
-  const selectedLandYieldRange = getLandYieldRangeForCrop(selectedLand, selectedCrop);
+  const selectedLandYieldRange = selectedCrop
+    ? selectedLandTotals.selectedEntries.reduce(
+      (acc, entry) => {
+        const range = getLandYieldRangeForCrop(entry, selectedCrop);
+        if (!range) return acc;
+
+        acc.resource = range.resource;
+        acc.min += range.min * entry.count;
+        acc.max += range.max * entry.count;
+        return acc;
+      },
+      { resource: '', min: 0, max: 0 }
+    )
+    : null;
+  const selectedLandMixLabel = selectedLandTotals.selectedEntries.length
+    ? selectedLandTotals.selectedEntries
+      .map((entry) => `${entry.label} x${entry.count}`)
+      .join(', ')
+    : 'None selected';
+  const hasSelectedLands = selectedLandTotals.totalLands > 0;
 
   panel.innerHTML = `
     <div class="selection-list">
@@ -672,18 +964,22 @@ function renderSelectionPanel() {
     </div>
     <div class="selection-summary">
       <div class="summary-row">
-        <span class="summary-label">Land:</span>
-        <span class="summary-value">${selectedLand.label}</span>
+        <span class="summary-label">Selected lands:</span>
+        <span class="summary-value">${selectedLandTotals.totalLands}/${FARMING_MAX_SELECTED_LANDS}</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Land tiles:</span>
-        <span class="summary-value">${selectedLand.tiles}</span>
+        <span class="summary-label">Land mix:</span>
+        <span class="summary-value">${selectedLandMixLabel}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Total land tiles:</span>
+        <span class="summary-value">${selectedLandTotals.totalTiles.toLocaleString()}</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">Materials:</span>
         <span class="summary-value">${summary.materials.slice(0, 5).join(', ')}${summary.materials.length > 5 ? ` +${summary.materials.length - 5} more` : ''}</span>
       </div>
-      ${selectedLandYieldRange ? `
+      ${selectedLandYieldRange && selectedLandYieldRange.resource ? `
       <div class="summary-row">
         <span class="summary-label">Expected yield:</span>
         <span class="summary-value">${selectedLandYieldRange.min}-${selectedLandYieldRange.max} ${selectedLandYieldRange.resource}</span>
@@ -699,7 +995,7 @@ function renderSelectionPanel() {
     </div>
     <div class="selection-actions">
       <button class="btn-clear-selection" id="clearSelectionBtn">Clear All</button>
-      <button class="btn-simulate-farming" id="simulateFarmingBtn">Simulate ${selectedLand.label}</button>
+      <button class="btn-simulate-farming" id="simulateFarmingBtn" ${hasSelectedLands ? '' : 'disabled'}>Simulate ${hasSelectedLands ? `${selectedLandTotals.totalLands} Lands` : 'Lands'}</button>
     </div>
   `;
 
@@ -783,20 +1079,21 @@ async function openFarmingSimulationModal(windowMode = null) {
   modalBody.innerHTML = '<div class="loading-spinner">Calculating optimal layouts...</div>';
 
   try {
-    const selectedLand = getSelectedFarmingLandMeta();
-    if (!selectedLand?.landType) {
+    const selectedOwnedLands = getSelectedFarmingOwnedLands();
+    const selectedTotals = getSelectedFarmingLandTotals();
+    if (!Object.keys(selectedOwnedLands).length) {
       modalBody.innerHTML = `
         <div class="no-lands-prompt">
           <h3>No Land Selected</h3>
-          <p>Pick a land from the left sidebar to see farming results for that land only.</p>
+          <p>Select at least one land from the left sidebar to run combined farming results.</p>
         </div>
       `;
       return;
     }
 
     const ownedLandsData = {
-      ownedLands: { [selectedLand.landType]: 1 },
-      totalTiles: { total: selectedLand.tiles }
+      ownedLands: selectedOwnedLands,
+      totalTiles: { total: selectedTotals.totalTiles }
     };
     farmingOwnedLandsData = ownedLandsData;
 
@@ -892,10 +1189,12 @@ function renderFarmingLandMiniGrid(land, simulation) {
     houseTiles.clearance.forEach((tile) => houseSet.add(`${tile.x},${tile.y}`));
   }
 
-  const maxGridWidth = 240;
-  const cellSize = Math.max(16, Math.min(30, Math.floor(maxGridWidth / width)));
+  // Keep all previews inside a consistent card width, including very wide lands like Fort.
+  const maxGridWidth = 220;
+  const cellSize = Math.max(5, Math.min(30, Math.floor(maxGridWidth / width)));
   const gridWidth = width * cellSize;
   const gridHeight = height * cellSize;
+  const iconSize = Math.max(8, Math.min(14, Math.floor(cellSize * 0.75)));
 
   let cells = '';
   for (let y = 0; y < height; y++) {
@@ -923,7 +1222,7 @@ function renderFarmingLandMiniGrid(land, simulation) {
     .join('');
 
   return `
-    <div class="emoji-grid farming-layout-preview" style="width:${gridWidth}px; height:${gridHeight}px; grid-template-columns: repeat(${width}, ${cellSize}px); grid-template-rows: repeat(${height}, ${cellSize}px);">
+    <div class="emoji-grid farming-layout-preview" style="width:${gridWidth}px; height:${gridHeight}px; grid-template-columns: repeat(${width}, ${cellSize}px); grid-template-rows: repeat(${height}, ${cellSize}px); --farming-grid-icon-size:${iconSize}px;">
       ${cells}
       ${overlays}
     </div>
@@ -1034,9 +1333,12 @@ function renderFarmingSimulationResults(results, selectedCrops) {
   const timeLabel = results?.displayTimeLabel || getSingleCycleTimeLabel(selectedCrops);
   const singleCycleMode = results?.singleCycleMode !== false;
   const windowCycleSummary = getFarmingWindowCycleSummary(selectedCrops, timeWindow, singleCycleMode);
+  const harvestsPer24hSummary = getFarmingHarvestsPer24hSummary(results, selectedCrops);
+  const husbandryTimersSummary = getHusbandryInteractionTimersSummary(results, selectedCrops);
+  const husbandrySplitSummary = getHusbandryHarvestAndButcherSummary(results, selectedCrops);
   const selectedLandSubtitle = singleCycleMode
-    ? 'Single-cycle yield and layout preview for the currently selected land.'
-    : '24-hour total yield and layout preview for the currently selected land.';
+    ? 'Single-cycle yield and layout preview for all selected lands.'
+    : '24-hour total yield and layout preview for all selected lands.';
   const summary = results?.summary || {};
   const baseYields = filterVisibleYieldTotals(results?.yields || {});
   const yields = applyPlentifulBonusToYields(baseYields);
@@ -1240,7 +1542,11 @@ function renderFarmingSimulationResults(results, selectedCrops) {
               <button type="button" class="sim-time-mode-btn ${singleCycleMode ? 'active' : ''}" data-sim-window="single">1 cycle</button>
               <button type="button" class="sim-time-mode-btn ${singleCycleMode ? '' : 'active'}" data-sim-window="24h">24h</button>
             </div>
-            ${windowCycleSummary ? `<div class="sim-time-window-note">${windowCycleSummary}</div>` : ''}
+            ${husbandryTimersSummary ? `<div class="sim-time-window-note">${husbandryTimersSummary}</div>` : ''}
+            ${husbandrySplitSummary
+    ? `<div class="sim-time-window-note">${husbandrySplitSummary}</div>`
+    : `${windowCycleSummary ? `<div class="sim-time-window-note">${windowCycleSummary}</div>` : ''}
+            ${harvestsPer24hSummary ? `<div class="sim-time-window-note">${harvestsPer24hSummary}</div>` : ''}`}
           </div>
         </div>
         <div class="sim-hero-row">
@@ -1261,7 +1567,7 @@ function renderFarmingSimulationResults(results, selectedCrops) {
 
       <div class="sim-lands-section">
         <div class="sim-lands-header">
-          <span class="sim-lands-title">Selected Land</span>
+          <span class="sim-lands-title">Selected Lands</span>
         </div>
         <div class="sim-lands-subtitle">${selectedLandSubtitle}</div>
         <div class="sim-lands-grid">
@@ -1359,6 +1665,49 @@ function getUtilizationClass(pct) {
   return 'util-low';
 }
 
+function calculatePlacementHarvestCount(crop, timeWindow, singleCycleMode = false) {
+  if (!crop) return 0;
+
+  if (singleCycleMode) {
+    if (crop.husbandryMode === 'gathering') {
+      return Math.max(Number(crop.gathersPerBuild) || 1, 1);
+    }
+    return 1;
+  }
+
+  if (crop.husbandryMode === 'gathering') {
+    const first = Math.max(Number(crop.firstGatherHours || crop.growthHours) || 0, 0);
+    const repeat = Math.max(Number(crop.repeatGatherHours || first) || 0, 0.01);
+    const gathersPerBuild = Math.max(Number(crop.gathersPerBuild) || 1, 1);
+
+    if (timeWindow <= 0 || first <= 0) return 0;
+
+    let remaining = timeWindow;
+    let totalHarvests = 0;
+
+    while (remaining >= first) {
+      totalHarvests += 1;
+      remaining -= first;
+
+      const extraPerBuild = Math.max(gathersPerBuild - 1, 0);
+      if (extraPerBuild > 0) {
+        const extraHarvests = Math.min(extraPerBuild, Math.floor(remaining / repeat));
+        totalHarvests += extraHarvests;
+        remaining -= extraHarvests * repeat;
+      }
+    }
+
+    return totalHarvests;
+  }
+
+  if (crop.isButchering) {
+    const cycleHours = Math.max(Number(crop.growthHours) || 0, 0.01);
+    return Math.floor(timeWindow / cycleHours);
+  }
+
+  return Math.max(1, Math.floor(timeWindow / Math.max(Number(crop.growthHours) || 0.01, 0.01)));
+}
+
 /**
  * Render farming plan overview showing what to plant and when
  */
@@ -1374,9 +1723,7 @@ function renderFarmingPlanOverview(landSimulations, timeWindow, singleCycleMode 
 
       if (!cropPlan[cropName]) {
         const isButchering = p.crop?.isButchering || false;
-        const actualHarvestCount = singleCycleMode
-          ? 1
-          : (isButchering ? 1 : Math.max(1, Math.floor(timeWindow / growthHours)));
+        const actualHarvestCount = calculatePlacementHarvestCount(p.crop, timeWindow, singleCycleMode);
 
         cropPlan[cropName] = {
           cropName,
@@ -1384,6 +1731,10 @@ function renderFarmingPlanOverview(landSimulations, timeWindow, singleCycleMode 
           emoji: window.CropIcons?.getIcon?.(cropId) || '🌱',
           growthTime: p.crop?.growthTime || 'Unknown',
           growthHours,
+          firstGatherHours: p.crop?.firstGatherHours,
+          repeatGatherHours: p.crop?.repeatGatherHours,
+          gathersPerBuild: p.crop?.gathersPerBuild,
+          husbandryMode: p.crop?.husbandryMode || null,
           harvestCount: actualHarvestCount,
           isButchering,
           experience: p.crop?.experience || 0,
@@ -1438,7 +1789,7 @@ function renderFarmingPlanOverview(landSimulations, timeWindow, singleCycleMode 
               }
             </div>
             <div class="plan-crop-schedule">
-              ${renderCropHarvestBadges(crop.growthHours, timeWindow, crop.isButchering, singleCycleMode)}
+              ${renderCropHarvestBadges(crop, timeWindow, singleCycleMode)}
             </div>
           </div>
         `
@@ -1452,8 +1803,29 @@ function renderFarmingPlanOverview(landSimulations, timeWindow, singleCycleMode 
 /**
  * Render small harvest time badges for a crop
  */
-function renderCropHarvestBadges(growthHours, timeWindow, isButchering = false, singleCycleMode = false) {
-  if (isButchering || !growthHours || growthHours <= 0) {
+function renderCropHarvestBadges(crop, timeWindow, singleCycleMode = false) {
+  const growthHours = Number(crop?.growthHours || 0);
+
+  if (crop?.husbandryMode === 'gathering') {
+    const first = Number(crop?.firstGatherHours || growthHours || 0);
+    const repeat = Number(crop?.repeatGatherHours || first || 0);
+    const gathersPerBuild = Math.max(Number(crop?.gathersPerBuild) || 1, 1);
+
+    if (!first || first <= 0) return '<span class="harvest-badge">-</span>';
+    if (singleCycleMode) {
+      return `<span class="harvest-badge">${gathersPerBuild}x per build</span>`;
+    }
+
+    const cycleBadges = [`<span class="harvest-badge">${formatHoursCompact(first)}</span>`];
+    for (let i = 1; i < gathersPerBuild; i++) {
+      cycleBadges.push(
+        `<span class="harvest-badge">${formatHoursCompact(first + (repeat * i))}</span>`
+      );
+    }
+    return cycleBadges.join('');
+  }
+
+  if (crop?.isButchering || !growthHours || growthHours <= 0) {
     return '<span class="harvest-badge butcher">Once</span>';
   }
 

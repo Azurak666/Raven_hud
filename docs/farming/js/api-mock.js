@@ -218,15 +218,134 @@ function parseGrowthTimeDemo(timeStr) {
   return hours > 0 ? hours : 6;
 }
 
+const HUSBANDRY_TIMING_OVERRIDES = {
+  small_hare_pen: {
+    firstGatherMinutes: 180,
+    repeatGatherMinutes: 90,
+    gathersPerBuild: 3,
+    butcheringMinutes: 360
+  },
+  medium_hare_pen: {
+    firstGatherMinutes: 180,
+    repeatGatherMinutes: 90,
+    gathersPerBuild: 3,
+    butcheringMinutes: 360
+  },
+  small_chicken_pen: {
+    firstGatherMinutes: 180,
+    repeatGatherMinutes: 90,
+    gathersPerBuild: 3,
+    butcheringMinutes: 360
+  },
+  medium_chicken_pen: {
+    firstGatherMinutes: 180,
+    repeatGatherMinutes: 90,
+    gathersPerBuild: 3,
+    butcheringMinutes: 360
+  },
+  small_pig_pen: {
+    forceButchering: true,
+    butcheringMinutes: 480
+  },
+  medium_pig_pen: {
+    forceButchering: true,
+    butcheringMinutes: 480
+  },
+  small_turkey_pen: {
+    forceButchering: true,
+    butcheringMinutes: 720
+  },
+  medium_turkey_pen: {
+    forceButchering: true,
+    butcheringMinutes: 720
+  }
+  ,
+  small_sheep_pen: {
+    firstGatherMinutes: 360,
+    repeatGatherMinutes: 180,
+    gathersPerBuild: 3,
+    butcheringMinutes: 720
+  },
+  medium_sheep_pen: {
+    firstGatherMinutes: 360,
+    repeatGatherMinutes: 180,
+    gathersPerBuild: 3,
+    butcheringMinutes: 720
+  }
+  ,
+  small_goat_pen: {
+    firstGatherMinutes: 240,
+    repeatGatherMinutes: 120,
+    gathersPerBuild: 3,
+    butcheringMinutes: 480
+  },
+  medium_goat_pen: {
+    firstGatherMinutes: 240,
+    repeatGatherMinutes: 120,
+    gathersPerBuild: 3,
+    butcheringMinutes: 480
+  }
+  ,
+  small_cow_pen: {
+    firstGatherMinutes: 600,
+    repeatGatherMinutes: 300,
+    gathersPerBuild: 3,
+    butcheringMinutes: 1200
+  },
+  medium_cow_pen: {
+    firstGatherMinutes: 600,
+    repeatGatherMinutes: 300,
+    gathersPerBuild: 3,
+    butcheringMinutes: 1200
+  }
+};
+
+function getHusbandryTimingProfile(crop, fallbackMinutes, gatheringMinutes, butcheringMinutes) {
+  const override = HUSBANDRY_TIMING_OVERRIDES[crop.id] || {};
+  const firstGatherMinutes =
+    override.firstGatherMinutes ||
+    Math.max(crop.growthTimeMinutes || 0, gatheringMinutes || 0, fallbackMinutes || 0, 60);
+  const repeatGatherMinutes =
+    override.repeatGatherMinutes || gatheringMinutes || firstGatherMinutes;
+  const gathersPerBuild = Math.max(
+    Number(override.gathersPerBuild || crop.gatheringMultiplier || 1),
+    1
+  );
+  const effectiveButcheringMinutes =
+    override.butcheringMinutes || butcheringMinutes || fallbackMinutes || firstGatherMinutes;
+
+  return {
+    firstGatherMinutes,
+    repeatGatherMinutes,
+    gathersPerBuild,
+    butcheringMinutes: effectiveButcheringMinutes
+  };
+}
+
 function getCropTimingAndXP(crop) {
   const gatheringMinutes = crop.gathering?.timeMinutes;
   const butcheringMinutes = crop.butchering?.timeMinutes;
   const fallbackMinutes = crop.growthTimeMinutes || Math.round(parseGrowthTimeDemo(crop.growthTime) * 60);
+  const husbandryOverride = HUSBANDRY_TIMING_OVERRIDES[crop.id] || {};
+  const forceButchering = Boolean(husbandryOverride.forceButchering);
 
-  const isButchering = crop.category === 'husbandry' && Boolean(crop.butchering);
+  const hasHusbandryGathering =
+    crop.category === 'husbandry' &&
+    !forceButchering &&
+    Boolean(crop.gathering) &&
+    Number(crop.gathering?.timeMinutes || 0) > 0;
+
+  const husbandryProfile = crop.category === 'husbandry'
+    ? getHusbandryTimingProfile(crop, fallbackMinutes, gatheringMinutes, butcheringMinutes)
+    : null;
+
+  // If gathering data exists for husbandry, simulate the repeatable gathering lifecycle.
+  const isButchering =
+    crop.category === 'husbandry' &&
+    (forceButchering || (!hasHusbandryGathering && Boolean(crop.butchering)));
   const timeMinutes = isButchering
-    ? (butcheringMinutes || gatheringMinutes || fallbackMinutes || 360)
-    : (gatheringMinutes || fallbackMinutes || butcheringMinutes || 360);
+    ? (husbandryProfile?.butcheringMinutes || butcheringMinutes || gatheringMinutes || fallbackMinutes || 360)
+    : (husbandryProfile?.repeatGatherMinutes || gatheringMinutes || fallbackMinutes || butcheringMinutes || 360);
 
   const gatheringXP =
     crop.gathering?.professionXP ||
@@ -246,8 +365,55 @@ function getCropTimingAndXP(crop) {
   return {
     isButchering,
     growthHours: Math.max((timeMinutes || 360) / 60, 0.01),
-    experience: Math.max(gatheringXP, butcheringXP, 0)
+    experience: hasHusbandryGathering ? Math.max(gatheringXP, 0) : Math.max(gatheringXP, butcheringXP, 0),
+    husbandryMode: hasHusbandryGathering ? 'gathering' : (isButchering ? 'butchering' : null),
+    firstGatherHours: husbandryProfile ? Math.max(husbandryProfile.firstGatherMinutes / 60, 0.01) : null,
+    repeatGatherHours: husbandryProfile ? Math.max(husbandryProfile.repeatGatherMinutes / 60, 0.01) : null,
+    gathersPerBuild: husbandryProfile ? Math.max(Number(husbandryProfile.gathersPerBuild) || 1, 1) : 1
   };
+}
+
+function calculateHarvestsInWindow(timing, timeWindowHours, singleCycleMode) {
+  if (!timing) return 0;
+
+  if (singleCycleMode) {
+    if (timing.husbandryMode === 'gathering') {
+      return Math.max(Number(timing.gathersPerBuild) || 1, 1);
+    }
+    return 1;
+  }
+
+  if (timing.husbandryMode === 'gathering') {
+    const first = Math.max(Number(timing.firstGatherHours) || Number(timing.growthHours) || 0, 0);
+    const repeat = Math.max(Number(timing.repeatGatherHours) || first || 0, 0.01);
+    const gathersPerBuild = Math.max(Number(timing.gathersPerBuild) || 1, 1);
+
+    if (timeWindowHours <= 0 || first <= 0) return 0;
+
+    let remaining = timeWindowHours;
+    let totalHarvests = 0;
+
+    while (remaining >= first) {
+      totalHarvests += 1;
+      remaining -= first;
+
+      const extraPerBuild = Math.max(gathersPerBuild - 1, 0);
+      if (extraPerBuild > 0) {
+        const extraHarvests = Math.min(extraPerBuild, Math.floor(remaining / repeat));
+        totalHarvests += extraHarvests;
+        remaining -= extraHarvests * repeat;
+      }
+    }
+
+    return totalHarvests;
+  }
+
+  if (timing.isButchering) {
+    const cycle = Math.max(Number(timing.growthHours) || 0, 0.01);
+    return timeWindowHours > 0 ? Math.floor(timeWindowHours / cycle) : 0;
+  }
+
+  return Math.max(1, Math.floor(timeWindowHours / Math.max(timing.growthHours, 0.01)));
 }
 
 function getCropSizeKey(crop) {
@@ -273,6 +439,10 @@ function buildPlacementCropData(crop, timing) {
     growthTime: crop.growthTime,
     growthHours: timing.growthHours,
     isButchering: timing.isButchering,
+    husbandryMode: timing.husbandryMode,
+    firstGatherHours: timing.firstGatherHours,
+    repeatGatherHours: timing.repeatGatherHours,
+    gathersPerBuild: timing.gathersPerBuild,
     experience: timing.experience
   };
 }
@@ -937,11 +1107,11 @@ window.electronAPI = {
       const placementsCount = bestOption.simulation?.placements?.length || 0;
       const landMultiplier = Math.max(Number(bestOption.land?.farmMultiplier || 1), 1);
       const plantingCostPerPlacement = Math.max(Number(chosenCrop.plantingCost || 0), 0);
-      const harvestsInWindow = singleCycleMode
-        ? 1
-        : (bestOption.timing.isButchering
-          ? 1
-          : Math.max(1, Math.floor(timeWindowHours / bestOption.timing.growthHours)));
+      const harvestsInWindow = calculateHarvestsInWindow(
+        bestOption.timing,
+        timeWindowHours,
+        singleCycleMode
+      );
 
       cropAllocations[chosenCrop.id].lands.push(bestOption.land);
       cropAllocations[chosenCrop.id].totalSlots += placementsCount;
