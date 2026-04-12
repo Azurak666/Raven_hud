@@ -6900,5 +6900,20 @@
     "trigger": "",
     "contributedBy": "Azurak | GXE",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_c3198ce3",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Cael",
+    "description": "",
+    "x": 4157,
+    "y": 2455,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "icon": "npc_reputation.webp"
   }
 ]
