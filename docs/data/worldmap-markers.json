@@ -6977,5 +6977,21 @@
     "trigger": "",
     "contributedBy": "Azurak | GXE",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_24c4259f",
+    "source": "base",
+    "category": "dynamic_event",
+    "name": "Souls of the Forest",
+    "description": "",
+    "x": 3880,
+    "y": 2080,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "screenshot": "community-screenshots/dynamic_event_07559b4543.webp",
+    "icon": "dynamic_event.webp"
   }
 ]
