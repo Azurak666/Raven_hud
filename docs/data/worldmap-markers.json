@@ -6993,5 +6993,20 @@
     "contributedBy": "Azurak | GXE",
     "screenshot": "community-screenshots/dynamic_event_07559b4543.webp",
     "icon": "dynamic_event.webp"
+  },
+  {
+    "id": "c_d6724588",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Erikson",
+    "description": "",
+    "x": 3982,
+    "y": 2608,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "icon": "npc_reputation.webp"
   }
 ]
