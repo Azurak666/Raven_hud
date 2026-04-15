@@ -5359,22 +5359,6 @@
     "screenshot": "community-screenshots/c_c5972bfe.webp"
   },
   {
-    "id": "c_30f9ef39",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "Glaceforde fox shiny",
-    "description": "high peak",
-    "x": 2151,
-    "y": 1114,
-    "floor": "surface",
-    "icon": "",
-    "label": "Glaceforde fox shiny",
-    "region": "Wolfhold",
-    "trigger": "",
-    "contributedBy": "Azurak",
-    "screenshot": "community-screenshots/c_30f9ef39.webp"
-  },
-  {
     "id": "c_d3a442de",
     "source": "base",
     "category": "reputation_shiny",
