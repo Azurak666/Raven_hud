@@ -4993,22 +4993,6 @@
     "screenshot": "community-screenshots/c_2f6215e9.webp"
   },
   {
-    "id": "c_4969dff2",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "Glaceforde winterborn shiny 3",
-    "description": "inside dungeon",
-    "x": 2386,
-    "y": 1205,
-    "floor": "surface",
-    "icon": "",
-    "label": "Glaceforde winterborn shiny 3",
-    "region": "Wolfhold",
-    "trigger": "",
-    "contributedBy": "Azurak",
-    "screenshot": "community-screenshots/c_4969dff2.webp"
-  },
-  {
     "id": "c_589d3297",
     "source": "base",
     "category": "reputation_shiny",
