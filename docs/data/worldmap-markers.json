@@ -6975,5 +6975,19 @@
     "trigger": "",
     "contributedBy": "rike_arx7",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_6998996d",
+    "source": "base",
+    "category": "reputation_shiny",
+    "name": "Harbor pirate key",
+    "description": "required to open shiny in harbor pirate island",
+    "x": 2115,
+    "y": 2402,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE"
   }
 ]
