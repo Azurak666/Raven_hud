@@ -5121,22 +5121,6 @@
     "screenshot": "community-screenshots/c_8e4b004c.webp"
   },
   {
-    "id": "c_c0fe0bd6",
-    "source": "base",
-    "category": "reputation_shiny",
-    "name": "Glaceforde drake shiny",
-    "description": "need melting device, deep south side",
-    "x": 2386,
-    "y": 517,
-    "floor": "surface",
-    "icon": "",
-    "label": "Glaceforde drake shiny",
-    "region": "Saint Alsek",
-    "trigger": "",
-    "contributedBy": "Azurak",
-    "screenshot": "community-screenshots/c_c0fe0bd6.webp"
-  },
-  {
     "id": "c_3eb8300c",
     "source": "base",
     "category": "reputation_shiny",
