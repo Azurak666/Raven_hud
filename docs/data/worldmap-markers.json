@@ -6967,14 +6967,16 @@
     "category": "npc_reputation",
     "name": "dido",
     "description": "",
-    "x": 6027,
-    "y": 3583,
+    "x": 5974,
+    "y": 3567,
     "floor": "surface",
     "label": "",
     "region": "",
     "trigger": "",
     "contributedBy": "rike_arx7",
-    "icon": "npc_reputation.webp"
+    "icon": "npc_reputation.webp",
+    "lastEditedBy": "Azurak | GXE",
+    "lastEditedAt": "2026-04-16T07:58:57.901Z"
   },
   {
     "id": "c_6998996d",
