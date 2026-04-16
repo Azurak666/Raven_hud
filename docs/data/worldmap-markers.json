@@ -6992,5 +6992,21 @@
     "lastEditedBy": "Azurak | GXE",
     "lastEditedAt": "2026-04-15T15:22:56.249Z",
     "screenshot": "community-screenshots/edit_cb9b68e7fa.webp"
+  },
+  {
+    "id": "c_44595279",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "THOREN THE SILENT",
+    "description": "",
+    "x": 3193,
+    "y": 678,
+    "floor": "surface",
+    "label": "",
+    "region": "Glaceforde",
+    "trigger": "",
+    "contributedBy": "Hironet11",
+    "screenshot": "community-screenshots/npc_reputation_1da201e56d.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
