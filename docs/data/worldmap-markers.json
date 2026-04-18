@@ -7025,5 +7025,20 @@
     "trigger": "",
     "contributedBy": "Hironet11",
     "screenshot": "community-screenshots/reputation_shiny_253b4cc3af.webp"
+  },
+  {
+    "id": "c_8d8dd4ff",
+    "source": "base",
+    "category": "reputation_shiny",
+    "name": "Hadarak Shark shiny 2",
+    "description": "high lv shark spot",
+    "x": 3641,
+    "y": 3395,
+    "floor": "surface",
+    "label": "",
+    "region": "Hadarak Desert",
+    "trigger": "",
+    "contributedBy": "Hironet11",
+    "screenshot": "community-screenshots/reputation_shiny_b598e90a51.webp"
   }
 ]
