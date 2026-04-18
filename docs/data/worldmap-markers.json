@@ -7040,5 +7040,21 @@
     "trigger": "",
     "contributedBy": "Hironet11",
     "screenshot": "community-screenshots/reputation_shiny_b598e90a51.webp"
+  },
+  {
+    "id": "c_ae079cf9",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Olivian Sideris",
+    "description": "",
+    "x": 5128,
+    "y": 2828,
+    "floor": "surface",
+    "label": "",
+    "region": "Bastion",
+    "trigger": "",
+    "contributedBy": "Hironet11",
+    "screenshot": "community-screenshots/npc_reputation_435f9bfeda.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
