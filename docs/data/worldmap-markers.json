@@ -7010,5 +7010,20 @@
     "contributedBy": "Hironet11",
     "screenshot": "community-screenshots/npc_reputation_1da201e56d.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_f9f547b2",
+    "source": "base",
+    "category": "reputation_shiny",
+    "name": "Frost steppes TITAN CLAWS shiny",
+    "description": "Climb the stairs on the south side of Yeti's Cave and head east. Go through the hidden entrance.",
+    "x": 5717,
+    "y": 430,
+    "floor": "surface",
+    "label": "",
+    "region": "Frost steppes",
+    "trigger": "",
+    "contributedBy": "Hironet11",
+    "screenshot": "community-screenshots/reputation_shiny_253b4cc3af.webp"
   }
 ]
