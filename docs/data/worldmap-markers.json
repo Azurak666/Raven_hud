@@ -7056,5 +7056,21 @@
     "contributedBy": "Hironet11",
     "screenshot": "community-screenshots/npc_reputation_435f9bfeda.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_74fdd001",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Professor Marius",
+    "description": "need Zephy Vale Journal 1/1",
+    "x": 5140,
+    "y": 2823,
+    "floor": "surface",
+    "label": "",
+    "region": "Bastion",
+    "trigger": "",
+    "contributedBy": "Hironet11",
+    "screenshot": "community-screenshots/npc_reputation_dd156eba1e.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
