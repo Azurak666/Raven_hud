@@ -7104,5 +7104,21 @@
     "contributedBy": "Azurak | GXE",
     "screenshot": "community-screenshots/npc_reputation_99360356eb.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_733913dc",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Rurikar",
+    "description": "inside dwarven city",
+    "x": 4534,
+    "y": 1601,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "screenshot": "community-screenshots/npc_reputation_2ec4b4406e.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
