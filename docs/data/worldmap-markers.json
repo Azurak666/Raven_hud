@@ -7088,5 +7088,21 @@
     "contributedBy": "Azurak | GXE",
     "screenshot": "community-screenshots/npc_reputation_98ac80e239.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_c38b6977",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Grundwig",
+    "description": "inside dwarven city",
+    "x": 4540,
+    "y": 1598,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "screenshot": "community-screenshots/npc_reputation_99360356eb.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
