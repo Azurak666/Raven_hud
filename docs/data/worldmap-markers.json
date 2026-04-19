@@ -7072,5 +7072,21 @@
     "contributedBy": "Hironet11",
     "screenshot": "community-screenshots/npc_reputation_dd156eba1e.webp",
     "icon": "npc_reputation.webp"
+  },
+  {
+    "id": "c_7376fa87",
+    "source": "base",
+    "category": "npc_reputation",
+    "name": "Sam Coltane",
+    "description": "inside dwarven city",
+    "x": 4537,
+    "y": 1613,
+    "floor": "surface",
+    "label": "",
+    "region": "",
+    "trigger": "",
+    "contributedBy": "Azurak | GXE",
+    "screenshot": "community-screenshots/npc_reputation_98ac80e239.webp",
+    "icon": "npc_reputation.webp"
   }
 ]
