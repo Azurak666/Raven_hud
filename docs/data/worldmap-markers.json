@@ -6112,16 +6112,17 @@
     "source": "base",
     "category": "reputation_shiny",
     "name": "Sajecho Dynamic Cave Shiny",
-    "description": "Only open when Look Don't Touch is active",
+    "description": "Only open when Look Don't Touch is active. Be sure to pick up before completing the dynamic you'll get teleported out after killing the \"boss\"",
     "x": 3359,
     "y": 2438,
     "floor": "surface",
-    "icon": "",
     "label": "Sajecho Dynamic Cave Shiny",
     "region": "",
     "trigger": "",
     "contributedBy": "Pixelated",
-    "screenshot": "community-screenshots/c_656a327a.webp"
+    "screenshot": "community-screenshots/c_656a327a.webp",
+    "lastEditedBy": "Netfsheppard",
+    "lastEditedAt": "2026-05-13T20:38:36.391Z"
   },
   {
     "id": "c_7de134b8",
